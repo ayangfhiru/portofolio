@@ -1,75 +1,98 @@
-# Nuxt Minimal Starter
+# Portfolio (Nuxt 4 + Tailwind CSS + Prisma ORM)
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Portofolio digital interaktif yang dikonversi dari file HTML murni (`docs/code.html`) menjadi aplikasi modern berbasis **Nuxt 4**, **Vue 3 Composition API**, **Tailwind CSS**, dan **Prisma ORM** dengan PostgreSQL.
 
-## Setup
+---
 
-Make sure to install dependencies:
+## 🛠️ Tech Stack
 
+- **Nuxt.js 4** & **Vue 3** (Script Setup + TypeScript)
+- **Tailwind CSS v4** (`@tailwindcss/vite`)
+- **Prisma ORM 7** (PostgreSQL driver adapter `@prisma/adapter-pg`)
+- **Nitro Server Engine** (API Endpoints di `server/api/`)
+
+---
+
+## 🚀 Memulai Proyek
+
+### 1. Prasyarat
+- Node.js >= 18.x
+- pnpm / npm / yarn
+- PostgreSQL (opsional untuk seed lokal)
+
+### 2. Instalasi Dependensi
 ```bash
-# npm
-npm install
-
-# pnpm
 pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
 ```
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
+### 3. Konfigurasi Environment Variables
+Salin file `.env.example` menjadi `.env`:
 ```bash
-# npm
-npm run dev
+cp .env.example .env
+```
+Sesuaikan nilai `DATABASE_URL` dengan database PostgreSQL Anda.
 
-# pnpm
+### 4. Prisma Database & Migrations
+Generate client Prisma:
+```bash
+pnpm db:generate
+```
+
+Push schema atau migrate database:
+```bash
+pnpm db:push
+# atau
+pnpm db:migrate
+```
+
+Seed database:
+```bash
+pnpm db:seed
+```
+
+### 5. Menjalankan Server Development
+```bash
 pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
+Buka browser di `http://localhost:3000`.
 
-## Production
-
-Build the application for production:
-
+### 6. Build untuk Produksi
 ```bash
-# npm
-npm run build
-
-# pnpm
 pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
 pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+---
+
+## 📡 API Endpoints
+
+- `GET /api/projects`
+  - Mengambil daftar proyek (opsional query `?category=web|mobile|oss`).
+  - Termasuk data tag & status featured.
+  - Memiliki fallback data otomatis saat database belum terhubung.
+
+---
+
+## 📁 Struktur Proyek
+```text
+.
+├── app/
+│   ├── app.vue            # Halaman utama aplikasi & interaksi Vue
+│   └── assets/
+│       └── main.css       # Style design tokens & styling dari HTML asli
+├── docs/
+│   ├── PROMT.md           # Panduan spesifikasi konversi
+│   └── code.html          # Template HTML sumber portofolio
+├── prisma/
+│   ├── schema.prisma      # Model database (Project & ProjectTag)
+│   └── seed.ts            # Script seeding data awal
+├── server/
+│   ├── api/
+│   │   └── projects/
+│   │       └── index.get.ts # Endpoint data proyek
+│   └── utils/
+│       └── prisma.ts      # Koneksi prisma client singleton server-side
+├── .env.example
+├── nuxt.config.ts
+└── README.md
+```
