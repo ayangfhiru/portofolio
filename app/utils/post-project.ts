@@ -114,6 +114,49 @@ export const patchProject = async (
 };
 
 /**
+ * Hapus satu project lewat `DELETE /api/projects/:id`.
+ * Mengembalikan data ringkas project yang baru dihapus.
+ */
+export const deleteProject = async (
+  id: string,
+): Promise<ApiResponse<{ id: string; title: string }>> =>
+  await $fetch<ApiResponse<{ id: string; title: string }>>(
+    `/api/projects/${encodeURIComponent(id)}`,
+    { method: "DELETE" },
+  );
+
+/**
+ * Hapus beberapa project sekaligus (aksi "Hapus Terpilih").
+ *
+ * Memanggil `DELETE /api/projects/:id` untuk tiap baris, lalu merangkum
+ * hasilnya. Keberhasilan sebagian tetap dilaporkan apa adanya sehingga
+ * pengguna tahu baris mana yang gagal.
+ */
+export const deleteProjects = async (
+  ids: string[],
+): Promise<{ succeeded: string[]; failed: string[] }> => {
+  const results = await Promise.allSettled(
+    ids.map((id) => deleteProject(id)),
+  );
+
+  const succeeded: string[] = [];
+  const failed: string[] = [];
+
+  for (const [index, result] of results.entries()) {
+    const id = ids[index];
+    if (!id) continue;
+
+    if (result.status === "fulfilled" && result.value.success) {
+      succeeded.push(id);
+    } else {
+      failed.push(id);
+    }
+  }
+
+  return { succeeded, failed };
+};
+
+/**
  * Menarik pesan yang layak ditampilkan dari error hasil `$fetch`.
  *
  * Error bawaan Nitro berbentuk `{ statusCode, statusMessage, message }`.

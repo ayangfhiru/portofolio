@@ -144,6 +144,8 @@ export const FALLBACK_PROJECTS: ProjectItem[] = [
     href: null,
     featured: true,
     tags: [{ name: "Next.js" }, { name: "TypeScript" }, { name: "PostgreSQL" }, { name: "ClickHouse" }, { name: "AWS" }],
+    createdAt: "2025-01-10T08:15:00.000Z",
+    updatedAt: "2026-01-14T09:38:00.000Z",
   },
   {
     id: "2",
@@ -158,6 +160,8 @@ export const FALLBACK_PROJECTS: ProjectItem[] = [
     href: null,
     featured: false,
     tags: [{ name: "Go" }, { name: "gRPC" }, { name: "Redis" }, { name: "Kubernetes" }],
+    createdAt: "2025-03-02T11:42:00.000Z",
+    updatedAt: "2025-11-20T16:05:00.000Z",
   },
   {
     id: "3",
@@ -172,6 +176,8 @@ export const FALLBACK_PROJECTS: ProjectItem[] = [
     href: null,
     featured: false,
     tags: [{ name: "React" }, { name: "Storybook" }, { name: "Tailwind" }, { name: "Playwright" }],
+    createdAt: "2024-06-18T10:20:00.000Z",
+    updatedAt: "2025-08-05T13:12:00.000Z",
   },
   {
     id: "4",
@@ -186,6 +192,8 @@ export const FALLBACK_PROJECTS: ProjectItem[] = [
     href: null,
     featured: false,
     tags: [{ name: "React Native" }, { name: "Mapbox" }, { name: "Node.js" }, { name: "MQTT" }],
+    createdAt: "2024-02-27T07:48:00.000Z",
+    updatedAt: "2025-04-16T18:31:00.000Z",
   },
   {
     id: "5",
@@ -200,6 +208,8 @@ export const FALLBACK_PROJECTS: ProjectItem[] = [
     href: "https://github.com",
     featured: false,
     tags: [{ name: "Node.js" }, { name: "TypeScript" }, { name: "SQLite" }, { name: "OSS" }],
+    createdAt: "2024-09-05T14:10:00.000Z",
+    updatedAt: "2025-12-29T11:27:00.000Z",
   },
 ];
 

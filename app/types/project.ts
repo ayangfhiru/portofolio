@@ -24,6 +24,9 @@ export interface ProjectItem {
   href: string | null;
   featured: boolean;
   tags: ProjectTag[];
+  /** Waktu pembuatan (ISO 8601) — dipakai kolom "Diperbarui" pada tabel admin. */
+  createdAt: string;
+  updatedAt: string;
 }
 
 export type ProjectCategory = "web" | "mobile" | "oss";

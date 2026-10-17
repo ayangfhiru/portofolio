@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed, ref } from "vue";
 import { AlertCircle, CheckCircle2, LoaderCircle, Save } from "@lucide/vue";
 import {
   BaseCheckbox,
@@ -26,12 +27,11 @@ import type {
  * - Mode `create`  → `POST /api/projects`      (payload lengkap)
  * - Mode `update`  → `PATCH /api/projects/:id` (hanya field yang berubah)
  *
- * Komponen ini memegang seluruh state form, validasi, dan proses submit
- * sehingga halaman `admin/project/create` dan `admin/project/[id]/edit`
- * tidak perlu menduplikasi logika apa pun.
+ * Komponen ini memegang seluruh state form, validasi, dan proses submit,
+ * sehingga halaman daftar `admin/project` cukup membuka modal, meneruskan
+ * `mode` + `initialProject`, dan memuat ulang data ketika `saved` dipancarkan.
  *
- * Mengikuti pola `pages/example/form.vue`: state `form` + `errors`,
- * tiap field memakai komponen `form/Base*`, dan pesan tampil lewat
+ * Seluruh field memakai komponen `form/Base*`, dan pesan tampil lewat
  * banner ber-`role` alih-alih `window.alert`.
  */
 
@@ -49,9 +49,21 @@ const props = withDefaults(
     initialProject?: ProjectItem | null;
     /** Label tombol submit; menyesuaikan mode bila tidak diisi. */
     submitLabel?: string;
+    /**
+     * Bila diisi, tombol Batal ikut ditampilkan pada bilah aksi —
+     * dipakai saat form ditampilkan di dalam modal.
+     */
+    cancelLabel?: string;
   }>(),
-  { initialProject: null, submitLabel: "" },
+  { initialProject: null, submitLabel: "", cancelLabel: "" },
 );
+
+const emit = defineEmits<{
+  /** Dipancarkan setelah server mengonfirmasi penyimpanan. */
+  saved: [project: ProjectItem];
+  /** Dipancarkan saat pengguna menekan tombol Batal. */
+  cancel: [];
+}>();
 
 const CATEGORY_OPTIONS = [
   { label: "Web", value: "web" },
@@ -299,6 +311,9 @@ const handleSubmit = async (): Promise<void> => {
         ? "Perubahan berhasil disimpan."
         : "Project berhasil dibuat.",
     );
+
+    // Beri tahu induk (mis. untuk memuat ulang daftar atau menutup modal).
+    emit("saved", saved.data);
   } catch (error) {
     // Nilai form tidak disentuh sehingga input user tetap utuh.
     setStatus("error", extractApiError(error).message);
@@ -309,18 +324,18 @@ const handleSubmit = async (): Promise<void> => {
 </script>
 
 <template>
-  <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-    <form class="px-4 py-6 sm:px-8 sm:py-8" novalidate @submit.prevent="handleSubmit">
+  <div>
+    <form class="px-5 py-6 sm:px-[30px]" novalidate @submit.prevent="handleSubmit">
       <!-- Banner pesan sukses / gagal / informasi -->
       <div
         v-if="status.message"
         :role="status.type === 'error' ? 'alert' : 'status'"
         class="mb-6 flex items-start gap-3 rounded-xl border px-4 py-3 text-sm"
         :class="{
-          'border-red-200 bg-red-50 text-red-700': status.type === 'error',
-          'border-emerald-200 bg-emerald-50 text-emerald-700': status.type === 'success',
-          'border-slate-200 bg-slate-50 text-slate-600': status.type === 'info',
-          'border-slate-200 bg-white text-slate-600': status.type === 'idle',
+          'border-[#f2c9c5] bg-admin-accent-soft text-admin-accent-dark': status.type === 'error',
+          'border-[#bfdfd1] bg-admin-ok-soft text-admin-ok': status.type === 'success',
+          'border-admin-line bg-admin-bg-2 text-admin-muted': status.type === 'info',
+          'border-admin-line bg-white text-admin-muted': status.type === 'idle',
         }"
       >
         <CheckCircle2
@@ -477,25 +492,36 @@ const handleSubmit = async (): Promise<void> => {
       </div>
     </form>
 
-    <!-- Footer aksi — meniru tata letak RegistrationNavigation -->
-    <div class="border-t border-slate-200 bg-white px-4 py-4 sm:px-6">
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <!-- Ringkasan file terpilih / gambar saat ini -->
-        <p class="text-xs text-slate-400">
-          <template v-if="imageFile">
-            Gambar baru: <span class="text-slate-600">{{ imageFile.name }}</span>
-          </template>
-          <template v-else-if="initialProject">
-            Gambar saat ini: <span class="text-slate-600">{{ initialProject.imageUrl }}</span>
-          </template>
-          <template v-else>
-            Belum ada gambar dipilih.
-          </template>
-        </p>
+    <!-- Bilah aksi — meniru tata letak kaki modal pada desain referensi -->
+    <div class="flex flex-col gap-3 rounded-b-[20px] border-t border-admin-line bg-admin-head px-5 pb-6 pt-5 sm:flex-row sm:items-center sm:justify-between sm:px-[30px]">
+      <!-- Ringkasan file terpilih / gambar saat ini -->
+      <p class="text-xs text-admin-muted-2">
+        <template v-if="imageFile">
+          Gambar baru: <span class="font-medium text-admin-ink-2">{{ imageFile.name }}</span>
+        </template>
+        <template v-else-if="initialProject">
+          Gambar saat ini: <span class="break-all font-medium text-admin-ink-2">{{ initialProject.imageUrl }}</span>
+        </template>
+        <template v-else>
+          Belum ada gambar dipilih.
+        </template>
+      </p>
+
+      <div class="flex flex-wrap gap-2.5">
+        <!-- Tombol Batal (hanya bila dipakai di dalam modal) -->
+        <button
+          v-if="props.cancelLabel"
+          type="button"
+          class="inline-flex min-h-11 items-center justify-center gap-2 whitespace-nowrap rounded-[11px] border border-admin-line-2 bg-white px-[18px] py-2.5 text-sm font-bold text-admin-ink-2 transition hover:-translate-y-0.5 hover:border-admin-ink hover:text-admin-ink disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
+          :disabled="submitting"
+          @click="emit('cancel')"
+        >
+          {{ props.cancelLabel }}
+        </button>
 
         <button
           type="button"
-          class="inline-flex min-h-11 items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-red-600 bg-red-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:border-red-700 hover:bg-red-700 active:bg-red-800 disabled:cursor-not-allowed disabled:opacity-50"
+          class="inline-flex min-h-11 items-center justify-center gap-2 whitespace-nowrap rounded-[11px] bg-admin-accent px-[18px] py-2.5 text-sm font-bold text-white shadow-[0_8px_18px_-8px_rgba(217,45,32,.55)] transition hover:-translate-y-0.5 hover:bg-admin-accent-dark disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
           :disabled="submitting"
           :aria-busy="submitting"
           @click="handleSubmit"

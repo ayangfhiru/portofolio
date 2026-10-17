@@ -19,6 +19,31 @@
   --color-accent-ink: #0a0b0d;
   --color-flare: #ff5b39;
 
+  /* ----------------------------------------------------------
+     Tema panel admin (terang) — dipisah dari tema publik (gelap)
+     agar mengubah tampilan admin tidak berdampak ke halaman utama.
+     Dipakai sebagai bg-admin-*, text-admin-*, border-admin-*, dst.
+     ---------------------------------------------------------- */
+  --color-admin-bg: #f4f5f7;
+  --color-admin-bg-2: #eef0f3;
+  --color-admin-head: #fbfbfc;
+  --color-admin-card: #ffffff;
+  --color-admin-ink: #0f1728;
+  --color-admin-ink-2: #333c4e;
+  --color-admin-muted: #6b7280;
+  --color-admin-muted-2: #98a0ac;
+  --color-admin-line: #e6e8ec;
+  --color-admin-line-2: #d8dce2;
+  --color-admin-accent: #d92d20;
+  --color-admin-accent-dark: #b42318;
+  --color-admin-accent-soft: #fdecea;
+  --color-admin-ok: #12805c;
+  --color-admin-ok-soft: #e3f5ee;
+  --color-admin-warn: #b25e09;
+  --color-admin-warn-soft: #fcf0e1;
+  --color-admin-info: #2563a8;
+  --color-admin-info-soft: #e7f0fa;
+
   --font-display: "Syne", sans-serif;
   --font-body: "Manrope", sans-serif;
   --font-mono: "JetBrains Mono", monospace;

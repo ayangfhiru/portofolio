@@ -45,6 +45,8 @@ export default defineEventHandler(async (event) => {
       href: project.href,
       featured: project.featured,
       tags: project.tags,
+      createdAt: project.createdAt,
+      updatedAt: project.updatedAt,
     }));
   }, category ? FALLBACK_PROJECTS.filter((p) => p.category === category) : FALLBACK_PROJECTS);
 });
