@@ -33,5 +33,4 @@ public/uploads
 .claude
 .windsurf
 
-# Docs
-# /docs
+*.md

@@ -3,6 +3,7 @@ import {
   defineEventHandler,
   readBody,
   readMultipartFormData,
+  setResponseStatus,
 } from "h3";
 import { Prisma } from "../../../prisma/generated/client";
 import type { ProjectCategory as ProjectCategoryEnum } from "../../../prisma/generated/enums";
@@ -10,6 +11,8 @@ import {
   collectErrors,
   isNonEmptyString,
   isPositiveInt,
+  parseBoolean,
+  parseTags,
   slugify,
 } from "../../utils/validation";
 import { UploadError, saveProjectImage } from "../../utils/upload";
@@ -31,42 +34,6 @@ import type { ProjectCategory } from "../../../app/types/project";
  */
 
 const VALID_CATEGORIES = new Set(["web", "mobile", "oss"]);
-
-/** Ubah berbagai bentuk input `tags` menjadi array string yang bersih. */
-const parseTags = (raw: unknown): string[] => {
-  if (Array.isArray(raw)) {
-    return raw
-      .filter((item): item is string => typeof item === "string")
-      .map((item) => item.trim())
-      .filter(Boolean);
-  }
-
-  if (typeof raw === "string") {
-    // Menerima format "a,b,c" atau '["a","b","c"]'.
-    try {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) {
-        return parseTags(parsed);
-      }
-    } catch {
-      // Bukan JSON — perlakukan sebagai daftar dipisah koma.
-    }
-
-    return raw
-      .split(",")
-      .map((item) => item.trim())
-      .filter(Boolean);
-  }
-
-  return [];
-};
-
-/** Normalisasi berbagai bentuk input boolean dari multipart. */
-const parseBoolean = (raw: unknown, fallback = false): boolean => {
-  if (typeof raw === "boolean") return raw;
-  if (typeof raw === "string") return raw === "true" || raw === "1";
-  return fallback;
-};
 
 export default defineEventHandler(async (event) => {
   const contentType = event.node.req.headers["content-type"] ?? "";
@@ -160,6 +127,9 @@ export default defineEventHandler(async (event) => {
       },
       include: { tags: true },
     });
+
+    // 201 Created — kontrak Create (lihat PROMT_ADMIN.md bagian 8).
+    setResponseStatus(event, 201);
 
     return ok({
       ...project,

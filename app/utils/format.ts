@@ -55,6 +55,26 @@ export const splitEmphasis = (text: string): EmphasisPart[] =>
 export const stripEmphasis = (text: string): string => text.replace(/\*\*/g, "");
 
 /**
+ * Ubah input tag berbentuk teks bebas (`"vue, nuxt, prisma"`)
+ * menjadi daftar tag yang bersih: tiap potongan di-trim, yang kosong
+ * dibuang, dan duplikat dihilangkan (urutan pertama dipertahankan).
+ */
+export const parseTagInput = (text: string): string[] => {
+  const seen = new Set<string>();
+  const result: string[] = [];
+
+  for (const raw of text.split(",")) {
+    const name = raw.trim();
+    const key = name.toLowerCase();
+    if (!name || seen.has(key)) continue;
+    seen.add(key);
+    result.push(name);
+  }
+
+  return result;
+};
+
+/**
  * Hitung persentase progres scroll dokumen (0–100).
  * Mengembalikan 0 bila tinggi konten sama dengan viewport.
  */
