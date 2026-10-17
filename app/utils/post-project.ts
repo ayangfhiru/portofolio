@@ -8,10 +8,15 @@ import type {
 /**
  * Util pemanggilan API project di sisi client.
  *
+ * File ini hanya memuat bagian yang benar-benar khas project: pembentukan
+ * `multipart/form-data` untuk upload gambar (lihat `server/utils/upload.ts`).
+ * Pemanggilan CRUD umum lainnya ada di `~/utils/admin-api` sehingga seluruh
+ * modul admin berbagi satu implementasi yang sama.
+ *
  * `postProject` mendukung dua mode:
  * 1. Tanpa file   — mengirim JSON biasa dengan `imageUrl` eksternal.
  * 2. Dengan file  — mengirim `multipart/form-data` sehingga gambar
- *    ikut di-upload ke server (lihat `server/utils/upload.ts`).
+ *    ikut di-upload ke server.
  *
  * Contoh pakai dengan file:
  *   await postProject(
@@ -50,17 +55,6 @@ export const postProject = async (
     body: payload,
   });
 };
-
-/**
- * Helper untuk membangun payload project dari form sederhana.
- * Berguna bila pemanggil ingin merapikan nilai sebelum dikirim.
- */
-export const buildProjectPayload = (
-  input: Omit<ProjectPayload, "tags"> & { tags?: string[] },
-): ProjectPayload => ({
-  ...input,
-  tags: input.tags ?? [],
-});
 
 /**
  * Mengubah sebagian field project lewat `PATCH /api/projects/:id`.
@@ -111,88 +105,4 @@ export const patchProject = async (
     method: "PATCH",
     body: payload,
   });
-};
-
-/**
- * Hapus satu project lewat `DELETE /api/projects/:id`.
- * Mengembalikan data ringkas project yang baru dihapus.
- */
-export const deleteProject = async (
-  id: string,
-): Promise<ApiResponse<{ id: string; title: string }>> =>
-  await $fetch<ApiResponse<{ id: string; title: string }>>(
-    `/api/projects/${encodeURIComponent(id)}`,
-    { method: "DELETE" },
-  );
-
-/**
- * Hapus beberapa project sekaligus (aksi "Hapus Terpilih").
- *
- * Memanggil `DELETE /api/projects/:id` untuk tiap baris, lalu merangkum
- * hasilnya. Keberhasilan sebagian tetap dilaporkan apa adanya sehingga
- * pengguna tahu baris mana yang gagal.
- */
-export const deleteProjects = async (
-  ids: string[],
-): Promise<{ succeeded: string[]; failed: string[] }> => {
-  const results = await Promise.allSettled(
-    ids.map((id) => deleteProject(id)),
-  );
-
-  const succeeded: string[] = [];
-  const failed: string[] = [];
-
-  for (const [index, result] of results.entries()) {
-    const id = ids[index];
-    if (!id) continue;
-
-    if (result.status === "fulfilled" && result.value.success) {
-      succeeded.push(id);
-    } else {
-      failed.push(id);
-    }
-  }
-
-  return { succeeded, failed };
-};
-
-/**
- * Menarik pesan yang layak ditampilkan dari error hasil `$fetch`.
- *
- * Error bawaan Nitro berbentuk `{ statusCode, statusMessage, message }`.
- * Bila tidak terbaca (mis. jaringan putus), kembalikan pesan generik
- * sehingga caller tidak perlu menangani bentuk error yang beragam.
- */
-export const extractApiError = (
-  error: unknown,
-  fallback = "Terjadi kesalahan. Silakan coba lagi.",
-): { statusCode: number | null; message: string } => {
-  if (typeof error === "object" && error !== null) {
-    const source = error as {
-      statusCode?: unknown;
-      statusMessage?: unknown;
-      data?: { statusMessage?: unknown };
-      message?: unknown;
-    };
-
-    const statusCode =
-      typeof source.statusCode === "number" ? source.statusCode : null;
-
-    // Urutan prioritas: pesan bawaan Nitro → pesan dari data → message.
-    const raw =
-      source.statusMessage ??
-      source.data?.statusMessage ??
-      (typeof source.message === "string" &&
-      !/^fetch failed|network error/i.test(source.message)
-        ? source.message
-        : undefined);
-
-    if (typeof raw === "string" && raw.trim()) {
-      return { statusCode, message: raw.trim() };
-    }
-
-    return { statusCode, message: fallback };
-  }
-
-  return { statusCode: null, message: fallback };
 };

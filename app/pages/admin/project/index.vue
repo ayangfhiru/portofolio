@@ -2,18 +2,21 @@
 /**
  * Halaman kelola data project (tampilan tabel).
  *
- * Merangkai komponen panel admin yang bersifat generik —
- * `AdminTopbar`, `StatStrip`, `TableToolbar`, `DataTable`,
- * `PaginationBar`, `ModalDialog`, `ConfirmDialog` — sehingga halaman
- * untuk model lain (project-tags, stack, dsb.) dapat meniru susunan
- * yang sama tanpa menduplikasi komponennya.
+ * Merangkai komponen panel admin yang bersifat generik — `AdminTopbar`,
+ * `StatStrip`, `TableToolbar`, `DataTable`, `PaginationBar`,
+ * `ModalDialog`, `ConfirmDialog` — sementara mesin daftarnya (muat data,
+ * pencarian, filter, pengurutan, paginasi, pilihan, form, hapus) ditangani
+ * `useAdminList`, dipakai bersama seluruh halaman modul admin lain.
  *
- * Seluruh data diambil dari `GET /api/projects` lalu diproses di sisi
- * klien (pencarian, filter, pengurutan, paginasi) karena volumenya
- * kecil. Bila kelak data membesar, cukup ganti sumber `pageRows`
- * menjadi hasil server tanpa mengubah komponen tampilan.
+ * Data diambil dari `GET /api/projects` lalu diproses di sisi klien
+ * karena volumenya kecil. Bila kelak data membesar, cukup ganti sumber
+ * `pageRows` menjadi hasil server tanpa mengubah komponen tampilan.
+ *
+ * Berbeda dengan modul master data, project memakai endpoint sendiri di
+ * `/api/projects` (bukan `/api/admin/projects`) karena endpoint tersebut
+ * sudah ada sejak awal dan menangani upload gambar.
  */
-import { computed, ref, watch } from "vue";
+import { computed } from "vue";
 import { Pencil, Plus, Trash2 } from "@lucide/vue";
 import {
   AdminTopbar,
@@ -26,64 +29,31 @@ import {
   StatStrip,
   TableToolbar,
 } from "~/components/admin";
-import { useToast } from "~/composables/useToast";
+import { useAdminList } from "~/composables/useAdminList";
+import { ADMIN_NAV_ITEMS, ADMIN_USER } from "~/utils/admin-nav";
 import { formatDate, formatTime, highlightParts } from "~/utils/format";
-import {
-  deleteProject,
-  deleteProjects,
-  extractApiError,
-} from "~/utils/post-project";
-import type { DataTableColumn, StatItem, TopNavItem, ToolbarFilter } from "~/types/admin";
 import type { ApiResponse } from "~/types/api";
+import type {
+  DataTableColumn,
+  StatItem,
+  ToolbarFilter,
+} from "~/types/admin";
 import type { ProjectItem } from "~/types/project";
 
 useHead({ title: "Kelola Project — Admin" });
 
-const toast = useToast();
+/* ----------------------------------------------------------- Kolom */
 
-/* ---------------------------------------------------------- Topbar */
-
-const NAV_ITEMS: TopNavItem[] = [
-  { key: "dashboard", label: "Dashboard" },
-  { key: "project", label: "Project", to: "/admin/project" },
-  { key: "media", label: "Media" },
-  { key: "message", label: "Pesan" },
-  { key: "settings", label: "Pengaturan" },
+const COLUMNS: DataTableColumn[] = [
+  { key: "title", label: "Project", sortable: true, hideLabel: true },
+  { key: "category", label: "Kategori", sortable: true },
+  { key: "year", label: "Tahun", sortable: true },
+  { key: "featured", label: "Sorotan", sortable: true },
+  { key: "href", label: "Tautan" },
+  { key: "updatedAt", label: "Diperbarui", sortable: true, align: "right" },
 ];
 
-const ADMIN_USER = { name: "Raka Devano", role: "Super Admin" };
-
-/* ---------------------------------------------------------- Data */
-
-const projects = ref<ProjectItem[]>([]);
-const loading = ref(true);
-const loadError = ref<string | null>(null);
-
-/** Ambil seluruh project dari API. */
-const loadProjects = async (): Promise<void> => {
-  loading.value = true;
-  loadError.value = null;
-
-  try {
-    const response = await $fetch<ApiResponse<ProjectItem[]>>("/api/projects");
-    projects.value = response.success && response.data ? response.data : [];
-  } catch (error) {
-    projects.value = [];
-    loadError.value = extractApiError(error, "Gagal memuat data project.").message;
-  } finally {
-    loading.value = false;
-  }
-};
-
-await loadProjects();
-
-/* -------------------------------------------------- Pencarian & filter */
-
-const search = ref("");
-const page = ref(1);
-const perPage = ref(8);
-
-const filters = ref<ToolbarFilter[]>([
+const FILTERS: ToolbarFilter[] = [
   {
     key: "category",
     label: "Kategori",
@@ -105,137 +75,115 @@ const filters = ref<ToolbarFilter[]>([
       { label: "Biasa", value: "plain" },
     ],
   },
-]);
+];
 
-const filterValue = (key: string): string =>
-  filters.value.find((filter) => filter.key === key)?.value ?? "all";
+/* ------------------------------------------------------ Mesin daftar */
 
-const onFilterChange = (key: string, value: string): void => {
-  filters.value = filters.value.map((filter) =>
-    filter.key === key ? { ...filter, value } : filter,
-  );
-  page.value = 1;
-};
+const list = await useAdminList<ProjectItem>({
+  resource: "Project",
+  fetchRows: async () => {
+    // Endpoint project berbeda dari modul lain (menyediakan upload gambar),
+    // jadi sumber datanya ditulis eksplisit di sini.
+    const response = await $fetch<ApiResponse<ProjectItem[]>>("/api/projects");
 
-/** Apakah satu project cocok dengan kata kunci pencarian? */
-const matchesSearch = (project: ProjectItem, query: string): boolean => {
-  if (!query) return true;
+    if (!response.success || !response.data) {
+      throw new Error(response.error ?? "Server tidak mengembalikan data project.");
+    }
 
-  const haystack = [
-    project.title,
-    project.slug,
-    project.description,
-    project.category,
-    String(project.year),
-    project.tags.map((tag) => tag.name).join(" "),
-  ]
-    .join(" ")
-    .toLowerCase();
+    return response.data;
+  },
+  columns: COLUMNS,
+  filters: FILTERS,
+  passesFilter: (project, values) => {
+    const category = values.category ?? "all";
+    const featured = values.featured ?? "all";
 
-  return haystack.includes(query);
-};
-
-const filteredProjects = computed(() => {
-  const query = search.value.trim().toLowerCase();
-  const category = filterValue("category");
-  const featured = filterValue("featured");
-
-  return projects.value.filter((project) => {
-    if (!matchesSearch(project, query)) return false;
     if (category !== "all" && project.category !== category) return false;
     if (featured === "featured" && !project.featured) return false;
     if (featured === "plain" && project.featured) return false;
     return true;
-  });
+  },
+  searchText: (project) =>
+    [
+      project.title,
+      project.slug,
+      project.description,
+      project.category,
+      String(project.year),
+      project.tags.map((tag) => tag.name).join(" "),
+    ].join(" "),
+  sortValue: (project, key) => {
+    if (key === "year") return project.year;
+    if (key === "featured") return project.featured ? 1 : 0;
+    if (key === "updatedAt") return new Date(project.updatedAt).getTime();
+    if (key === "category") return project.category;
+    return project.title;
+  },
+  rowLabel: (project) => project.title,
+  defaultSort: { key: "year", dir: "desc" },
+  numericSortKeys: ["year", "updatedAt", "featured"],
+  // Project memakai prefix `/api/projects` (bukan `/api/admin/projects`)
+  // karena endpointnya menangani upload gambar, jadi pemanggilan hapusnya
+  // ditulis eksplisit di sini.
+  remove: (id) =>
+    $fetch<ApiResponse<{ id: string; title: string }>>(
+      `/api/projects/${encodeURIComponent(id)}`,
+      { method: "DELETE" },
+    ),
 });
 
-/* ------------------------------------------------------- Pengurutan */
-
-interface SortState {
-  key: string;
-  dir: "asc" | "desc";
-}
-
-const sort = ref<SortState>({ key: "year", dir: "desc" });
-
-/** Nilai pembanding pengurutan — angka untuk kolom numerik/tanggal. */
-const sortValue = (project: ProjectItem, key: string): string | number => {
-  if (key === "year") return project.year;
-  if (key === "featured") return project.featured ? 1 : 0;
-  if (key === "updatedAt") return new Date(project.updatedAt).getTime();
-  if (key === "category") return project.category;
-  return project.title;
-};
-
-const sortedProjects = computed(() => {
-  const { key, dir } = sort.value;
-  const factor = dir === "asc" ? 1 : -1;
-
-  return [...filteredProjects.value].sort((a, b) => {
-    const left = sortValue(a, key);
-    const right = sortValue(b, key);
-
-    if (typeof left === "number" && typeof right === "number") {
-      return (left - right) * factor;
-    }
-
-    return String(left).localeCompare(String(right)) * factor;
-  });
-});
-
-const onSort = (key: string): void => {
-  if (sort.value.key === key) {
-    sort.value = { key, dir: sort.value.dir === "asc" ? "desc" : "asc" };
-  } else {
-    // Kolom tanggal/angka awalnya menurun, kolom teks menaik.
-    const numeric = key === "year" || key === "updatedAt" || key === "featured";
-    sort.value = { key, dir: numeric ? "desc" : "asc" };
-  }
-};
-
-/** Kembalikan pencarian, filter, dan halaman ke keadaan awal. */
-const resetFilters = (): void => {
-  search.value = "";
-  filters.value = filters.value.map((filter) => ({ ...filter, value: "all" }));
-  page.value = 1;
-};
-
-// Kembali ke halaman pertama tiap pencarian berubah.
-watch(search, () => {
-  page.value = 1;
-});
-
-/* -------------------------------------------------------- Paginasi */
-
-const pageRows = computed(() => {
-  const start = (page.value - 1) * perPage.value;
-  return sortedProjects.value.slice(start, start + perPage.value);
-});
-
-/* --------------------------------------------------------- Pilihan */
-
-const selected = ref<string[]>([]);
-const hasSelection = computed(() => selected.value.length > 0);
+const {
+  rows,
+  loading,
+  loadError,
+  reload,
+  search,
+  page,
+  perPage,
+  filters,
+  onFilterChange,
+  resetFilters,
+  sort,
+  sortedRows,
+  onSort,
+  pageRows,
+  selected,
+  hasSelection,
+  formOpen,
+  formMode,
+  editing,
+  openCreate,
+  openEdit,
+  closeForm,
+  deleteTarget,
+  deleteDialogOpen,
+  deleting,
+  bulkDeleteMode,
+  askDelete,
+  askBulkDelete,
+  closeDelete,
+  confirmDelete,
+} = list;
 
 /* --------------------------------------------------------- Statistik */
 
 const stats = computed<StatItem[]>(() => {
-  const uniqueCategories = new Set(projects.value.map((project) => project.category));
+  const uniqueCategories = new Set(rows.value.map((project) => project.category));
   const uniqueTags = new Set(
-    projects.value.flatMap((project) => project.tags.map((tag) => tag.name)),
+    rows.value.flatMap((project) => project.tags.map((tag) => tag.name)),
   );
 
   return [
     {
       key: "total",
       label: "Total Project",
-      value: projects.value.length,
+      value: rows.value.length,
       hint: "Semua data terdaftar",
     },
     {
       key: "featured",
       label: "Unggulan",
-      value: projects.value.filter((project) => project.featured).length,
+      value: rows.value.filter((project) => project.featured).length,
       hint: "Tampil menonjol di bagian Work",
     },
     {
@@ -253,135 +201,15 @@ const stats = computed<StatItem[]>(() => {
   ];
 });
 
-/* ----------------------------------------------------------- Kolom */
+/* ----------------------------------------------------------- Aksi */
 
-const COLUMNS: DataTableColumn[] = [
-  { key: "title", label: "Project", sortable: true, hideLabel: true },
-  { key: "category", label: "Kategori", sortable: true },
-  { key: "year", label: "Tahun", sortable: true },
-  { key: "featured", label: "Sorotan", sortable: true },
-  { key: "href", label: "Tautan" },
-  { key: "updatedAt", label: "Diperbarui", sortable: true, align: "right" },
-];
-
-/* ------------------------------------------------- Form tambah/ubah */
-
-const formOpen = ref(false);
-const formMode = ref<"create" | "update">("create");
-const editing = ref<ProjectItem | null>(null);
-
-const openCreate = (): void => {
-  formMode.value = "create";
-  editing.value = null;
-  formOpen.value = true;
-};
-
-const openEdit = (row: ProjectItem): void => {
-  formMode.value = "update";
-  editing.value = row;
-  formOpen.value = true;
-};
-
-const closeForm = (): void => {
-  formOpen.value = false;
-  editing.value = null;
-};
-
+/** Simpan lalu tutup modal, sambil memuat ulang daftar. */
 const onSaved = async (project: ProjectItem): Promise<void> => {
   const verb = formMode.value === "update" ? "diperbarui" : "ditambahkan";
 
   closeForm();
-  toast.success(`Project ${verb}`, `“${project.title}” tersimpan.`);
-  await loadProjects();
-};
-
-/* --------------------------------------------------------- Hapus */
-
-const deleteTarget = ref<ProjectItem | null>(null);
-const deleteDialogOpen = ref(false);
-const deleting = ref(false);
-/** `true` bila konfirmasi sedang menangani aksi hapus massal. */
-const bulkDeleteMode = ref(false);
-
-const askDelete = (row: ProjectItem): void => {
-  deleteTarget.value = row;
-  bulkDeleteMode.value = false;
-  deleteDialogOpen.value = true;
-};
-
-const askBulkDelete = (): void => {
-  if (!hasSelection.value) return;
-  deleteTarget.value = null;
-  bulkDeleteMode.value = true;
-  deleteDialogOpen.value = true;
-};
-
-const closeDelete = (): void => {
-  if (deleting.value) return;
-  deleteDialogOpen.value = false;
-  deleteTarget.value = null;
-};
-
-const confirmDelete = async (): Promise<void> => {
-  if (deleting.value) return;
-
-  deleting.value = true;
-
-  try {
-    if (bulkDeleteMode.value) {
-      const ids = [...selected.value];
-      const { succeeded, failed } = await deleteProjects(ids);
-
-      // Tidak ada satu pun yang berhasil: biarkan dialog terbuka agar
-      // pengguna dapat mengulang tanpa kehilangan pilihannya.
-      if (succeeded.length === 0) {
-        throw new Error(
-          ids.length === 0
-            ? "Tidak ada project yang dipilih."
-            : "Semua project gagal dihapus.",
-        );
-      }
-
-      // Baris yang gagal tetap terpilih agar aksi dapat diulang,
-      // sedangkan yang berhasil dikeluarkan agar tidak diproses lagi.
-      selected.value = selected.value.filter((id) => failed.includes(id));
-
-      if (failed.length > 0) {
-        toast.danger(
-          `${failed.length} project gagal dihapus`,
-          "Periksa koneksi lalu coba kembali.",
-        );
-      } else {
-        toast.success(
-          `${succeeded.length} project dihapus`,
-          "Data berhasil dihapus permanen.",
-        );
-      }
-    } else {
-      const target = deleteTarget.value;
-      if (!target) throw new Error("Data yang akan dihapus tidak ditemukan.");
-
-      const response = await deleteProject(target.id);
-      if (!response.success) {
-        throw new Error(response.error ?? "Server tidak mengonfirmasi penghapusan.");
-      }
-
-      toast.success("Project dihapus", `“${target.title}” dihapus permanen.`);
-    }
-
-    // Ditutup langsung, bukan lewat `closeDelete()`: penjaga `deleting`
-    // pada penutup tersebut ditujukan untuk aksi batal dari pengguna,
-    // sehingga akan memblokir penutupan setelah penghapusan berhasil.
-    deleteDialogOpen.value = false;
-    deleteTarget.value = null;
-    await loadProjects();
-  } catch (error) {
-    // Dialog sengaja dibiarkan terbuka agar pengguna dapat mencoba ulang;
-    // nilai `deleting` dipulihkan oleh blok `finally`.
-    toast.danger("Gagal menghapus", extractApiError(error).message);
-  } finally {
-    deleting.value = false;
-  }
+  list.toast.success(`Project ${verb}`, `“${project.title}” tersimpan.`);
+  await reload();
 };
 
 /* --------------------------------------------------------- Format */
@@ -393,7 +221,7 @@ const titleParts = (value: string) => highlightParts(value, search.value);
 <template>
   <div class="min-h-screen bg-admin-bg text-admin-ink">
     <AdminTopbar
-      :nav-items="NAV_ITEMS"
+      :nav-items="ADMIN_NAV_ITEMS"
       active-key="project"
       :user="ADMIN_USER"
     />
@@ -488,7 +316,7 @@ const titleParts = (value: string) => highlightParts(value, search.value);
           <button
             type="button"
             class="ml-2 underline underline-offset-[3px]"
-            @click="loadProjects"
+            @click="reload"
           >
             Coba lagi
           </button>
@@ -620,7 +448,7 @@ const titleParts = (value: string) => highlightParts(value, search.value);
         <PaginationBar
           v-model:page="page"
           v-model:per-page="perPage"
-          :total="sortedProjects.length"
+          :total="sortedRows.length"
         />
       </section>
     </main>

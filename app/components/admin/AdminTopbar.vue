@@ -58,14 +58,20 @@ const isActive = (item: TopNavItem): boolean =>
         </span>
       </div>
 
-      <!-- Menu -->
-      <nav v-if="props.navItems.length" class="ml-3 hidden items-center gap-1 lg:flex">
+      <!-- Menu
+           `overflow-x-auto` dipakai agar seluruh tautan modul tetap
+           terjangkau pada lebar sempit tanpa mengubah tampilan ketika
+           semuanya masih muat. -->
+      <nav
+        v-if="props.navItems.length"
+        class="ml-3 hidden min-w-0 flex-nowrap items-center gap-1 overflow-x-auto [scrollbar-width:none] lg:flex [&::-webkit-scrollbar]:hidden"
+      >
         <component
           :is="item.to ? 'NuxtLink' : 'span'"
           v-for="item in props.navItems"
           :key="item.key"
           :to="item.to"
-          class="rounded-[9px] px-3.5 py-2 text-sm font-semibold transition-colors"
+          class="shrink-0 rounded-[9px] px-3.5 py-2 text-sm font-semibold transition-colors"
           :class="
             isActive(item)
               ? 'bg-admin-accent-soft text-admin-accent'

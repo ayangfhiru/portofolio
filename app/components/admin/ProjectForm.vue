@@ -8,11 +8,8 @@ import {
   BaseTextarea,
 } from "~/components/form";
 import { parseTagInput } from "~/utils/format";
-import {
-  extractApiError,
-  patchProject,
-  postProject,
-} from "~/utils/post-project";
+import { extractApiError } from "~/utils/admin-api";
+import { patchProject, postProject } from "~/utils/post-project";
 import type { ApiResponse } from "~/types/api";
 import type {
   ProjectFormState,
