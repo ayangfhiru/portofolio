@@ -31,8 +31,8 @@ export * from "./enums.js"
  * const prisma = new PrismaClient({
  *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
  * })
- * // Fetch zero or more Projects
- * const projects = await prisma.project.findMany()
+ * // Fetch zero or more Profiles
+ * const profiles = await prisma.profile.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).
@@ -41,6 +41,31 @@ export const PrismaClient = $Class.getPrismaClientClass()
 export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts extends Prisma.PrismaClientOptions["omit"] = Prisma.PrismaClientOptions["omit"], ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = $Class.PrismaClient<LogOpts, OmitOpts, ExtArgs>
 export { Prisma }
 
+/**
+ * Model Profile
+ * 
+ */
+export type Profile = Prisma.ProfileModel
+/**
+ * Model Stat
+ * 
+ */
+export type Stat = Prisma.StatModel
+/**
+ * Model Service
+ * 
+ */
+export type Service = Prisma.ServiceModel
+/**
+ * Model StackGroup
+ * 
+ */
+export type StackGroup = Prisma.StackGroupModel
+/**
+ * Model StackItem
+ * 
+ */
+export type StackItem = Prisma.StackItemModel
 /**
  * Model Project
  * 
@@ -51,3 +76,33 @@ export type Project = Prisma.ProjectModel
  * 
  */
 export type ProjectTag = Prisma.ProjectTagModel
+/**
+ * Model Experience
+ * 
+ */
+export type Experience = Prisma.ExperienceModel
+/**
+ * Model ExperiencePoint
+ * 
+ */
+export type ExperiencePoint = Prisma.ExperiencePointModel
+/**
+ * Model Testimonial
+ * 
+ */
+export type Testimonial = Prisma.TestimonialModel
+/**
+ * Model AboutFact
+ * 
+ */
+export type AboutFact = Prisma.AboutFactModel
+/**
+ * Model ContactCard
+ * 
+ */
+export type ContactCard = Prisma.ContactCardModel
+/**
+ * Model SocialLink
+ * 
+ */
+export type SocialLink = Prisma.SocialLinkModel

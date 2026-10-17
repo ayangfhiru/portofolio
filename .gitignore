@@ -25,6 +25,9 @@ logs
 
 /app/generated
 
+# Gambar yang di-upload lewat POST /api/projects
+public/uploads
+
 # AI
 .agents
 .claude

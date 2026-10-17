@@ -51,8 +51,19 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
+  Profile: 'Profile',
+  Stat: 'Stat',
+  Service: 'Service',
+  StackGroup: 'StackGroup',
+  StackItem: 'StackItem',
   Project: 'Project',
-  ProjectTag: 'ProjectTag'
+  ProjectTag: 'ProjectTag',
+  Experience: 'Experience',
+  ExperiencePoint: 'ExperiencePoint',
+  Testimonial: 'Testimonial',
+  AboutFact: 'AboutFact',
+  ContactCard: 'ContactCard',
+  SocialLink: 'SocialLink'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -71,6 +82,70 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+export const ProfileScalarFieldEnum = {
+  id: 'id',
+  fullName: 'fullName',
+  brand: 'brand',
+  role: 'role',
+  availabilityText: 'availabilityText',
+  heroLead: 'heroLead',
+  rotatingWords: 'rotatingWords',
+  photoUrl: 'photoUrl',
+  photoTagline: 'photoTagline',
+  aboutNote: 'aboutNote',
+  aboutParagraphs: 'aboutParagraphs',
+  badgeValue: 'badgeValue',
+  badgeLabel: 'badgeLabel',
+  contactSubtitle: 'contactSubtitle',
+  contactEmail: 'contactEmail',
+  contactCallUrl: 'contactCallUrl',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProfileScalarFieldEnum = (typeof ProfileScalarFieldEnum)[keyof typeof ProfileScalarFieldEnum]
+
+
+export const StatScalarFieldEnum = {
+  id: 'id',
+  value: 'value',
+  suffix: 'suffix',
+  label: 'label',
+  order: 'order'
+} as const
+
+export type StatScalarFieldEnum = (typeof StatScalarFieldEnum)[keyof typeof StatScalarFieldEnum]
+
+
+export const ServiceScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  order: 'order'
+} as const
+
+export type ServiceScalarFieldEnum = (typeof ServiceScalarFieldEnum)[keyof typeof ServiceScalarFieldEnum]
+
+
+export const StackGroupScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  order: 'order'
+} as const
+
+export type StackGroupScalarFieldEnum = (typeof StackGroupScalarFieldEnum)[keyof typeof StackGroupScalarFieldEnum]
+
+
+export const StackItemScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  order: 'order',
+  groupId: 'groupId'
+} as const
+
+export type StackItemScalarFieldEnum = (typeof StackItemScalarFieldEnum)[keyof typeof StackItemScalarFieldEnum]
+
+
 export const ProjectScalarFieldEnum = {
   id: 'id',
   slug: 'slug',
@@ -81,6 +156,7 @@ export const ProjectScalarFieldEnum = {
   imageUrl: 'imageUrl',
   href: 'href',
   featured: 'featured',
+  order: 'order',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -95,6 +171,71 @@ export const ProjectTagScalarFieldEnum = {
 } as const
 
 export type ProjectTagScalarFieldEnum = (typeof ProjectTagScalarFieldEnum)[keyof typeof ProjectTagScalarFieldEnum]
+
+
+export const ExperienceScalarFieldEnum = {
+  id: 'id',
+  role: 'role',
+  dateLabel: 'dateLabel',
+  company: 'company',
+  description: 'description',
+  order: 'order'
+} as const
+
+export type ExperienceScalarFieldEnum = (typeof ExperienceScalarFieldEnum)[keyof typeof ExperienceScalarFieldEnum]
+
+
+export const ExperiencePointScalarFieldEnum = {
+  id: 'id',
+  text: 'text',
+  order: 'order',
+  experienceId: 'experienceId'
+} as const
+
+export type ExperiencePointScalarFieldEnum = (typeof ExperiencePointScalarFieldEnum)[keyof typeof ExperiencePointScalarFieldEnum]
+
+
+export const TestimonialScalarFieldEnum = {
+  id: 'id',
+  quote: 'quote',
+  authorName: 'authorName',
+  authorRole: 'authorRole',
+  authorImage: 'authorImage',
+  active: 'active',
+  order: 'order'
+} as const
+
+export type TestimonialScalarFieldEnum = (typeof TestimonialScalarFieldEnum)[keyof typeof TestimonialScalarFieldEnum]
+
+
+export const AboutFactScalarFieldEnum = {
+  id: 'id',
+  term: 'term',
+  value: 'value',
+  order: 'order'
+} as const
+
+export type AboutFactScalarFieldEnum = (typeof AboutFactScalarFieldEnum)[keyof typeof AboutFactScalarFieldEnum]
+
+
+export const ContactCardScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  value: 'value',
+  order: 'order'
+} as const
+
+export type ContactCardScalarFieldEnum = (typeof ContactCardScalarFieldEnum)[keyof typeof ContactCardScalarFieldEnum]
+
+
+export const SocialLinkScalarFieldEnum = {
+  id: 'id',
+  label: 'label',
+  url: 'url',
+  order: 'order'
+} as const
+
+export type SocialLinkScalarFieldEnum = (typeof SocialLinkScalarFieldEnum)[keyof typeof SocialLinkScalarFieldEnum]
 
 
 export const SortOrder = {

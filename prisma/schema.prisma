@@ -1,29 +1,211 @@
+// ============================================================================
+// Prisma schema — Portfolio dinamis
+// Provider: PostgreSQL. Jalankan `pnpm db:generate` setelah mengubah file ini.
+// ============================================================================
+
 generator client {
   provider = "prisma-client"
-  output = "./generated"
+  output   = "./generated"
 }
+
 datasource db {
   provider = "postgresql"
 }
-model Project {
-  id String @id @default(cuid())
-  slug String @unique
-  title String
-  description String
-  category String
-  year Int
-  imageUrl String
-  href String?
-  featured Boolean @default(false)
-  tags ProjectTag[]
+
+// ---------------------------------------------------------------------------
+// Kategori project — dipakai filter pada bagian Work.
+// ---------------------------------------------------------------------------
+enum ProjectCategory {
+  WEB
+  MOBILE
+  OSS
+}
+
+// ---------------------------------------------------------------------------
+// Profile (singleton, id selalu "singleton").
+// Menampung identitas + konfigurasi hero, about, dan kontak.
+// Kolom String[] mendukung array teks (Paragraf about, kata berputar hero).
+// ---------------------------------------------------------------------------
+model Profile {
+  id                String   @id @default("singleton")
+  // Identitas
+  fullName          String
+  brand             String
+  role              String
+  // Hero
+  availabilityText  String
+  heroLead          String
+  rotatingWords     String[]
+  photoUrl          String
+  photoTagline      String
+  // About
+  aboutNote         String
+  aboutParagraphs   String[]
+  badgeValue        String
+  badgeLabel        String
+  // Contact
+  contactSubtitle   String
+  contactEmail      String
+  contactCallUrl    String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Statistik hero (counter angka + suffix).
+// ---------------------------------------------------------------------------
+model Stat {
+  id     String @id @default(cuid())
+  value  Int
+  suffix String @default("")
+  label  String
+  order  Int    @default(0)
+
+  @@index([order])
+}
+
+// ---------------------------------------------------------------------------
+// Daftar layanan (bagian Services).
+// ---------------------------------------------------------------------------
+model Service {
+  id          String @id @default(cuid())
+  name        String @unique
+  description String
+  order       Int    @default(0)
+
+  @@index([order])
+}
+
+// ---------------------------------------------------------------------------
+// Tech stack: grup (Frontend/Backend/...) berisi banyak item.
+// ---------------------------------------------------------------------------
+model StackGroup {
+  id    String      @id @default(cuid())
+  title String      @unique
+  order Int         @default(0)
+  items StackItem[]
+
+  @@index([order])
+}
+
+model StackItem {
+  id      String     @id @default(cuid())
+  name    String
+  order   Int        @default(0)
+  groupId String
+  group   StackGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, name])
+  @@index([order])
+}
+
+// ---------------------------------------------------------------------------
+// Project portfolio + tag-nya.
+// ---------------------------------------------------------------------------
+model Project {
+  id          String         @id @default(cuid())
+  slug        String         @unique
+  title       String
+  description String
+  category    ProjectCategory
+  year        Int
+  imageUrl    String
+  href        String?
+  featured    Boolean        @default(false)
+  order       Int            @default(0)
+  tags        ProjectTag[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([category, year])
 }
+
 model ProjectTag {
-  id String @id @default(cuid())
-  name String
+  id        String  @id @default(cuid())
+  name      String
   projectId String
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
   @@unique([projectId, name])
+}
+
+// ---------------------------------------------------------------------------
+// Pengalaman karier (timeline) + poin-poin pendukung.
+// ---------------------------------------------------------------------------
+model Experience {
+  id          String            @id @default(cuid())
+  role        String
+  dateLabel   String
+  company     String
+  description String
+  order       Int               @default(0)
+  points      ExperiencePoint[]
+
+  @@index([order])
+}
+
+model ExperiencePoint {
+  id           String     @id @default(cuid())
+  text         String
+  order        Int        @default(0)
+  experienceId String
+  experience   Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+
+  @@index([order])
+}
+
+// ---------------------------------------------------------------------------
+// Testimonial / quote client (biasanya hanya satu yang tampil).
+// ---------------------------------------------------------------------------
+model Testimonial {
+  id         String  @id @default(cuid())
+  quote      String
+  authorName String
+  authorRole String
+  authorImage String
+  active     Boolean @default(true)
+  order      Int     @default(0)
+
+  @@index([active, order])
+}
+
+// ---------------------------------------------------------------------------
+// Fakta singkat pada bagian About (Based in, Timezone, ...).
+// Kolom `value` boleh memuat **penekanan** untuk frasa yang ditonjolkan.
+// ---------------------------------------------------------------------------
+model AboutFact {
+  id    String @id @default(cuid())
+  term  String @unique
+  value String
+  order Int    @default(0)
+
+  @@index([order])
+}
+
+// ---------------------------------------------------------------------------
+// Kartu informasi kontak (Availability / Based in / Response time).
+// `value` memuat kalimat lengkap, frasa penting dibungkus ** **.
+// ---------------------------------------------------------------------------
+model ContactCard {
+  id    String @id @default(cuid())
+  key   String @unique
+  // Kalimat lengkap; frasa penting dibungkus ** ** agar di-highlight.
+  value String
+  order Int    @default(0)
+
+  @@index([order])
+}
+
+// ---------------------------------------------------------------------------
+// Tautan sosial media.
+// ---------------------------------------------------------------------------
+model SocialLink {
+  id    String @id @default(cuid())
+  label String @unique
+  url   String
+  order Int    @default(0)
+
+  @@index([order])
 }

@@ -8,6 +8,17 @@
  *
  * 🟢 You can import this file directly.
  */
+export type * from './models/Profile.js'
+export type * from './models/Stat.js'
+export type * from './models/Service.js'
+export type * from './models/StackGroup.js'
+export type * from './models/StackItem.js'
 export type * from './models/Project.js'
 export type * from './models/ProjectTag.js'
+export type * from './models/Experience.js'
+export type * from './models/ExperiencePoint.js'
+export type * from './models/Testimonial.js'
+export type * from './models/AboutFact.js'
+export type * from './models/ContactCard.js'
+export type * from './models/SocialLink.js'
 export type * from './commonInputTypes.js'

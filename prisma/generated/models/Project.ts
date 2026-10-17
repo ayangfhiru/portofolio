@@ -28,10 +28,12 @@ export type AggregateProject = {
 
 export type ProjectAvgAggregateOutputType = {
   year: number | null
+  order: number | null
 }
 
 export type ProjectSumAggregateOutputType = {
   year: number | null
+  order: number | null
 }
 
 export type ProjectMinAggregateOutputType = {
@@ -39,11 +41,12 @@ export type ProjectMinAggregateOutputType = {
   slug: string | null
   title: string | null
   description: string | null
-  category: string | null
+  category: $Enums.ProjectCategory | null
   year: number | null
   imageUrl: string | null
   href: string | null
   featured: boolean | null
+  order: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -53,11 +56,12 @@ export type ProjectMaxAggregateOutputType = {
   slug: string | null
   title: string | null
   description: string | null
-  category: string | null
+  category: $Enums.ProjectCategory | null
   year: number | null
   imageUrl: string | null
   href: string | null
   featured: boolean | null
+  order: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -72,6 +76,7 @@ export type ProjectCountAggregateOutputType = {
   imageUrl: number
   href: number
   featured: number
+  order: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -80,10 +85,12 @@ export type ProjectCountAggregateOutputType = {
 
 export type ProjectAvgAggregateInputType = {
   year?: true
+  order?: true
 }
 
 export type ProjectSumAggregateInputType = {
   year?: true
+  order?: true
 }
 
 export type ProjectMinAggregateInputType = {
@@ -96,6 +103,7 @@ export type ProjectMinAggregateInputType = {
   imageUrl?: true
   href?: true
   featured?: true
+  order?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -110,6 +118,7 @@ export type ProjectMaxAggregateInputType = {
   imageUrl?: true
   href?: true
   featured?: true
+  order?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -124,6 +133,7 @@ export type ProjectCountAggregateInputType = {
   imageUrl?: true
   href?: true
   featured?: true
+  order?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -220,11 +230,12 @@ export type ProjectGroupByOutputType = {
   slug: string
   title: string
   description: string
-  category: string
+  category: $Enums.ProjectCategory
   year: number
   imageUrl: string
   href: string | null
   featured: boolean
+  order: number
   createdAt: Date
   updatedAt: Date
   _count: ProjectCountAggregateOutputType | null
@@ -257,11 +268,12 @@ export type ProjectWhereInput = {
   slug?: Prisma.StringFilter<"Project"> | string
   title?: Prisma.StringFilter<"Project"> | string
   description?: Prisma.StringFilter<"Project"> | string
-  category?: Prisma.StringFilter<"Project"> | string
+  category?: Prisma.EnumProjectCategoryFilter<"Project"> | $Enums.ProjectCategory
   year?: Prisma.IntFilter<"Project"> | number
   imageUrl?: Prisma.StringFilter<"Project"> | string
   href?: Prisma.StringNullableFilter<"Project"> | string | null
   featured?: Prisma.BoolFilter<"Project"> | boolean
+  order?: Prisma.IntFilter<"Project"> | number
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   tags?: Prisma.ProjectTagListRelationFilter
@@ -277,6 +289,7 @@ export type ProjectOrderByWithRelationInput = {
   imageUrl?: Prisma.SortOrder
   href?: Prisma.SortOrderInput | Prisma.SortOrder
   featured?: Prisma.SortOrder
+  order?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   tags?: Prisma.ProjectTagOrderByRelationAggregateInput
@@ -290,11 +303,12 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.ProjectWhereInput | Prisma.ProjectWhereInput[]
   title?: Prisma.StringFilter<"Project"> | string
   description?: Prisma.StringFilter<"Project"> | string
-  category?: Prisma.StringFilter<"Project"> | string
+  category?: Prisma.EnumProjectCategoryFilter<"Project"> | $Enums.ProjectCategory
   year?: Prisma.IntFilter<"Project"> | number
   imageUrl?: Prisma.StringFilter<"Project"> | string
   href?: Prisma.StringNullableFilter<"Project"> | string | null
   featured?: Prisma.BoolFilter<"Project"> | boolean
+  order?: Prisma.IntFilter<"Project"> | number
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   tags?: Prisma.ProjectTagListRelationFilter
@@ -310,6 +324,7 @@ export type ProjectOrderByWithAggregationInput = {
   imageUrl?: Prisma.SortOrder
   href?: Prisma.SortOrderInput | Prisma.SortOrder
   featured?: Prisma.SortOrder
+  order?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ProjectCountOrderByAggregateInput
@@ -327,11 +342,12 @@ export type ProjectScalarWhereWithAggregatesInput = {
   slug?: Prisma.StringWithAggregatesFilter<"Project"> | string
   title?: Prisma.StringWithAggregatesFilter<"Project"> | string
   description?: Prisma.StringWithAggregatesFilter<"Project"> | string
-  category?: Prisma.StringWithAggregatesFilter<"Project"> | string
+  category?: Prisma.EnumProjectCategoryWithAggregatesFilter<"Project"> | $Enums.ProjectCategory
   year?: Prisma.IntWithAggregatesFilter<"Project"> | number
   imageUrl?: Prisma.StringWithAggregatesFilter<"Project"> | string
   href?: Prisma.StringNullableWithAggregatesFilter<"Project"> | string | null
   featured?: Prisma.BoolWithAggregatesFilter<"Project"> | boolean
+  order?: Prisma.IntWithAggregatesFilter<"Project"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Project"> | Date | string
 }
@@ -341,11 +357,12 @@ export type ProjectCreateInput = {
   slug: string
   title: string
   description: string
-  category: string
+  category: $Enums.ProjectCategory
   year: number
   imageUrl: string
   href?: string | null
   featured?: boolean
+  order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   tags?: Prisma.ProjectTagCreateNestedManyWithoutProjectInput
@@ -356,11 +373,12 @@ export type ProjectUncheckedCreateInput = {
   slug: string
   title: string
   description: string
-  category: string
+  category: $Enums.ProjectCategory
   year: number
   imageUrl: string
   href?: string | null
   featured?: boolean
+  order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   tags?: Prisma.ProjectTagUncheckedCreateNestedManyWithoutProjectInput
@@ -371,11 +389,12 @@ export type ProjectUpdateInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumProjectCategoryFieldUpdateOperationsInput | $Enums.ProjectCategory
   year?: Prisma.IntFieldUpdateOperationsInput | number
   imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   href?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tags?: Prisma.ProjectTagUpdateManyWithoutProjectNestedInput
@@ -386,11 +405,12 @@ export type ProjectUncheckedUpdateInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumProjectCategoryFieldUpdateOperationsInput | $Enums.ProjectCategory
   year?: Prisma.IntFieldUpdateOperationsInput | number
   imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   href?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tags?: Prisma.ProjectTagUncheckedUpdateManyWithoutProjectNestedInput
@@ -401,11 +421,12 @@ export type ProjectCreateManyInput = {
   slug: string
   title: string
   description: string
-  category: string
+  category: $Enums.ProjectCategory
   year: number
   imageUrl: string
   href?: string | null
   featured?: boolean
+  order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -415,11 +436,12 @@ export type ProjectUpdateManyMutationInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumProjectCategoryFieldUpdateOperationsInput | $Enums.ProjectCategory
   year?: Prisma.IntFieldUpdateOperationsInput | number
   imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   href?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -429,11 +451,12 @@ export type ProjectUncheckedUpdateManyInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumProjectCategoryFieldUpdateOperationsInput | $Enums.ProjectCategory
   year?: Prisma.IntFieldUpdateOperationsInput | number
   imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   href?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -448,12 +471,14 @@ export type ProjectCountOrderByAggregateInput = {
   imageUrl?: Prisma.SortOrder
   href?: Prisma.SortOrder
   featured?: Prisma.SortOrder
+  order?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type ProjectAvgOrderByAggregateInput = {
   year?: Prisma.SortOrder
+  order?: Prisma.SortOrder
 }
 
 export type ProjectMaxOrderByAggregateInput = {
@@ -466,6 +491,7 @@ export type ProjectMaxOrderByAggregateInput = {
   imageUrl?: Prisma.SortOrder
   href?: Prisma.SortOrder
   featured?: Prisma.SortOrder
+  order?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -480,12 +506,14 @@ export type ProjectMinOrderByAggregateInput = {
   imageUrl?: Prisma.SortOrder
   href?: Prisma.SortOrder
   featured?: Prisma.SortOrder
+  order?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type ProjectSumOrderByAggregateInput = {
   year?: Prisma.SortOrder
+  order?: Prisma.SortOrder
 }
 
 export type ProjectScalarRelationFilter = {
@@ -493,28 +521,12 @@ export type ProjectScalarRelationFilter = {
   isNot?: Prisma.ProjectWhereInput
 }
 
-export type StringFieldUpdateOperationsInput = {
-  set?: string
-}
-
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
+export type EnumProjectCategoryFieldUpdateOperationsInput = {
+  set?: $Enums.ProjectCategory
 }
 
 export type BoolFieldUpdateOperationsInput = {
   set?: boolean
-}
-
-export type DateTimeFieldUpdateOperationsInput = {
-  set?: Date | string
 }
 
 export type ProjectCreateNestedOneWithoutTagsInput = {
@@ -536,11 +548,12 @@ export type ProjectCreateWithoutTagsInput = {
   slug: string
   title: string
   description: string
-  category: string
+  category: $Enums.ProjectCategory
   year: number
   imageUrl: string
   href?: string | null
   featured?: boolean
+  order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -550,11 +563,12 @@ export type ProjectUncheckedCreateWithoutTagsInput = {
   slug: string
   title: string
   description: string
-  category: string
+  category: $Enums.ProjectCategory
   year: number
   imageUrl: string
   href?: string | null
   featured?: boolean
+  order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -580,11 +594,12 @@ export type ProjectUpdateWithoutTagsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumProjectCategoryFieldUpdateOperationsInput | $Enums.ProjectCategory
   year?: Prisma.IntFieldUpdateOperationsInput | number
   imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   href?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -594,11 +609,12 @@ export type ProjectUncheckedUpdateWithoutTagsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumProjectCategoryFieldUpdateOperationsInput | $Enums.ProjectCategory
   year?: Prisma.IntFieldUpdateOperationsInput | number
   imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   href?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -644,6 +660,7 @@ export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   imageUrl?: boolean
   href?: boolean
   featured?: boolean
+  order?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   tags?: boolean | Prisma.Project$tagsArgs<ExtArgs>
@@ -660,6 +677,7 @@ export type ProjectSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   imageUrl?: boolean
   href?: boolean
   featured?: boolean
+  order?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["project"]>
@@ -674,6 +692,7 @@ export type ProjectSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   imageUrl?: boolean
   href?: boolean
   featured?: boolean
+  order?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["project"]>
@@ -688,11 +707,12 @@ export type ProjectSelectScalar = {
   imageUrl?: boolean
   href?: boolean
   featured?: boolean
+  order?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ProjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "title" | "description" | "category" | "year" | "imageUrl" | "href" | "featured" | "createdAt" | "updatedAt", ExtArgs["result"]["project"]>
+export type ProjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "title" | "description" | "category" | "year" | "imageUrl" | "href" | "featured" | "order" | "createdAt" | "updatedAt", ExtArgs["result"]["project"]>
 export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tags?: boolean | Prisma.Project$tagsArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
@@ -710,11 +730,12 @@ export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     slug: string
     title: string
     description: string
-    category: string
+    category: $Enums.ProjectCategory
     year: number
     imageUrl: string
     href: string | null
     featured: boolean
+    order: number
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["project"]>
@@ -1145,11 +1166,12 @@ export interface ProjectFieldRefs {
   readonly slug: Prisma.FieldRef<"Project", 'String'>
   readonly title: Prisma.FieldRef<"Project", 'String'>
   readonly description: Prisma.FieldRef<"Project", 'String'>
-  readonly category: Prisma.FieldRef<"Project", 'String'>
+  readonly category: Prisma.FieldRef<"Project", 'ProjectCategory'>
   readonly year: Prisma.FieldRef<"Project", 'Int'>
   readonly imageUrl: Prisma.FieldRef<"Project", 'String'>
   readonly href: Prisma.FieldRef<"Project", 'String'>
   readonly featured: Prisma.FieldRef<"Project", 'Boolean'>
+  readonly order: Prisma.FieldRef<"Project", 'Int'>
   readonly createdAt: Prisma.FieldRef<"Project", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Project", 'DateTime'>
 }
