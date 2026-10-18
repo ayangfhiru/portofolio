@@ -16,8 +16,8 @@
  * `/api/projects` (bukan `/api/admin/projects`) karena endpoint tersebut
  * sudah ada sejak awal dan menangani upload gambar.
  */
-import { computed, watch } from "vue";
 import { Pencil, Plus, Trash2 } from "@lucide/vue";
+import { computed, watch } from "vue";
 import {
   AdminTopbar,
   AppToast,
@@ -30,15 +30,11 @@ import {
   TableToolbar,
 } from "~/components/admin";
 import { useAdminList } from "~/composables/useAdminList";
+import type { DataTableColumn, StatItem, ToolbarFilter } from "~/types/admin";
+import type { ApiResponse } from "~/types/api";
+import type { ProjectItem } from "~/types/project";
 import { ADMIN_NAV_ITEMS, ADMIN_USER } from "~/utils/admin-nav";
 import { formatDate, formatTime, highlightParts } from "~/utils/format";
-import type { ApiResponse } from "~/types/api";
-import type {
-  DataTableColumn,
-  StatItem,
-  ToolbarFilter,
-} from "~/types/admin";
-import type { ProjectItem } from "~/types/project";
 
 useHead({ title: "Kelola Project — Admin" });
 
@@ -87,7 +83,9 @@ const list = await useAdminList<ProjectItem>({
     const response = await $fetch<ApiResponse<ProjectItem[]>>("/api/projects");
 
     if (!response.success || !response.data) {
-      throw new Error(response.error ?? "Server tidak mengembalikan data project.");
+      throw new Error(
+        response.error ?? "Server tidak mengembalikan data project.",
+      );
     }
 
     return response.data;
@@ -186,7 +184,9 @@ watch(() => route.query.tambah, openCreateFromQuery);
 /* --------------------------------------------------------- Statistik */
 
 const stats = computed<StatItem[]>(() => {
-  const uniqueCategories = new Set(rows.value.map((project) => project.category));
+  const uniqueCategories = new Set(
+    rows.value.map((project) => project.category),
+  );
   const uniqueTags = new Set(
     rows.value.flatMap((project) => project.tags.map((tag) => tag.name)),
   );
@@ -248,20 +248,33 @@ const titleParts = (value: string) => highlightParts(value, search.value);
       <!-- Kepala halaman -->
       <div class="flex flex-wrap items-end justify-between gap-6 py-9">
         <div class="min-w-0">
-          <div class="font-mono text-[.71rem] font-bold uppercase tracking-[.17em] text-admin-accent">
+          <div
+            class="font-mono text-[.71rem] font-bold uppercase tracking-[.17em] text-admin-accent"
+          >
             Admin · Project
           </div>
-          <h1 class="mt-3 font-display text-[clamp(1.95rem,4.2vw,2.85rem)] font-extrabold leading-[1.04] tracking-tight">
-            Data project <span class="font-bold text-admin-muted-2">/ view table</span>
+          <h1
+            class="mt-3 font-display text-[clamp(1.95rem,4.2vw,2.85rem)] font-extrabold leading-[1.04] tracking-tight"
+          >
+            Data project
+            <span class="font-bold text-admin-muted-2">/ view table</span>
           </h1>
           <p class="mt-3 max-w-[74ch] text-[.985rem] text-admin-muted">
             Kelola seluruh data project yang tampil pada bagian
-            <b class="text-admin-ink">Work</b> di halaman utama. Data tersimpan melalui
-            <code class="rounded-md border border-admin-line bg-admin-bg-2 px-1.5 py-0.5 font-mono text-[.82em] text-admin-ink-2">POST /api/projects</code>,
-            diperbarui via
-            <code class="rounded-md border border-admin-line bg-admin-bg-2 px-1.5 py-0.5 font-mono text-[.82em] text-admin-ink-2">PATCH /api/projects/:id</code>,
-            dan dihapus via
-            <code class="rounded-md border border-admin-line bg-admin-bg-2 px-1.5 py-0.5 font-mono text-[.82em] text-admin-ink-2">DELETE /api/projects/:id</code>.
+            <b class="text-admin-ink">Work</b> di halaman utama. Data tersimpan
+            melalui
+            <code
+              class="rounded-md border border-admin-line bg-admin-bg-2 px-1.5 py-0.5 font-mono text-[.82em] text-admin-ink-2"
+              >POST /api/projects</code
+            >, diperbarui via
+            <code
+              class="rounded-md border border-admin-line bg-admin-bg-2 px-1.5 py-0.5 font-mono text-[.82em] text-admin-ink-2"
+              >PATCH /api/projects/:id</code
+            >, dan dihapus via
+            <code
+              class="rounded-md border border-admin-line bg-admin-bg-2 px-1.5 py-0.5 font-mono text-[.82em] text-admin-ink-2"
+              >DELETE /api/projects/:id</code
+            >.
           </p>
         </div>
 
@@ -279,7 +292,9 @@ const titleParts = (value: string) => highlightParts(value, search.value);
       <StatStrip :items="stats" class="mb-6 mt-1" />
 
       <!-- Panel tabel -->
-      <section class="overflow-hidden rounded-[20px] border border-admin-line bg-admin-card shadow-[0_1px_2px_rgba(16,24,40,.05)]">
+      <section
+        class="overflow-hidden rounded-[20px] border border-admin-line bg-admin-card shadow-[0_1px_2px_rgba(16,24,40,.05)]"
+      >
         <TableToolbar
           v-model:search="search"
           search-placeholder="Cari judul, slug, kategori, atau deskripsi…"
@@ -310,7 +325,9 @@ const titleParts = (value: string) => highlightParts(value, search.value);
             v-if="hasSelection"
             class="flex flex-wrap items-center gap-3 border-b border-[#f6d4d1] bg-admin-accent-soft px-5 py-3 text-sm font-semibold text-admin-accent-dark"
           >
-            <span class="rounded-full bg-admin-accent px-2.5 py-[3px] font-mono text-[.78rem] font-bold text-white">
+            <span
+              class="rounded-full bg-admin-accent px-2.5 py-[3px] font-mono text-[.78rem] font-bold text-white"
+            >
               {{ selected.length }}
             </span>
             <span>baris dipilih</span>
@@ -355,8 +372,10 @@ const titleParts = (value: string) => highlightParts(value, search.value);
         >
           <!-- Judul + slug -->
           <template #cell-title="{ row }">
-            <div class="flex min-w-[250px] items-center gap-3">
-              <div class="h-10 w-[52px] flex-none overflow-hidden rounded-[9px] border border-admin-line bg-admin-bg-2">
+            <div class="flex min-w-62.5 items-center gap-3">
+              <div
+                class="h-10 w-13 flex-none overflow-hidden rounded-[9px] border border-admin-line bg-admin-bg-2"
+              >
                 <img
                   :src="row.imageUrl"
                   :alt="row.title"
@@ -366,13 +385,31 @@ const titleParts = (value: string) => highlightParts(value, search.value);
               </div>
               <div class="min-w-0">
                 <div class="font-bold leading-snug tracking-tight">
-                  <template v-for="(part, index) in titleParts(row.title)" :key="index">
-                    <mark v-if="part.matched" class="rounded-[3px] bg-[rgba(217,45,32,.16)] px-0.5 text-admin-accent-dark">{{ part.text }}</mark>
+                  <template
+                    v-for="(part, index) in titleParts(row.title)"
+                    :key="index"
+                  >
+                    <mark
+                      v-if="part.matched"
+                      class="rounded-[3px] bg-[rgba(217,45,32,.16)] px-0.5 text-admin-accent-dark"
+                      >{{ part.text }}</mark
+                    >
                     <template v-else>{{ part.text }}</template>
                   </template>
                 </div>
-                <div class="mt-0.5 truncate font-mono text-[.715rem] text-admin-muted-2">
-                  <span class="text-admin-line-2">/work/</span><template v-for="(part, index) in titleParts(row.slug)" :key="index"><mark v-if="part.matched" class="rounded-[3px] bg-[rgba(217,45,32,.16)] px-0.5 text-admin-accent-dark">{{ part.text }}</mark><template v-else>{{ part.text }}</template></template>
+                <div
+                  class="mt-0.5 truncate font-mono text-[.715rem] text-admin-muted-2"
+                >
+                  <span class="text-admin-line-2">/work/</span
+                  ><template
+                    v-for="(part, index) in titleParts(row.slug)"
+                    :key="index"
+                    ><mark
+                      v-if="part.matched"
+                      class="rounded-[3px] bg-[rgba(217,45,32,.16)] px-0.5 text-admin-accent-dark"
+                      >{{ part.text }}</mark
+                    ><template v-else>{{ part.text }}</template></template
+                  >
                 </div>
               </div>
             </div>
@@ -380,22 +417,33 @@ const titleParts = (value: string) => highlightParts(value, search.value);
 
           <!-- Kategori -->
           <template #cell-category="{ row }">
-            <span class="inline-flex items-center gap-[7px] rounded-lg border border-admin-line bg-admin-bg-2 px-[11px] py-[5px] text-[.795rem] font-semibold capitalize text-admin-ink-2">
-              <span class="h-1.5 w-1.5 rotate-45 rounded-[2px] bg-admin-accent" aria-hidden="true" />
+            <span
+              class="inline-flex items-center gap-[7px] rounded-lg border border-admin-line bg-admin-bg-2 px-[11px] py-[5px] text-[.795rem] font-semibold capitalize text-admin-ink-2"
+            >
+              <span
+                class="h-1.5 w-1.5 rotate-45 rounded-[2px] bg-admin-accent"
+                aria-hidden="true"
+              />
               {{ row.category }}
             </span>
           </template>
 
           <!-- Tahun -->
           <template #cell-year="{ row }">
-            <span class="font-mono text-[.83rem] font-bold text-admin-ink-2">{{ row.year }}</span>
+            <span class="font-mono text-[.83rem] font-bold text-admin-ink-2">{{
+              row.year
+            }}</span>
           </template>
 
           <!-- Sorotan (featured) -->
           <template #cell-featured="{ row }">
             <span
               class="inline-flex items-center gap-[7px] rounded-full px-[11px] py-[5px] text-[.735rem] font-bold"
-              :class="row.featured ? 'bg-admin-ok-soft text-admin-ok' : 'bg-admin-bg-2 text-admin-muted'"
+              :class="
+                row.featured
+                  ? 'bg-admin-ok-soft text-admin-ok'
+                  : 'bg-admin-bg-2 text-admin-muted'
+              "
             >
               <span
                 class="h-1.5 w-1.5 rounded-full"
@@ -415,7 +463,12 @@ const titleParts = (value: string) => highlightParts(value, search.value);
               rel="noopener"
               class="inline-flex items-center gap-1.5 border-b border-dashed border-admin-info/40 pb-px font-mono text-[.745rem] text-admin-info transition hover:border-admin-accent hover:text-admin-accent"
             >
-              {{ String(row.href).replace(/^https?:\/\//, "").slice(0, 26) }} ↗
+              {{
+                String(row.href)
+                  .replace(/^https?:\/\//, "")
+                  .slice(0, 26)
+              }}
+              ↗
             </a>
             <span v-else class="text-admin-muted-2">—</span>
           </template>
@@ -424,7 +477,9 @@ const titleParts = (value: string) => highlightParts(value, search.value);
           <template #cell-updatedAt="{ row }">
             <div class="whitespace-nowrap text-[.815rem] text-admin-muted">
               {{ formatDate(row.updatedAt) }}
-              <span class="mt-0.5 block font-mono text-[.715rem] text-admin-muted-2">
+              <span
+                class="mt-0.5 block font-mono text-[.715rem] text-admin-muted-2"
+              >
                 {{ formatTime(row.updatedAt) }}
               </span>
             </div>
@@ -482,12 +537,18 @@ const titleParts = (value: string) => highlightParts(value, search.value);
       <template #description>
         <template v-if="formMode === 'create'">
           Isi data project berikut. Data tersimpan melalui
-          <code class="rounded-md border border-admin-line bg-admin-bg-2 px-1.5 py-0.5 font-mono text-[.82em] text-admin-ink-2">POST /api/projects</code>
+          <code
+            class="rounded-md border border-admin-line bg-admin-bg-2 px-1.5 py-0.5 font-mono text-[.82em] text-admin-ink-2"
+            >POST /api/projects</code
+          >
           dan tampil pada bagian Work di halaman utama.
         </template>
         <template v-else>
           Perbarui data project. Hanya field yang berubah yang dikirim melalui
-          <code class="rounded-md border border-admin-line bg-admin-bg-2 px-1.5 py-0.5 font-mono text-[.82em] text-admin-ink-2">PATCH /api/projects/:id</code>.
+          <code
+            class="rounded-md border border-admin-line bg-admin-bg-2 px-1.5 py-0.5 font-mono text-[.82em] text-admin-ink-2"
+            >PATCH /api/projects/:id</code
+          >.
         </template>
       </template>
 
@@ -505,20 +566,29 @@ const titleParts = (value: string) => highlightParts(value, search.value);
     <ConfirmDialog
       :open="deleteDialogOpen"
       :loading="deleting"
-      :title="bulkDeleteMode ? `Hapus ${selected.length} project?` : 'Hapus project ini?'"
+      :title="
+        bulkDeleteMode
+          ? `Hapus ${selected.length} project?`
+          : 'Hapus project ini?'
+      "
       confirm-label="Ya, hapus"
       @confirm="confirmDelete"
       @close="closeDelete"
     >
       <!-- Kalimat penuh lewat slot: label sasaran saja tidak merangkai kalimat utuh -->
       <template v-if="bulkDeleteMode">
-        Sebanyak <b class="font-bold text-admin-ink">{{ selected.length }} project</b>
-        beserta seluruh tag-nya akan dihapus permanen. Tindakan ini tidak dapat dibatalkan.
+        Sebanyak
+        <b class="font-bold text-admin-ink">{{ selected.length }} project</b>
+        beserta seluruh tag-nya akan dihapus permanen. Tindakan ini tidak dapat
+        dibatalkan.
       </template>
       <template v-else>
         Data <b class="font-bold text-admin-ink">“{{ deleteTarget?.title }}”</b>
         beserta seluruh tag-nya akan dihapus permanen melalui
-        <code class="rounded-md border border-admin-line bg-admin-bg-2 px-1.5 py-0.5 font-mono text-[.82em] text-admin-ink-2">DELETE /api/projects/:id</code>.
+        <code
+          class="rounded-md border border-admin-line bg-admin-bg-2 px-1.5 py-0.5 font-mono text-[.82em] text-admin-ink-2"
+          >DELETE /api/projects/:id</code
+        >.
       </template>
     </ConfirmDialog>
 

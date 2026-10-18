@@ -27,11 +27,11 @@ import {
   TableToolbar,
 } from "~/components/admin";
 import { useAdminList } from "~/composables/useAdminList";
+import type { DataTableColumn } from "~/types/admin";
+import type { SocialLinkAdmin } from "~/types/contact";
 import { adminList, adminRemove } from "~/utils/admin-api";
 import { ADMIN_NAV_ITEMS, ADMIN_USER } from "~/utils/admin-nav";
 import { highlightParts } from "~/utils/format";
-import type { DataTableColumn } from "~/types/admin";
-import type { SocialLinkAdmin } from "~/types/contact";
 
 useHead({ title: "Kelola Tautan Sosial — Admin" });
 
@@ -47,7 +47,9 @@ const list = await useAdminList<SocialLinkAdmin>({
     const response = await adminList<SocialLinkAdmin>("social-links");
 
     if (!response.success || !response.data) {
-      throw new Error(response.error ?? "Server tidak mengembalikan data tautan sosial.");
+      throw new Error(
+        response.error ?? "Server tidak mengembalikan data tautan sosial.",
+      );
     }
 
     return response.data;
@@ -121,20 +123,33 @@ const onSaved = async (socialLink: SocialLinkAdmin): Promise<void> => {
       <!-- Kepala halaman -->
       <div class="flex flex-wrap items-end justify-between gap-6 py-9">
         <div class="min-w-0">
-          <div class="font-mono text-[.71rem] font-bold uppercase tracking-[.17em] text-admin-accent">
+          <div
+            class="font-mono text-[.71rem] font-bold uppercase tracking-[.17em] text-admin-accent"
+          >
             Admin · Tautan Sosial
           </div>
-          <h1 class="mt-3 font-display text-[clamp(1.95rem,4.2vw,2.85rem)] font-extrabold leading-[1.04] tracking-tight">
-            Data tautan sosial <span class="font-bold text-admin-muted-2">/ view table</span>
+          <h1
+            class="mt-3 font-display text-[clamp(1.95rem,4.2vw,2.85rem)] font-extrabold leading-[1.04] tracking-tight"
+          >
+            Data tautan sosial
+            <span class="font-bold text-admin-muted-2">/ view table</span>
           </h1>
           <p class="mt-3 max-w-[74ch] text-[.985rem] text-admin-muted">
             Kelola seluruh tautan sosial yang tampil pada bagian
-            <b class="text-admin-ink">Contact</b> di halaman utama. Data tersimpan melalui
-            <code class="rounded-md border border-admin-line bg-admin-bg-2 px-1.5 py-0.5 font-mono text-[.82em] text-admin-ink-2">POST /api/admin/social-links</code>,
-            diperbarui via
-            <code class="rounded-md border border-admin-line bg-admin-bg-2 px-1.5 py-0.5 font-mono text-[.82em] text-admin-ink-2">PATCH /api/admin/social-links/:id</code>,
-            dan dihapus via
-            <code class="rounded-md border border-admin-line bg-admin-bg-2 px-1.5 py-0.5 font-mono text-[.82em] text-admin-ink-2">DELETE /api/admin/social-links/:id</code>.
+            <b class="text-admin-ink">Contact</b> di halaman utama. Data
+            tersimpan melalui
+            <code
+              class="rounded-md border border-admin-line bg-admin-bg-2 px-1.5 py-0.5 font-mono text-[.82em] text-admin-ink-2"
+              >POST /api/admin/social-links</code
+            >, diperbarui via
+            <code
+              class="rounded-md border border-admin-line bg-admin-bg-2 px-1.5 py-0.5 font-mono text-[.82em] text-admin-ink-2"
+              >PATCH /api/admin/social-links/:id</code
+            >, dan dihapus via
+            <code
+              class="rounded-md border border-admin-line bg-admin-bg-2 px-1.5 py-0.5 font-mono text-[.82em] text-admin-ink-2"
+              >DELETE /api/admin/social-links/:id</code
+            >.
           </p>
         </div>
 
@@ -149,7 +164,9 @@ const onSaved = async (socialLink: SocialLinkAdmin): Promise<void> => {
       </div>
 
       <!-- Panel tabel -->
-      <section class="overflow-hidden rounded-[20px] border border-admin-line bg-admin-card shadow-[0_1px_2px_rgba(16,24,40,.05)]">
+      <section
+        class="overflow-hidden rounded-[20px] border border-admin-line bg-admin-card shadow-[0_1px_2px_rgba(16,24,40,.05)]"
+      >
         <TableToolbar
           v-model:search="search"
           search-placeholder="Cari label atau URL tautan…"
@@ -178,7 +195,9 @@ const onSaved = async (socialLink: SocialLinkAdmin): Promise<void> => {
             v-if="hasSelection"
             class="flex flex-wrap items-center gap-3 border-b border-[#f6d4d1] bg-admin-accent-soft px-5 py-3 text-sm font-semibold text-admin-accent-dark"
           >
-            <span class="rounded-full bg-admin-accent px-2.5 py-[3px] font-mono text-[.78rem] font-bold text-white">
+            <span
+              class="rounded-full bg-admin-accent px-2.5 py-[3px] font-mono text-[.78rem] font-bold text-white"
+            >
               {{ selected.length }}
             </span>
             <span>baris dipilih</span>
@@ -224,8 +243,15 @@ const onSaved = async (socialLink: SocialLinkAdmin): Promise<void> => {
           <!-- Label -->
           <template #cell-label="{ row }">
             <div class="min-w-[150px] font-bold leading-snug tracking-tight">
-              <template v-for="(part, index) in labelParts(row.label)" :key="index">
-                <mark v-if="part.matched" class="rounded-[3px] bg-[rgba(217,45,32,.16)] px-0.5 text-admin-accent-dark">{{ part.text }}</mark>
+              <template
+                v-for="(part, index) in labelParts(row.label)"
+                :key="index"
+              >
+                <mark
+                  v-if="part.matched"
+                  class="rounded-[3px] bg-[rgba(217,45,32,.16)] px-0.5 text-admin-accent-dark"
+                  >{{ part.text }}</mark
+                >
                 <template v-else>{{ part.text }}</template>
               </template>
             </div>
@@ -247,7 +273,9 @@ const onSaved = async (socialLink: SocialLinkAdmin): Promise<void> => {
 
           <!-- Urutan -->
           <template #cell-order="{ row }">
-            <span class="font-mono text-[.83rem] font-bold text-admin-ink-2">{{ row.order }}</span>
+            <span class="font-mono text-[.83rem] font-bold text-admin-ink-2">{{
+              row.order
+            }}</span>
           </template>
 
           <!-- Aksi -->
@@ -302,12 +330,19 @@ const onSaved = async (socialLink: SocialLinkAdmin): Promise<void> => {
       <template #description>
         <template v-if="formMode === 'create'">
           Isi data tautan sosial berikut. Data tersimpan melalui
-          <code class="rounded-md border border-admin-line bg-admin-bg-2 px-1.5 py-0.5 font-mono text-[.82em] text-admin-ink-2">POST /api/admin/social-links</code>
+          <code
+            class="rounded-md border border-admin-line bg-admin-bg-2 px-1.5 py-0.5 font-mono text-[.82em] text-admin-ink-2"
+            >POST /api/admin/social-links</code
+          >
           dan tampil pada bagian Contact di halaman utama.
         </template>
         <template v-else>
-          Perbarui data tautan sosial. Hanya field yang berubah yang dikirim melalui
-          <code class="rounded-md border border-admin-line bg-admin-bg-2 px-1.5 py-0.5 font-mono text-[.82em] text-admin-ink-2">PATCH /api/admin/social-links/:id</code>.
+          Perbarui data tautan sosial. Hanya field yang berubah yang dikirim
+          melalui
+          <code
+            class="rounded-md border border-admin-line bg-admin-bg-2 px-1.5 py-0.5 font-mono text-[.82em] text-admin-ink-2"
+            >PATCH /api/admin/social-links/:id</code
+          >.
         </template>
       </template>
 
@@ -325,20 +360,28 @@ const onSaved = async (socialLink: SocialLinkAdmin): Promise<void> => {
     <ConfirmDialog
       :open="deleteDialogOpen"
       :loading="deleting"
-      :title="bulkDeleteMode ? `Hapus ${selected.length} tautan?` : 'Hapus tautan ini?'"
+      :title="
+        bulkDeleteMode
+          ? `Hapus ${selected.length} tautan?`
+          : 'Hapus tautan ini?'
+      "
       confirm-label="Ya, hapus"
       @confirm="confirmDelete"
       @close="closeDelete"
     >
       <!-- Kalimat penuh lewat slot: label sasaran saja tidak merangkai kalimat utuh -->
       <template v-if="bulkDeleteMode">
-        Sebanyak <b class="font-bold text-admin-ink">{{ selected.length }} tautan</b>
+        Sebanyak
+        <b class="font-bold text-admin-ink">{{ selected.length }} tautan</b>
         akan dihapus permanen. Tindakan ini tidak dapat dibatalkan.
       </template>
       <template v-else>
         Data <b class="font-bold text-admin-ink">“{{ deleteTarget?.label }}”</b>
         akan dihapus permanen melalui
-        <code class="rounded-md border border-admin-line bg-admin-bg-2 px-1.5 py-0.5 font-mono text-[.82em] text-admin-ink-2">DELETE /api/admin/social-links/:id</code>.
+        <code
+          class="rounded-md border border-admin-line bg-admin-bg-2 px-1.5 py-0.5 font-mono text-[.82em] text-admin-ink-2"
+          >DELETE /api/admin/social-links/:id</code
+        >.
       </template>
     </ConfirmDialog>
 

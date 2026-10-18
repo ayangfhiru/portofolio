@@ -59,6 +59,7 @@ const DEVELOPER_CONFIG: TerminalConfig = {
   role: "Full-Stack Engineer",
   focus: ["product", "performance", "craft"],
   openToWork: true,
+  openToFreelance: true,
   stack: {
     frontend: {
       language: "JavaScript + TypeScript",

@@ -144,6 +144,7 @@ export const ADMIN_USER_LINKS: AdminNavLink[] = [
     key: "site",
     label: "Lihat Situs",
     to: "/",
+    isBlank: true,
     icon: ExternalLink,
     description: "Buka halaman publik portfolio",
   },

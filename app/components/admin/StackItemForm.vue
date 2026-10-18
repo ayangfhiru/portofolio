@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
-import { AlertCircle, CheckCircle2, LoaderCircle, RefreshCw, Save } from "@lucide/vue";
-import { BaseInput, BaseSelect } from "~/components/form";
 import {
-  adminCreate,
-  adminList,
-  adminPatch,
-  extractApiError,
-} from "~/utils/admin-api";
+  AlertCircle,
+  CheckCircle2,
+  LoaderCircle,
+  RefreshCw,
+  Save,
+} from "@lucide/vue";
+import { computed, onMounted, ref } from "vue";
+import { BaseInput, BaseSelect } from "~/components/form";
 import type { ApiResponse } from "~/types/api";
 import type {
   StackGroupAdmin,
@@ -16,6 +16,12 @@ import type {
   StackItemFormState,
   StackItemUpdateInput,
 } from "~/types/stack";
+import {
+  adminCreate,
+  adminList,
+  adminPatch,
+  extractApiError,
+} from "~/utils/admin-api";
 
 /**
  * Form item stack bersama untuk mode Create dan Update.
@@ -88,7 +94,9 @@ const loadGroups = async (): Promise<void> => {
     const response = await adminList<StackGroupAdmin>("stack-groups");
 
     if (!response.success || !response.data) {
-      throw new Error(response.error ?? "Server tidak mengembalikan data grup.");
+      throw new Error(
+        response.error ?? "Server tidak mengembalikan data grup.",
+      );
     }
 
     groups.value = response.data;
@@ -236,6 +244,8 @@ const handleSubmit = async (): Promise<void> => {
         return;
       }
 
+      console.log({ payload });
+
       saved = await adminPatch<StackItemAdmin>(
         "stack-items",
         props.initialItem?.id ?? "",
@@ -276,7 +286,11 @@ const handleSubmit = async (): Promise<void> => {
 
 <template>
   <div>
-    <form class="px-5 py-6 sm:px-[30px]" novalidate @submit.prevent="handleSubmit">
+    <form
+      class="px-5 py-6 sm:px-[30px]"
+      novalidate
+      @submit.prevent="handleSubmit"
+    >
       <!-- Banner pesan sukses / gagal -->
       <div
         v-if="status.message"
@@ -293,7 +307,11 @@ const handleSubmit = async (): Promise<void> => {
           class="mt-0.5 h-4 w-4 shrink-0"
           aria-hidden="true"
         />
-        <AlertCircle v-else class="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+        <AlertCircle
+          v-else
+          class="mt-0.5 h-4 w-4 shrink-0"
+          aria-hidden="true"
+        />
         <p>{{ status.message }}</p>
       </div>
 
@@ -337,7 +355,10 @@ const handleSubmit = async (): Promise<void> => {
             </button>
           </div>
 
-          <p v-else-if="!hasGroups" class="mt-1.5 text-xs text-admin-accent-dark">
+          <p
+            v-else-if="!hasGroups"
+            class="mt-1.5 text-xs text-admin-accent-dark"
+          >
             Belum ada grup stack. Buat satu pada halaman
             <b>Grup Stack</b> terlebih dahulu.
             <button

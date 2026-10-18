@@ -1,8 +1,12 @@
 import { createError, defineEventHandler } from "h3";
-import { readAdminBody, requireId, throwPrismaError } from "../../../utils/admin";
+import type { StackItemAdmin } from "../../../../app/types/stack";
+import {
+  readAdminBody,
+  requireId,
+  throwPrismaError,
+} from "../../../utils/admin";
 import { ok } from "../../../utils/response";
 import { isNonEmptyString } from "../../../utils/validation";
-import type { StackItemAdmin } from "../../../../app/types/stack";
 
 /** Field yang diizinkan berubah melalui endpoint ini. */
 const ALLOWED_FIELDS = ["name", "groupId", "order"] as const;
@@ -68,7 +72,7 @@ export default defineEventHandler(async (event) => {
     data.groupId = groupId;
   }
 
-  if (isNonEmptyString(fields.order)) {
+  if (isPositiveInt(fields.order)) {
     const order = Number(fields.order);
     if (!Number.isInteger(order) || order < 0) {
       throw createError({

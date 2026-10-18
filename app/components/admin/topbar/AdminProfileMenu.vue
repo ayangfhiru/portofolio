@@ -86,6 +86,7 @@ const emit = defineEmits<{ toggle: []; navigate: [] }>();
             v-for="link in props.links"
             :key="link.key"
             :to="link.to"
+            :target="link.isBlank ? '_blank' : ''"
             role="menuitem"
             class="flex items-start gap-3 rounded-xl px-3 py-2.5 text-admin-ink-2 transition-colors hover:bg-admin-bg-2"
             @click="emit('navigate')"

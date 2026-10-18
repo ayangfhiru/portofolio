@@ -27,6 +27,7 @@ export interface AdminNavLink {
   key: string;
   label: string;
   to: string;
+  isBlank?: boolean;
   icon?: NavIcon;
   /** Keterangan singkat tampil di bawah label. */
   description?: string;

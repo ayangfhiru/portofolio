@@ -1,6 +1,6 @@
-<script setup lang="ts">
-import { computed } from "vue";
+<script setup lang="ts" generic="T extends Record<string, unknown>">
 import { LoaderCircle } from "@lucide/vue";
+import { computed } from "vue";
 import type { DataTableColumn } from "~/types/admin";
 
 /**
@@ -38,7 +38,7 @@ interface Props<T> {
   minWidth?: string;
 }
 
-const props = withDefaults(defineProps<Props<object>>(), {
+const props = withDefaults(defineProps<Props<T>>(), {
   rowKey: "id",
   sortKey: "",
   sortDir: "asc",
@@ -46,7 +46,8 @@ const props = withDefaults(defineProps<Props<object>>(), {
   selected: () => [],
   loading: false,
   emptyTitle: "Data tidak ditemukan",
-  emptyDescription: "Coba ubah kata kunci pencarian atau filter yang digunakan.",
+  emptyDescription:
+    "Coba ubah kata kunci pencarian atau filter yang digunakan.",
   minWidth: "940px",
 });
 
@@ -117,7 +118,10 @@ const alignClass = (column: DataTableColumn): string =>
 <template>
   <div>
     <!-- Tabel -->
-    <div v-if="props.rows.length > 0" class="overflow-x-visible md:overflow-x-auto">
+    <div
+      v-if="props.rows.length > 0"
+      class="overflow-x-visible md:overflow-x-auto"
+    >
       <table
         class="w-full border-collapse md:min-w-[var(--table-min)]"
         :style="{ '--table-min': props.minWidth }"
@@ -130,12 +134,18 @@ const alignClass = (column: DataTableColumn): string =>
               style="width: 52px"
               class="whitespace-nowrap bg-admin-head px-4 py-[15px] text-left align-middle"
             >
-              <label class="relative flex h-[19px] w-[19px] cursor-pointer items-center">
+              <label
+                class="relative flex h-[19px] w-[19px] cursor-pointer items-center"
+              >
                 <input
                   type="checkbox"
                   class="peer sr-only"
                   :checked="allSelectedOnPage"
-                  :aria-label="someSelectedOnPage ? 'Sebagian baris terpilih' : 'Pilih semua baris'"
+                  :aria-label="
+                    someSelectedOnPage
+                      ? 'Sebagian baris terpilih'
+                      : 'Pilih semua baris'
+                  "
                   @change="toggleAllOnPage"
                 />
                 <span
@@ -173,7 +183,9 @@ const alignClass = (column: DataTableColumn): string =>
                 column.sortable
                   ? 'cursor-pointer transition-colors hover:text-admin-ink'
                   : 'cursor-default',
-                column.sortable && props.sortKey === column.key ? 'text-admin-ink' : '',
+                column.sortable && props.sortKey === column.key
+                  ? 'text-admin-ink'
+                  : '',
               ]"
               @click="onSort(column)"
             >
@@ -181,12 +193,18 @@ const alignClass = (column: DataTableColumn): string =>
               <span
                 v-if="column.sortable"
                 class="ml-1.5 inline-block transition-opacity duration-300"
-                :class="props.sortKey === column.key ? 'opacity-100' : 'opacity-0'"
+                :class="
+                  props.sortKey === column.key ? 'opacity-100' : 'opacity-0'
+                "
                 aria-hidden="true"
               >
                 <span
                   class="inline-block transition-transform duration-300"
-                  :class="props.sortKey === column.key && props.sortDir === 'desc' ? 'rotate-180' : ''"
+                  :class="
+                    props.sortKey === column.key && props.sortDir === 'desc'
+                      ? 'rotate-180'
+                      : ''
+                  "
                 >
                   ▲
                 </span>
@@ -219,7 +237,9 @@ const alignClass = (column: DataTableColumn): string =>
               v-if="props.selectable"
               class="flex items-center justify-end border-none p-0 md:table-cell md:border-b md:border-solid md:border-admin-line md:p-4"
             >
-              <label class="relative flex h-[19px] w-[19px] cursor-pointer items-center">
+              <label
+                class="relative flex h-[19px] w-[19px] cursor-pointer items-center"
+              >
                 <input
                   type="checkbox"
                   class="peer sr-only"
@@ -227,7 +247,9 @@ const alignClass = (column: DataTableColumn): string =>
                   :aria-label="`Pilih ${String(asRecord(row).title ?? rowId(row))}`"
                   @change="toggleRow(row)"
                 />
-                <span class="absolute inset-0 rounded-md border-[1.6px] border-admin-line-2 bg-white transition-all peer-checked:border-admin-accent peer-checked:bg-admin-accent peer-focus-visible:shadow-[0_0_0_4px_var(--color-admin-accent-soft)]">
+                <span
+                  class="absolute inset-0 rounded-md border-[1.6px] border-admin-line-2 bg-white transition-all peer-checked:border-admin-accent peer-checked:bg-admin-accent peer-focus-visible:shadow-[0_0_0_4px_var(--color-admin-accent-soft)]"
+                >
                   <span
                     v-if="isSelected(row)"
                     class="absolute left-[5.5px] top-[2px] h-[9px] w-[5px] rotate-[42deg] border-b-2 border-r-2 border-white"
@@ -250,7 +272,11 @@ const alignClass = (column: DataTableColumn): string =>
                   : 'before:mr-4 before:text-[.645rem] before:font-bold before:uppercase before:tracking-[.13em] before:text-admin-muted-2 before:content-[attr(data-label)] md:before:hidden',
               ]"
             >
-              <slot :name="`cell-${column.key}`" :row="row" :value="cellValue(row, column.key)">
+              <slot
+                :name="`cell-${column.key}`"
+                :row="row"
+                :value="cellValue(row, column.key)"
+              >
                 {{ cellValue(row, column.key) }}
               </slot>
             </td>
@@ -270,20 +296,38 @@ const alignClass = (column: DataTableColumn): string =>
     <!-- Keadaan kosong -->
     <div v-else-if="!props.loading" class="px-5 py-16 text-center">
       <slot name="empty">
-        <div class="mx-auto mb-[18px] grid h-16 w-16 place-items-center rounded-[18px] bg-admin-accent-soft text-admin-accent">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true">
+        <div
+          class="mx-auto mb-[18px] grid h-16 w-16 place-items-center rounded-[18px] bg-admin-accent-soft text-admin-accent"
+        >
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.9"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
             <circle cx="11" cy="11" r="7" />
             <path d="m20 20-3.2-3.2" />
           </svg>
         </div>
-        <h3 class="font-display text-[1.18rem] tracking-tight">{{ props.emptyTitle }}</h3>
-        <p class="mx-auto mt-2 max-w-md text-sm text-admin-muted">{{ props.emptyDescription }}</p>
+        <h3 class="font-display text-[1.18rem] tracking-tight">
+          {{ props.emptyTitle }}
+        </h3>
+        <p class="mx-auto mt-2 max-w-md text-sm text-admin-muted">
+          {{ props.emptyDescription }}
+        </p>
         <slot name="empty-actions" />
       </slot>
     </div>
 
     <!-- Sedang memuat -->
-    <div v-else class="flex items-center justify-center gap-3 px-5 py-16 text-sm text-admin-muted">
+    <div
+      v-else
+      class="flex items-center justify-center gap-3 px-5 py-16 text-sm text-admin-muted"
+    >
       <LoaderCircle class="h-4 w-4 animate-spin" aria-hidden="true" />
       <span>Memuat data…</span>
     </div>

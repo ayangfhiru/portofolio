@@ -41,7 +41,7 @@ const onFilterChange = (key: string, event: Event): void => {
 <template>
   <div class="flex flex-wrap items-center gap-3 border-b border-admin-line p-5">
     <!-- Pencarian -->
-    <div class="relative min-w-[240px] flex-1 basis-80">
+    <div class="relative min-w-[260px] flex-1 basis-80">
       <Search
         class="pointer-events-none absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-admin-muted-2"
         aria-hidden="true"
@@ -52,7 +52,9 @@ const onFilterChange = (key: string, event: Event): void => {
         :placeholder="props.searchPlaceholder"
         autocomplete="off"
         class="w-full rounded-[11px] border border-admin-line-2 bg-white py-3 pl-10 pr-11 text-[.915rem] outline-none transition placeholder:text-admin-muted-2 focus:border-admin-accent focus:shadow-[0_0_0_4px_var(--color-admin-accent-soft)]"
-        @input="emit('update:search', ($event.target as HTMLInputElement).value)"
+        @input="
+          emit('update:search', ($event.target as HTMLInputElement).value)
+        "
       />
       <button
         v-if="props.search"
@@ -66,18 +68,18 @@ const onFilterChange = (key: string, event: Event): void => {
     </div>
 
     <!-- Filter -->
-    <div
-      v-for="filter in props.filters"
-      :key="filter.key"
-      class="relative"
-    >
+    <div v-for="filter in props.filters" :key="filter.key" class="relative">
       <select
         :value="filter.value"
         :aria-label="filter.label"
         class="cursor-pointer appearance-none rounded-[11px] border border-admin-line-2 bg-white py-[11px] pl-3.5 pr-9 text-[.855rem] font-semibold text-admin-ink-2 outline-none transition focus:border-admin-accent focus:shadow-[0_0_0_4px_var(--color-admin-accent-soft)]"
         @change="onFilterChange(filter.key, $event)"
       >
-        <option v-for="option in filter.options" :key="option.value" :value="option.value">
+        <option
+          v-for="option in filter.options"
+          :key="option.value"
+          :value="option.value"
+        >
           {{ option.label }}
         </option>
       </select>
