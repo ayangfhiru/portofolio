@@ -19,18 +19,21 @@ const DEFAULT_ROTATING_WORDS = ["ship fast."];
 
 /** Marquee dekoratif (teknologi yang dikuasai). */
 const MARQUEE_ITEMS = [
+  "Node.js",
   "TypeScript",
+  "Vue.js",
+  "Nuxt.js",
   "React",
   "Next.js",
-  "Node.js",
-  "Go",
+  "NestJs",
+  "PHP",
+  "Laravel",
   "PostgreSQL",
-  "GraphQL",
+  "MySQL",
   "Docker",
-  "AWS",
   "Redis",
   "Tailwind",
-  "Kubernetes",
+  "GIT",
 ];
 
 /** Chip melayang di sekitar foto. */

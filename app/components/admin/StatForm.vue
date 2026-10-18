@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import { AlertCircle, CheckCircle2, LoaderCircle, Save } from "@lucide/vue";
+import { computed, ref } from "vue";
 import { BaseInput } from "~/components/form";
-import { adminCreate, adminPatch, extractApiError } from "~/utils";
-import type { ApiResponse } from "~/types";
 import type {
+  ApiResponse,
   StatAdmin,
   StatCreateInput,
   StatFormState,
   StatUpdateInput,
 } from "~/types";
+import { adminCreate, adminPatch, extractApiError } from "~/utils";
 
 /**
  * Form statistik bersama untuk mode Create dan Update.
@@ -110,7 +110,7 @@ const validate = (): Record<string, string> => {
   // `value` sengaja dikosongkan pada mode create — pengguna harus
   // memasukkan angka secara sadar. `Number("")` bernilai 0 dan akan
   // lolos `Number.isInteger`, jadi kekosongan diperiksa terpisah.
-  const rawValue = form.value.value.trim();
+  const rawValue = String(form.value.value ?? "").trim();
   const value = Number(rawValue);
   if (!rawValue || !Number.isInteger(value)) {
     next.value = "Nilai harus berupa bilangan bulat.";
@@ -156,8 +156,9 @@ const buildUpdatePayload = (): StatUpdateInput | null => {
     payload.label = current.label.trim();
   }
 
-  if (Number(current.value.trim()) !== stat.value) {
-    payload.value = Number(current.value.trim());
+  const currentValue = Number(String(current.value ?? "").trim());
+  if (currentValue !== stat.value) {
+    payload.value = currentValue;
   }
 
   if (current.suffix.trim() !== stat.suffix) {
@@ -202,10 +203,7 @@ const handleSubmit = async (): Promise<void> => {
         payload,
       );
     } else {
-      saved = await adminCreate<StatAdmin>(
-        "stats",
-        buildCreatePayload(),
-      );
+      saved = await adminCreate<StatAdmin>("stats", buildCreatePayload());
     }
 
     if (!saved.success || !saved.data) {
@@ -215,9 +213,7 @@ const handleSubmit = async (): Promise<void> => {
     // Kembalikan form ke keadaan bersih tanpa menyentuh nilai user
     // sebelum server benar-benar mengonfirmasi (mencegah pengiriman
     // ganda).
-    form.value = isUpdate.value
-      ? formFromStat(saved.data)
-      : emptyForm();
+    form.value = isUpdate.value ? formFromStat(saved.data) : emptyForm();
 
     setStatus(
       "success",
@@ -239,7 +235,11 @@ const handleSubmit = async (): Promise<void> => {
 
 <template>
   <div>
-    <form class="px-5 py-6 sm:px-[30px]" novalidate @submit.prevent="handleSubmit">
+    <form
+      class="px-5 py-6 sm:px-[30px]"
+      novalidate
+      @submit.prevent="handleSubmit"
+    >
       <!-- Banner pesan sukses / gagal -->
       <div
         v-if="status.message"
@@ -256,7 +256,11 @@ const handleSubmit = async (): Promise<void> => {
           class="mt-0.5 h-4 w-4 shrink-0"
           aria-hidden="true"
         />
-        <AlertCircle v-else class="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+        <AlertCircle
+          v-else
+          class="mt-0.5 h-4 w-4 shrink-0"
+          aria-hidden="true"
+        />
         <p>{{ status.message }}</p>
       </div>
 
@@ -294,8 +298,7 @@ const handleSubmit = async (): Promise<void> => {
         />
         <p class="-mt-3 text-xs text-slate-400">
           Teks pendek pendamping angka, mis.
-          <b class="text-slate-600">+</b>,
-          <b class="text-slate-600">%</b>, atau
+          <b class="text-slate-600">+</b>, <b class="text-slate-600">%</b>, atau
           <b class="text-slate-600">rb</b>. Kosongkan bila tidak perlu.
         </p>
 

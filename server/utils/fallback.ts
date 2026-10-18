@@ -55,7 +55,7 @@ export const FALLBACK_FACTS: AboutFact[] = [
 ];
 
 export const FALLBACK_STATS: Stat[] = [
-  { value: 6, suffix: "+", label: "Years exp" },
+  { value: 2, suffix: "+", label: "Years exp" },
   { value: 48, suffix: "+", label: "Projects" },
   { value: 26, suffix: "+", label: "Clients" },
   { value: 12, suffix: "", label: "Open source" },

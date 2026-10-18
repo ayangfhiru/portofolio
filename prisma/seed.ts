@@ -84,7 +84,7 @@ const ABOUT_FACTS = [
 // Statistik hero
 // ---------------------------------------------------------------------------
 const STATS = [
-  { value: 6, suffix: "+", label: "Years exp" },
+  { value: 2, suffix: "+", label: "Years exp" },
   { value: 48, suffix: "+", label: "Projects" },
   { value: 26, suffix: "+", label: "Clients" },
   { value: 12, suffix: "", label: "Open source" },
