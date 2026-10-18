@@ -2,13 +2,13 @@
 import { computed, ref } from "vue";
 import { AlertCircle, CheckCircle2, LoaderCircle, Save } from "@lucide/vue";
 import { BaseInput, BaseTextarea, FileUpload, InputList } from "~/components/form";
-import { adminPut, extractApiError } from "~/utils/admin-api";
-import type { ApiResponse } from "~/types/api";
+import { adminPut, extractApiError } from "~/utils";
+import type { ApiResponse } from "~/types";
 import type {
   ProfileAdmin,
   ProfileFormState,
   ProfileUpdateInput,
-} from "~/types/profile";
+} from "~/types";
 
 /**
  * Form pengelolaan profil.

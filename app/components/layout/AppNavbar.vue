@@ -4,9 +4,9 @@
  * progress bar scroll, dan tombol burger untuk mobile.
  */
 import { ref } from "vue";
-import AppButton from "~/components/ui/AppButton.vue";
-import { useScrollProgress } from "~/composables/useScrollProgress";
-import { NAV_LINKS } from "~/utils/navigation";
+import { AppButton } from "~/components/ui";
+import { useScrollProgress } from "~/composables";
+import { NAV_LINKS } from "~/utils";
 
 const props = defineProps<{ menuOpen: boolean }>();
 const emit = defineEmits<{ toggleMenu: [] }>();

@@ -11,7 +11,7 @@
  */
 import { ChevronDown, Plus, X } from "@lucide/vue";
 import { ref } from "vue";
-import type { AdminNavItem, AdminNavLink, AdminUser } from "~/types/admin";
+import type { AdminNavItem, AdminNavLink, AdminUser } from "~/types";
 import AdminBrand from "./AdminBrand.vue";
 
 interface Props {

@@ -1,6 +1,6 @@
 import { defineEventHandler } from "h3";
-import { withFallback } from "../../utils/api";
-import { FALLBACK_STACK } from "../../utils/fallback";
+import { withFallback } from "~~/server/utils/api";
+import { FALLBACK_STACK } from "~~/server/utils/fallback";
 
 /**
  * GET /api/stack

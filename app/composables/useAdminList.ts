@@ -1,7 +1,6 @@
 import { computed, ref, watch } from "vue";
-import { extractApiError } from "~/utils/admin-api";
-import type { ApiResponse } from "~/types/api";
-import type { DataTableColumn, ToolbarFilter } from "~/types/admin";
+import { extractApiError } from "~/utils";
+import type { ApiResponse, DataTableColumn, ToolbarFilter } from "~/types";
 
 /**
  * Mesin status bersama untuk seluruh halaman daftar admin.

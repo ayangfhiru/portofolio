@@ -1,7 +1,7 @@
 <script setup lang="ts" generic="T extends Record<string, unknown>">
 import { LoaderCircle } from "@lucide/vue";
 import { computed } from "vue";
-import type { DataTableColumn } from "~/types/admin";
+import type { DataTableColumn } from "~/types";
 
 /**
  * Tabel data admin yang generik.

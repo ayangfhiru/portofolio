@@ -8,20 +8,20 @@ import {
 } from "@lucide/vue";
 import { computed, onMounted, ref } from "vue";
 import { BaseInput, BaseSelect } from "~/components/form";
-import type { ApiResponse } from "~/types/api";
+import type { ApiResponse } from "~/types";
 import type {
   StackGroupAdmin,
   StackItemAdmin,
   StackItemCreateInput,
   StackItemFormState,
   StackItemUpdateInput,
-} from "~/types/stack";
+} from "~/types";
 import {
   adminCreate,
   adminList,
   adminPatch,
   extractApiError,
-} from "~/utils/admin-api";
+} from "~/utils";
 
 /**
  * Form item stack bersama untuk mode Create dan Update.

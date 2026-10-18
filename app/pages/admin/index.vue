@@ -12,7 +12,7 @@
  */
 import { ArrowRight } from "@lucide/vue";
 import { AdminTopbar, AppToast } from "~/components/admin";
-import { ADMIN_NAV_ITEMS, ADMIN_USER } from "~/utils/admin-nav";
+import { ADMIN_NAV_ITEMS, ADMIN_USER } from "~/utils";
 
 useHead({ title: "Admin — Semua Modul" });
 

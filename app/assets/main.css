@@ -98,8 +98,9 @@
    Tailwind murni (state yang di-toggle lewat JS / animasi).
    ============================================================ */
 
-/* Scroll-reveal: state awal disembunyikan, dikirim ke `.in`
-   oleh directive `v-reveal` (lihat plugins/reveal.client.ts). */
+/* Scroll-reveal: state awal disembunyikan. Class dasar `reveal` ditulis
+   statis di template agar hidrasi mulus; status `.in` dikirim directive
+   `v-reveal` (lihat plugins/reveal.ts) setelah elemen masuk viewport. */
 @utility reveal {
   opacity: 0;
   transform: translateY(26px);

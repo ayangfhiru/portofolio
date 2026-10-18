@@ -2,14 +2,14 @@
 import { computed, ref } from "vue";
 import { AlertCircle, CheckCircle2, LoaderCircle, Save } from "@lucide/vue";
 import { BaseInput, BaseTextarea, InputList } from "~/components/form";
-import { adminCreate, adminPatch, extractApiError } from "~/utils/admin-api";
-import type { ApiResponse } from "~/types/api";
+import { adminCreate, adminPatch, extractApiError } from "~/utils";
+import type { ApiResponse } from "~/types";
 import type {
   ExperienceAdmin,
   ExperienceCreateInput,
   ExperienceFormState,
   ExperienceUpdateInput,
-} from "~/types/experience";
+} from "~/types";
 
 /**
  * Form pengalaman bersama untuk mode Create dan Update.

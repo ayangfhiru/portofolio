@@ -6,10 +6,10 @@ import {
   readMultipartFormData,
 } from "h3";
 import type { H3Event } from "h3";
-import { Prisma } from "../../../prisma/generated/client";
-import type { ProjectCategory as ProjectCategoryEnum } from "../../../prisma/generated/enums";
-import { normalizeCategory } from "../../utils/api";
-import { ok } from "../../utils/response";
+import { Prisma } from "~~/prisma/generated/client";
+import type { ProjectCategory as ProjectCategoryEnum } from "~~/prisma/generated/enums";
+import { normalizeCategory } from "~~/server/utils/api";
+import { ok } from "~~/server/utils/response";
 import {
   collectErrors,
   isNonEmptyString,
@@ -17,9 +17,9 @@ import {
   parseBoolean,
   parseTags,
   slugify,
-} from "../../utils/validation";
-import { UploadError, removeManagedProjectImage, saveProjectImage } from "../../utils/upload";
-import type { ProjectCategory } from "../../../app/types/project";
+} from "~~/server/utils/validation";
+import { UploadError, removeManagedProjectImage, saveProjectImage } from "~~/server/utils/upload";
+import type { ProjectCategory } from "~~/app/types/project";
 
 /**
  * PATCH /api/projects/:id

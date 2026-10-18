@@ -1,6 +1,6 @@
 import { defineEventHandler } from "h3";
-import { ok } from "../../../utils/response";
-import type { StackItemAdmin } from "../../../../app/types/stack";
+import { ok } from "~~/server/utils/response";
+import type { StackItemAdmin } from "~~/app/types/stack";
 
 /**
  * GET /api/admin/stack-items

@@ -3,7 +3,7 @@
  * Panel menu mobile full-screen (slide-down clip-path).
  * Ditutup otomatis saat salah satu link diklik.
  */
-import { NAV_LINKS } from "~/utils/navigation";
+import { NAV_LINKS } from "~/utils";
 
 const props = defineProps<{ open: boolean }>();
 const emit = defineEmits<{ close: [] }>();

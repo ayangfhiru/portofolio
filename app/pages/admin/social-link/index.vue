@@ -26,12 +26,9 @@ import {
   SocialLinkForm,
   TableToolbar,
 } from "~/components/admin";
-import { useAdminList } from "~/composables/useAdminList";
-import type { DataTableColumn } from "~/types/admin";
-import type { SocialLinkAdmin } from "~/types/contact";
-import { adminList, adminRemove } from "~/utils/admin-api";
-import { ADMIN_NAV_ITEMS, ADMIN_USER } from "~/utils/admin-nav";
-import { highlightParts } from "~/utils/format";
+import { useAdminList } from "~/composables";
+import type { DataTableColumn, SocialLinkAdmin } from "~/types";
+import { adminList, adminRemove, ADMIN_NAV_ITEMS, ADMIN_USER, highlightParts } from "~/utils";
 
 useHead({ title: "Kelola Tautan Sosial — Admin" });
 

@@ -8,9 +8,8 @@
  * data biasa, markup warna dan indentasinya dibuat otomatis.
  */
 import { computed, onMounted, onUnmounted, ref } from "vue";
-import EyebrowLabel from "~/components/ui/EyebrowLabel.vue";
-import type { ApiResponse } from "~/types/api";
-import type { StackGroup } from "~/types/stack";
+import { EyebrowLabel } from "~/components/ui";
+import type { ApiResponse, StackGroup } from "~/types";
 
 const { data: stackResponse } =
   await useFetch<ApiResponse<StackGroup[]>>("/api/stack");
@@ -229,7 +228,7 @@ onMounted(() => {
       <div
         class="mb-14 flex flex-wrap items-end justify-between gap-7 max-[680px]:mb-[38px]"
       >
-        <div v-reveal>
+        <div v-reveal class="reveal">
           <EyebrowLabel>Toolkit</EyebrowLabel>
           <h2
             class="mt-4 font-display text-[clamp(2.1rem,5.2vw,3.65rem)] font-extrabold leading-[0.98] tracking-[-0.025em]"
@@ -239,7 +238,7 @@ onMounted(() => {
             >
           </h2>
         </div>
-        <p v-reveal class="max-w-[38ch] text-[0.98rem] text-muted">
+        <p v-reveal class="max-w-[38ch] text-[0.98rem] text-muted reveal">
           The stack I reach for daily — chosen for velocity, maintainability and
           developer happiness.
         </p>
@@ -254,7 +253,7 @@ onMounted(() => {
             v-for="(group, index) in stackGroups"
             :key="group.title"
             v-reveal="index * 0.07"
-            class="rounded-[18px] border border-line bg-surface p-6 transition-[transform,border-color,background] duration-[450ms] ease-[cubic-bezier(.22,.9,.28,1)] hover:-translate-y-[7px] hover:border-accent/40 hover:bg-surface-2"
+            class="rounded-[18px] border border-line bg-surface p-6 transition-[transform,border-color,background] duration-[450ms] ease-[cubic-bezier(.22,.9,.28,1)] hover:-translate-y-[7px] hover:border-accent/40 hover:bg-surface-2 reveal"
           >
             <h3
               class="mb-4 flex items-center gap-2.5 font-display text-[1.06rem] font-bold tracking-[-0.015em]"
@@ -294,7 +293,7 @@ onMounted(() => {
           yang bisa dijadikan acuan tinggi. Karena tingginya kini definit,
           isi yang lebih panjang otomatis tergulir.
         -->
-        <div v-reveal="0.12" class="relative h-[520px] min-[1101px]:h-auto">
+        <div v-reveal="0.12" class="relative h-[520px] min-[1101px]:h-auto reveal">
           <div
             class="absolute inset-0 flex flex-col overflow-hidden rounded-[18px] border border-line bg-[#08090B] shadow-[0_40px_80px_-34px_rgba(0,0,0,.9)]"
           >

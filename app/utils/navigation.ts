@@ -1,4 +1,4 @@
-import type { ProjectFilter } from "~/types/project";
+import type { ProjectFilter } from "~/types";
 
 /** Tautan navigasi utama (header desktop & mobile). */
 export const NAV_LINKS = [

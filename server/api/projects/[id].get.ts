@@ -1,6 +1,6 @@
 import { createError, defineEventHandler, getRouterParam } from "h3";
-import { normalizeCategory } from "../../utils/api";
-import { ok } from "../../utils/response";
+import { normalizeCategory } from "~~/server/utils/api";
+import { ok } from "~~/server/utils/response";
 
 /**
  * GET /api/projects/:id

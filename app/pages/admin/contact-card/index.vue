@@ -26,12 +26,9 @@ import {
   ContactCardForm,
   TableToolbar,
 } from "~/components/admin";
-import { useAdminList } from "~/composables/useAdminList";
-import { adminList, adminRemove } from "~/utils/admin-api";
-import { ADMIN_NAV_ITEMS, ADMIN_USER } from "~/utils/admin-nav";
-import { highlightParts } from "~/utils/format";
-import type { DataTableColumn } from "~/types/admin";
-import type { ContactCardAdmin } from "~/types/contact";
+import { useAdminList } from "~/composables";
+import { adminList, adminRemove, ADMIN_NAV_ITEMS, ADMIN_USER, highlightParts } from "~/utils";
+import type { DataTableColumn, ContactCardAdmin } from "~/types";
 
 useHead({ title: "Kelola Kartu Kontak — Admin" });
 

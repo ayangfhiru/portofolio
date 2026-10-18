@@ -4,9 +4,8 @@
  * Data diambil dari `/api/experience`.
  */
 import { computed } from "vue";
-import EyebrowLabel from "~/components/ui/EyebrowLabel.vue";
-import type { ApiResponse } from "~/types/api";
-import type { Experience } from "~/types/experience";
+import { EyebrowLabel } from "~/components/ui";
+import type { ApiResponse, Experience } from "~/types";
 
 const { data: experienceResponse } = await useFetch<ApiResponse<Experience[]>>(
   "/api/experience",
@@ -27,7 +26,7 @@ const timeline = computed<Experience[]>(
       <div
         class="mb-14 flex flex-wrap items-end justify-between gap-7 max-[680px]:mb-[38px]"
       >
-        <div v-reveal>
+        <div v-reveal class="reveal">
           <EyebrowLabel>Career</EyebrowLabel>
           <h2
             class="mt-4 font-display text-[clamp(2.1rem,5.2vw,3.65rem)] font-extrabold leading-[0.98] tracking-[-0.025em]"
@@ -35,7 +34,7 @@ const timeline = computed<Experience[]>(
             Experience &amp;<br /><em class="not-italic text-accent">milestones.</em>
           </h2>
         </div>
-        <p v-reveal class="max-w-[38ch] text-[0.98rem] text-muted">
+        <p v-reveal class="max-w-[38ch] text-[0.98rem] text-muted reveal">
           A path shaped by startups, scale-ups, and a lot of shipped code.
         </p>
       </div>
@@ -48,7 +47,7 @@ const timeline = computed<Experience[]>(
           v-for="(item, index) in timeline"
           :key="item.role"
           v-reveal="index * 0.08"
-          class="relative pb-[42px] last:pb-0 before:absolute before:-left-[34px] before:top-[7px] before:h-[13px] before:w-[13px] before:rounded-full before:border-2 before:border-accent before:bg-bg-2"
+          class="relative pb-[42px] last:pb-0 before:absolute before:-left-[34px] before:top-[7px] before:h-[13px] before:w-[13px] before:rounded-full before:border-2 before:border-accent before:bg-bg-2 reveal"
         >
           <div class="mb-2 flex flex-wrap items-baseline gap-3.5">
             <h3 class="font-display text-[1.36rem] font-bold tracking-[-0.022em]">

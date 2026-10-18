@@ -1,5 +1,5 @@
 import { onMounted, onUnmounted, ref } from "vue";
-import { formatJakartaClock } from "~/utils/format";
+import { formatJakartaClock } from "~/utils";
 
 /** Jam live WIB yang diperbarui tiap detik. */
 export const useJakartaClock = () => {

@@ -1,9 +1,9 @@
-import type { ApiResponse } from "~/types/api";
+import type { ApiResponse } from "~/types";
 import type {
   ProjectItem,
   ProjectPayload,
   ProjectUpdatePayload,
-} from "~/types/project";
+} from "~/types";
 
 /**
  * Util pemanggilan API project di sisi client.

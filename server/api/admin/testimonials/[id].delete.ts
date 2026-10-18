@@ -1,6 +1,6 @@
 import { defineEventHandler } from "h3";
-import { requireId, throwPrismaError } from "../../../utils/admin";
-import { ok } from "../../../utils/response";
+import { requireId, throwPrismaError } from "~~/server/utils/admin";
+import { ok } from "~~/server/utils/response";
 
 /**
  * DELETE /api/admin/testimonials/:id

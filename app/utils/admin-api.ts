@@ -1,4 +1,4 @@
-import type { ApiResponse } from "~/types/api";
+import type { ApiResponse } from "~/types";
 
 /**
  * Util pemanggilan API resource admin di sisi klien.

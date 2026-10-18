@@ -6,9 +6,8 @@
  * Teks quote memuat penanda `**penekanan**` untuk frasa berwarna aksen.
  */
 import { computed } from "vue";
-import { splitEmphasis } from "~/utils/format";
-import type { ApiResponse } from "~/types/api";
-import type { Testimonial } from "~/types/testimonial";
+import { splitEmphasis } from "~/utils";
+import type { ApiResponse, Testimonial } from "~/types";
 
 const { data: testimonialResponse } = await useFetch<ApiResponse<Testimonial[]>>(
   "/api/testimonial",
@@ -39,7 +38,7 @@ const quoteParts = computed(() =>
       <figure
         v-else
         v-reveal
-        class="relative overflow-hidden rounded-[26px] border border-line px-[clamp(26px,5vw,66px)] py-[60px] max-[680px]:px-[22px] max-[680px]:py-[42px]"
+        class="relative overflow-hidden rounded-[26px] border border-line px-[clamp(26px,5vw,66px)] py-[60px] max-[680px]:px-[22px] max-[680px]:py-[42px] reveal"
         style="
           background:
             radial-gradient(ellipse at 88% 12%, rgba(214, 255, 74, 0.11), transparent 55%),

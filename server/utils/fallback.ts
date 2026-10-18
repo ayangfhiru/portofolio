@@ -1,10 +1,10 @@
-import type { ContactCard, SocialLink } from "../../app/types/contact";
-import type { Experience } from "../../app/types/experience";
-import type { AboutFact, Profile, Stat } from "../../app/types/profile";
-import type { ProjectItem } from "../../app/types/project";
-import type { Service } from "../../app/types/service";
-import type { StackGroup } from "../../app/types/stack";
-import type { Testimonial } from "../../app/types/testimonial";
+import type { ContactCard, SocialLink } from "~~/app/types/contact";
+import type { Experience } from "~~/app/types/experience";
+import type { AboutFact, Profile, Stat } from "~~/app/types/profile";
+import type { ProjectItem } from "~~/app/types/project";
+import type { Service } from "~~/app/types/service";
+import type { StackGroup } from "~~/app/types/stack";
+import type { Testimonial } from "~~/app/types/testimonial";
 
 /**
  * Data cadangan (fallback) yang dipakai HANYA saat koneksi database

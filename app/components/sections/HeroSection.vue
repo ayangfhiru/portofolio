@@ -10,10 +10,9 @@
  * Marquee & chip melayang tetap statis karena murni dekoratif.
  */
 import { computed, onMounted, onUnmounted, ref } from "vue";
-import AppButton from "~/components/ui/AppButton.vue";
-import type { ApiResponse } from "~/types/api";
-import type { Profile, Stat } from "~/types/profile";
-import { splitEmphasis } from "~/utils/format";
+import { AppButton } from "~/components/ui";
+import type { ApiResponse, Profile, Stat } from "~/types";
+import { splitEmphasis } from "~/utils";
 
 /** Kata berputar cadangan bila API belum mengembalikan data. */
 const DEFAULT_ROTATING_WORDS = ["ship fast."];
@@ -259,7 +258,7 @@ onUnmounted(() => {
       <div>
         <div
           v-reveal
-          class="inline-flex items-center gap-2.5 rounded-full border border-line-strong bg-white/[0.03] py-2 pl-2.5 pr-4 font-mono text-[0.72rem] uppercase tracking-[0.09em] text-muted"
+          class="inline-flex items-center gap-2.5 rounded-full border border-line-strong bg-white/[0.03] py-2 pl-2.5 pr-4 font-mono text-[0.72rem] uppercase tracking-[0.09em] text-muted reveal"
         >
           <span class="relative h-2 w-2 rounded-full bg-accent">
             <span
@@ -273,7 +272,7 @@ onUnmounted(() => {
 
         <h1
           v-reveal="0.08"
-          class="my-6 font-display text-[clamp(2.75rem,7.1vw,5.35rem)] font-extrabold leading-[0.94] tracking-[-0.035em]"
+          class="my-6 font-display text-[clamp(2.75rem,7.1vw,5.35rem)] font-extrabold leading-[0.94] tracking-[-0.035em] reveal"
         >
           I build digital<br />
           products that<br />
@@ -288,7 +287,7 @@ onUnmounted(() => {
 
         <p
           v-reveal="0.16"
-          class="mb-[34px] max-w-[47ch] text-[1.07rem] text-muted"
+          class="mb-[34px] max-w-[47ch] text-[1.07rem] text-muted reveal"
         >
           <template v-for="(part, i) in leadParts" :key="i">
             <strong v-if="part.emphasized" class="font-semibold text-ink">{{
@@ -298,7 +297,7 @@ onUnmounted(() => {
           </template>
         </p>
 
-        <div v-reveal="0.24" class="mb-[46px] flex flex-wrap gap-3.5">
+        <div v-reveal="0.24" class="mb-[46px] flex flex-wrap gap-3.5 reveal">
           <AppButton href="#work">View selected work</AppButton>
           <AppButton variant="ghost" href="#contact" :magnetic="false">
             Let's talk
@@ -307,7 +306,7 @@ onUnmounted(() => {
 
         <div
           v-reveal="0.32"
-          class="grid max-w-[560px] grid-cols-4 gap-[18px] border-t border-line pt-[26px] max-[980px]:max-w-none max-[680px]:grid-cols-2 max-[680px]:gap-x-4 max-[680px]:gap-y-[22px]"
+          class="grid max-w-[560px] grid-cols-4 gap-[18px] border-t border-line pt-[26px] max-[980px]:max-w-none max-[680px]:grid-cols-2 max-[680px]:gap-x-4 max-[680px]:gap-y-[22px] reveal"
         >
           <div v-for="(stat, index) in stats" :key="stat.label">
             <div
@@ -334,7 +333,7 @@ onUnmounted(() => {
       <!-- Kolom kanan: foto -->
       <div
         v-reveal="0.2"
-        class="relative p-3.5 max-[980px]:mx-auto max-[980px]:w-full max-[980px]:max-w-[520px]"
+        class="relative p-3.5 max-[980px]:mx-auto max-[980px]:w-full max-[980px]:max-w-[520px] reveal"
       >
         <div
           class="relative aspect-[4/4.55] overflow-hidden rounded-[26px] bg-surface shadow-[0_40px_90px_-30px_rgba(0,0,0,.85)]"

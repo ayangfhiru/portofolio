@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Search, X } from "@lucide/vue";
-import type { ToolbarFilter } from "~/types/admin";
+import type { ToolbarFilter } from "~/types";
 
 /**
  * Toolbar di atas tabel: pencarian, filter dropdown, dan slot tombol aksi.

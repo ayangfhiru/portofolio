@@ -1,5 +1,5 @@
 import { defineEventHandler } from "h3";
-import { ok } from "../../../utils/response";
+import { ok } from "~~/server/utils/response";
 
 /**
  * GET /api/admin/stats

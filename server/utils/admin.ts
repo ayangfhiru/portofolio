@@ -1,6 +1,6 @@
 import type { H3Event } from "h3";
 import { createError, getRouterParam, readBody } from "h3";
-import { Prisma } from "../../prisma/generated/client";
+import { Prisma } from "~~/prisma/generated/client";
 
 /**
  * Helper bersama untuk endpoint resource admin

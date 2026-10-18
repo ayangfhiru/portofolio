@@ -4,17 +4,17 @@
  * Hanya mengatur state menu mobile dan merangkai section-section.
  */
 import { ref } from "vue";
-import AppFooter from "~/components/layout/AppFooter.vue";
-import AppNavbar from "~/components/layout/AppNavbar.vue";
-import MobileMenu from "~/components/layout/MobileMenu.vue";
-import AboutSection from "~/components/sections/AboutSection.vue";
-import ContactSection from "~/components/sections/ContactSection.vue";
-import ExperienceSection from "~/components/sections/ExperienceSection.vue";
-import HeroSection from "~/components/sections/HeroSection.vue";
-import QuoteSection from "~/components/sections/QuoteSection.vue";
-import ServicesSection from "~/components/sections/ServicesSection.vue";
-import StackSection from "~/components/sections/StackSection.vue";
-import WorkSection from "~/components/sections/WorkSection.vue";
+import { AppFooter, AppNavbar, MobileMenu } from "~/components/layout";
+import {
+  AboutSection,
+  ContactSection,
+  ExperienceSection,
+  HeroSection,
+  QuoteSection,
+  ServicesSection,
+  StackSection,
+  WorkSection,
+} from "~/components/sections";
 
 useHead({
   title: "Syang Ghege — Full-Stack Developer & Product Engineer",

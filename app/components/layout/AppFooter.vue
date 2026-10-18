@@ -2,9 +2,8 @@
 /**
  * Footer: brand, tautan section, meta jam WIB + tahun, tombol back-to-top.
  */
-import { useJakartaClock } from "~/composables/useJakartaClock";
-import { getCurrentYear } from "~/utils/format";
-import { NAV_LINKS } from "~/utils/navigation";
+import { useJakartaClock } from "~/composables";
+import { getCurrentYear, NAV_LINKS } from "~/utils";
 
 const { clock } = useJakartaClock();
 const year = getCurrentYear();

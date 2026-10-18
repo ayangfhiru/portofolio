@@ -2,7 +2,7 @@ import type { MultiPartData } from "h3";
 import { randomUUID } from "node:crypto";
 import { mkdir, unlink, writeFile } from "node:fs/promises";
 import { extname, join } from "node:path";
-import type { MoveImageOptions, MoveImageResult } from "../../app/types/upload";
+import type { MoveImageOptions, MoveImageResult } from "~~/app/types/upload";
 
 /**
  * Util upload file.

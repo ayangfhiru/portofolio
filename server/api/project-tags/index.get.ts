@@ -1,5 +1,5 @@
 import { defineEventHandler } from "h3";
-import { withFallback } from "../../utils/api";
+import { withFallback } from "~~/server/utils/api";
 
 /**
  * GET /api/project-tags

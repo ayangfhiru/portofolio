@@ -1,6 +1,6 @@
 import { defineEventHandler } from "h3";
-import { ok } from "../../../utils/response";
-import type { TestimonialAdmin } from "../../../../app/types/testimonial";
+import { ok } from "~~/server/utils/response";
+import type { TestimonialAdmin } from "~~/app/types/testimonial";
 
 /**
  * GET /api/admin/testimonials

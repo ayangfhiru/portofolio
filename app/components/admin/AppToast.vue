@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Check, X } from "@lucide/vue";
-import { useToast } from "~/composables/useToast";
+import { useToast } from "~/composables";
 
 /**
  * Penampil notifikasi toast panel admin.

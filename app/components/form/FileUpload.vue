@@ -20,9 +20,8 @@
  */
 import { LoaderCircle, Paperclip, X } from "@lucide/vue";
 import { computed, ref, watch } from "vue";
-import type { ApiResponse } from "~/types/api";
-import type { MoveImageResult } from "~/types/upload";
-import { extractApiError } from "~/utils/admin-api";
+import type { ApiResponse, MoveImageResult } from "~/types";
+import { extractApiError } from "~/utils";
 
 interface Props {
   /**

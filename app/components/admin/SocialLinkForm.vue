@@ -2,14 +2,14 @@
 import { computed, ref } from "vue";
 import { AlertCircle, CheckCircle2, LoaderCircle, Save } from "@lucide/vue";
 import { BaseInput } from "~/components/form";
-import { adminCreate, adminPatch, extractApiError } from "~/utils/admin-api";
-import type { ApiResponse } from "~/types/api";
+import { adminCreate, adminPatch, extractApiError } from "~/utils";
+import type { ApiResponse } from "~/types";
 import type {
   SocialLinkAdmin,
   SocialLinkCreateInput,
   SocialLinkFormState,
   SocialLinkUpdateInput,
-} from "~/types/contact";
+} from "~/types";
 
 /**
  * Form tautan sosial bersama untuk mode Create dan Update.

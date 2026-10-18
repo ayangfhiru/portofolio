@@ -1,7 +1,7 @@
 import { PrismaClient } from "./generated/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import pg from "pg";
-import type { SeedResult } from "../app/types/seed";
+import type { SeedResult } from "~~/app/types/seed";
 
 /**
  * Seed database dengan data konten portfolio.

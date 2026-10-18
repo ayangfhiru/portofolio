@@ -4,11 +4,9 @@
  * Data diambil dari `/api/projects` (SSR lewat useFetch).
  */
 import { computed, ref } from "vue";
-import ProjectCard from "~/components/ui/ProjectCard.vue";
-import SectionHeading from "~/components/ui/SectionHeading.vue";
-import type { ApiResponse } from "~/types/api";
-import type { ProjectCategory, ProjectItem } from "~/types/project";
-import { PROJECT_FILTERS } from "~/utils/navigation";
+import { ProjectCard, SectionHeading } from "~/components/ui";
+import type { ApiResponse, ProjectCategory, ProjectItem } from "~/types";
+import { PROJECT_FILTERS } from "~/utils";
 
 const activeFilter = ref<ProjectCategory | "all">("all");
 
@@ -56,7 +54,7 @@ const gridProjects = computed<ProjectItem[]>(() =>
         </template>
 
         <template #actions>
-          <div v-reveal class="flex flex-wrap gap-[9px]">
+          <div v-reveal class="flex flex-wrap gap-[9px] reveal">
             <button
               v-for="filter in PROJECT_FILTERS"
               :key="filter.value"
@@ -108,6 +106,7 @@ const gridProjects = computed<ProjectItem[]>(() =>
           :project="featuredProject"
           featured
           v-reveal
+          class="reveal"
         />
 
         <div class="grid grid-cols-2 gap-[22px] max-[680px]:grid-cols-1">
@@ -116,6 +115,7 @@ const gridProjects = computed<ProjectItem[]>(() =>
             :key="project.id ?? project.slug"
             :project="project"
             v-reveal="index * 0.06"
+            class="reveal"
           />
         </div>
       </template>

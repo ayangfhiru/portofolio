@@ -3,8 +3,8 @@ import {
   defineEventHandler,
   getRouterParam,
 } from "h3";
-import { Prisma } from "../../../prisma/generated/client";
-import { ok } from "../../utils/response";
+import { Prisma } from "~~/prisma/generated/client";
+import { ok } from "~~/server/utils/response";
 
 /**
  * DELETE /api/projects/:id

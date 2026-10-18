@@ -9,7 +9,7 @@
  */
 import { onMounted, ref } from "vue";
 import { ChevronDown } from "@lucide/vue";
-import type { AdminNavItem } from "~/types/admin";
+import type { AdminNavItem } from "~/types";
 
 interface Props {
   items?: AdminNavItem[];

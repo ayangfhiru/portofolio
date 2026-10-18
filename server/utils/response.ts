@@ -1,4 +1,4 @@
-import type { ApiResponse } from "../../app/types/api";
+import type { ApiResponse } from "~~/app/types/api";
 
 /**
  * Pembungkus response standar.

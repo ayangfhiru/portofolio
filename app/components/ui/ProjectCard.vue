@@ -4,7 +4,7 @@
  * - `featured` : layout split besar (label + judul besar + link di bawah)
  * - default    : kartu grid (judul + tahun di atas, link di bawah)
  */
-import type { ProjectItem } from "~/types/project";
+import type { ProjectItem } from "~/types";
 
 defineProps<{ project: ProjectItem; featured?: boolean }>();
 </script>

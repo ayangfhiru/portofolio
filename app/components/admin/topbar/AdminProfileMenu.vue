@@ -6,7 +6,7 @@
  * ditutup bersamaan dengan lapisan lain oleh klik luar maupun Esc.
  */
 import { ChevronDown } from "@lucide/vue";
-import type { AdminNavLink, AdminUser } from "~/types/admin";
+import type { AdminNavLink, AdminUser } from "~/types";
 
 interface Props {
   user: AdminUser;

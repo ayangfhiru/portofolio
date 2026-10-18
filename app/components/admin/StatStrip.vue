@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { StatItem } from "~/types/admin";
+import type { StatItem } from "~/types";
 
 /**
  * Deretan kartu statistik di atas tabel.

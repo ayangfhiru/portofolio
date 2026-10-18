@@ -2,14 +2,14 @@
 import { computed, ref } from "vue";
 import { AlertCircle, CheckCircle2, LoaderCircle, Save } from "@lucide/vue";
 import { BaseInput } from "~/components/form";
-import { adminCreate, adminPatch, extractApiError } from "~/utils/admin-api";
-import type { ApiResponse } from "~/types/api";
+import { adminCreate, adminPatch, extractApiError } from "~/utils";
+import type { ApiResponse } from "~/types";
 import type {
   StatAdmin,
   StatCreateInput,
   StatFormState,
   StatUpdateInput,
-} from "~/types/stat";
+} from "~/types";
 
 /**
  * Form statistik bersama untuk mode Create dan Update.

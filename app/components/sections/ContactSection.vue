@@ -9,23 +9,19 @@
  * `value` pada kartu memuat penanda `**penekanan**` untuk frasa aksen.
  */
 import { computed } from "vue";
-import AppButton from "~/components/ui/AppButton.vue";
-import { splitEmphasis } from "~/utils/format";
-import type { ApiResponse } from "~/types/api";
-import type { Profile } from "~/types/profile";
-import type { ContactCard, SocialLink } from "~/types/contact";
+import { AppButton } from "~/components/ui";
+import type { ApiResponse, ContactCard, Profile, SocialLink } from "~/types";
+import { splitEmphasis } from "~/utils";
 
 interface ContactPayload {
   cards: ContactCard[];
   socials: SocialLink[];
 }
 
-const { data: profileResponse } = await useFetch<ApiResponse<Profile>>(
-  "/api/profile",
-);
-const { data: contactResponse } = await useFetch<ApiResponse<ContactPayload>>(
-  "/api/contact",
-);
+const { data: profileResponse } =
+  await useFetch<ApiResponse<Profile>>("/api/profile");
+const { data: contactResponse } =
+  await useFetch<ApiResponse<ContactPayload>>("/api/contact");
 
 const profile = computed<Profile | null>(
   () => profileResponse.value?.data ?? null,
@@ -49,18 +45,25 @@ const cardParts = computed(() =>
     <div
       class="pointer-events-none absolute left-1/2 top-[8%] h-[620px] w-[900px] -translate-x-1/2"
       style="
-        background: radial-gradient(ellipse, rgba(214, 255, 74, 0.1), transparent 62%);
+        background: radial-gradient(
+          ellipse,
+          rgba(214, 255, 74, 0.1),
+          transparent 62%
+        );
       "
       aria-hidden="true"
     />
 
-    <div class="relative mx-auto w-[min(1240px,100%-48px)] max-[680px]:w-[min(1240px,100%-32px)]">
+    <div
+      class="relative mx-auto w-[min(1240px,100%-48px)] max-[680px]:w-[min(1240px,100%-32px)]"
+    >
       <h2
         v-reveal
-        class="text-center font-display text-[clamp(2.65rem,9vw,7.4rem)] font-extrabold leading-[0.95] tracking-[-0.035em]"
+        class="text-center font-display text-[clamp(2.65rem,9vw,7.4rem)] font-extrabold leading-[0.95] tracking-[-0.035em] reveal"
       >
         LET'S BUILD<br />
-        <span class="text-transparent [-webkit-text-stroke:1.5px_var(--color-line-strong)]"
+        <span
+          class="text-transparent [-webkit-text-stroke:1.5px_var(--color-line-strong)]"
           >SOMETHING</span
         >
         <span class="text-accent">GOOD.</span>
@@ -68,13 +71,19 @@ const cardParts = computed(() =>
 
       <p
         v-reveal="0.1"
-        class="mx-auto mb-10 mt-[26px] max-w-[50ch] text-center text-[1.06rem] text-muted"
+        class="mx-auto mb-10 mt-[26px] max-w-[50ch] text-center text-[1.06rem] text-muted reveal"
       >
         {{ profile?.contactSubtitle }}
       </p>
 
-      <div v-reveal="0.18" class="mb-[52px] flex flex-wrap justify-center gap-3.5">
-        <AppButton :href="`mailto:${profile?.contactEmail ?? ''}`" variant="mail">
+      <div
+        v-reveal="0.18"
+        class="mb-[52px] flex flex-wrap justify-center gap-3.5 reveal"
+      >
+        <AppButton
+          :href="`mailto:${profile?.contactEmail ?? ''}`"
+          variant="mail"
+        >
           {{ profile?.contactEmail }}
         </AppButton>
         <AppButton
@@ -91,21 +100,30 @@ const cardParts = computed(() =>
           v-for="(card, index) in cardParts"
           :key="card.key"
           v-reveal="index * 0.08"
-          class="rounded-[18px] border border-line bg-surface/[.66] p-6 backdrop-blur-lg transition-all duration-[450ms] ease-[cubic-bezier(.22,.9,.28,1)] hover:-translate-y-1.5 hover:border-accent/[.36]"
+          class="rounded-[18px] border border-line bg-surface/66 p-6 backdrop-blur-lg transition-all duration-450 ease-[cubic-bezier(.22,.9,.28,1)] hover:-translate-y-1.5 hover:border-accent/36 reveal"
         >
-          <div class="font-mono text-[0.68rem] uppercase tracking-[0.15em] text-muted-2">
+          <div
+            class="font-mono text-[0.68rem] uppercase tracking-[0.15em] text-muted-2"
+          >
             {{ card.key }}
           </div>
-          <div class="mt-[9px] break-words font-display text-[1.16rem] font-bold tracking-[-0.018em]">
+          <div
+            class="mt-[9px] break-words font-display text-[1.16rem] font-bold tracking-[-0.018em]"
+          >
             <template v-for="(part, i) in card.parts" :key="i">
-              <span v-if="part.emphasized" class="text-accent">{{ part.text }}</span>
+              <span v-if="part.emphasized" class="text-accent">{{
+                part.text
+              }}</span>
               <template v-else>{{ part.text }}</template>
             </template>
           </div>
         </div>
       </div>
 
-      <div v-reveal="0.22" class="mt-[34px] flex flex-wrap justify-center gap-2.5">
+      <div
+        v-reveal="0.22"
+        class="mt-[34px] flex flex-wrap justify-center gap-2.5 reveal"
+      >
         <a
           v-for="social in socials"
           :key="social.label"

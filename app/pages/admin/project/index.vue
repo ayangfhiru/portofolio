@@ -29,12 +29,9 @@ import {
   StatStrip,
   TableToolbar,
 } from "~/components/admin";
-import { useAdminList } from "~/composables/useAdminList";
-import type { DataTableColumn, StatItem, ToolbarFilter } from "~/types/admin";
-import type { ApiResponse } from "~/types/api";
-import type { ProjectItem } from "~/types/project";
-import { ADMIN_NAV_ITEMS, ADMIN_USER } from "~/utils/admin-nav";
-import { formatDate, formatTime, highlightParts } from "~/utils/format";
+import { useAdminList } from "~/composables";
+import type { DataTableColumn, StatItem, ToolbarFilter, ApiResponse, ProjectItem } from "~/types";
+import { ADMIN_NAV_ITEMS, ADMIN_USER, formatDate, formatTime, highlightParts } from "~/utils";
 
 useHead({ title: "Kelola Project — Admin" });
 

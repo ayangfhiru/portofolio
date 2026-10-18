@@ -1,6 +1,6 @@
 import { defineEventHandler } from "h3";
-import { ok } from "../../../utils/response";
-import type { ProfileAdmin } from "../../../../app/types/profile";
+import { ok } from "~~/server/utils/response";
+import type { ProfileAdmin } from "~~/app/types/profile";
 
 /**
  * GET /api/admin/profile

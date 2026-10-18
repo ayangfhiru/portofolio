@@ -3,10 +3,10 @@ import {
   defineEventHandler,
   setResponseStatus,
 } from "h3";
-import { isSent, readAdminBody, throwPrismaError } from "../../../utils/admin";
-import { ok } from "../../../utils/response";
-import { collectErrors, isNonEmptyString } from "../../../utils/validation";
-import type { StatAdmin } from "../../../../app/types/stat";
+import { isSent, readAdminBody, throwPrismaError } from "~~/server/utils/admin";
+import { ok } from "~~/server/utils/response";
+import { collectErrors, isNonEmptyString } from "~~/server/utils/validation";
+import type { StatAdmin } from "~~/app/types/stat";
 
 /**
  * POST /api/admin/stats

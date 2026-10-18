@@ -1,8 +1,8 @@
 import { createError, defineEventHandler } from "h3";
-import { parseStringList, readAdminBody, throwPrismaError } from "../../../utils/admin";
-import { ok } from "../../../utils/response";
-import { collectErrors, isNonEmptyString } from "../../../utils/validation";
-import type { ProfileAdmin } from "../../../../app/types/profile";
+import { parseStringList, readAdminBody, throwPrismaError } from "~~/server/utils/admin";
+import { ok } from "~~/server/utils/response";
+import { collectErrors, isNonEmptyString } from "~~/server/utils/validation";
+import type { ProfileAdmin } from "~~/app/types/profile";
 
 /**
  * PUT /api/admin/profile

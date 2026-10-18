@@ -13,7 +13,7 @@ import {
   UserRound,
   Wrench,
 } from "@lucide/vue";
-import type { AdminNavItem, AdminNavLink } from "~/types/admin";
+import type { AdminNavItem, AdminNavLink } from "~/types";
 
 /**
  * Konfigurasi navigasi panel admin.

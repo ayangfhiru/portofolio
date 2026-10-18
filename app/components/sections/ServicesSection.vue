@@ -4,9 +4,8 @@
  * Data diambil dari /api/services.
  */
 import { computed } from "vue";
-import EyebrowLabel from "~/components/ui/EyebrowLabel.vue";
-import type { ApiResponse } from "~/types/api";
-import type { Service } from "~/types/service";
+import { EyebrowLabel } from "~/components/ui";
+import type { ApiResponse, Service } from "~/types";
 
 const { data: servicesResponse } = await useFetch<ApiResponse<Service[]>>(
   "/api/services",
@@ -27,7 +26,7 @@ const services = computed(() =>
       <div
         class="mb-14 flex flex-wrap items-end justify-between gap-7 max-[680px]:mb-[38px]"
       >
-        <div v-reveal>
+        <div v-reveal class="reveal">
           <EyebrowLabel>What I do</EyebrowLabel>
           <h2
             class="mt-4 font-display text-[clamp(2.1rem,5.2vw,3.65rem)] font-extrabold leading-[0.98] tracking-[-0.025em]"
@@ -35,7 +34,7 @@ const services = computed(() =>
             Services built<br />for <em class="not-italic text-accent">shipping.</em>
           </h2>
         </div>
-        <p v-reveal class="max-w-[38ch] text-[0.98rem] text-muted">
+        <p v-reveal class="max-w-[38ch] text-[0.98rem] text-muted reveal">
           End-to-end capability means fewer handoffs, fewer misunderstandings,
           and faster launches.
         </p>
@@ -46,7 +45,7 @@ const services = computed(() =>
           v-for="(service, index) in services"
           :key="service.name"
           v-reveal="index * 0.07"
-          class="group relative grid grid-cols-[70px_1.1fr_1.4fr_auto] items-center gap-6 border-b border-line px-[18px] py-7 transition-[background,padding] duration-[400ms] ease-[cubic-bezier(.22,.9,.28,1)] hover:bg-accent/[.045] hover:px-7 max-[980px]:grid-cols-[52px_1fr_auto] max-[980px]:gap-4"
+          class="group relative grid grid-cols-[70px_1.1fr_1.4fr_auto] items-center gap-6 border-b border-line px-[18px] py-7 transition-[background,padding] duration-[400ms] ease-[cubic-bezier(.22,.9,.28,1)] hover:bg-accent/[.045] hover:px-7 max-[980px]:grid-cols-[52px_1fr_auto] max-[980px]:gap-4 reveal"
         >
           <!-- Bar aksen yang tumbuh dari atas saat hover -->
           <span

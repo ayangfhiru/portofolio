@@ -1,8 +1,8 @@
 import { createError, defineEventHandler } from "h3";
-import { isSent, readAdminBody, requireId, throwPrismaError } from "../../../utils/admin";
-import { ok } from "../../../utils/response";
-import { isNonEmptyString } from "../../../utils/validation";
-import type { AboutFactAdmin } from "../../../../app/types/fact";
+import { isSent, readAdminBody, requireId, throwPrismaError } from "~~/server/utils/admin";
+import { ok } from "~~/server/utils/response";
+import { isNonEmptyString } from "~~/server/utils/validation";
+import type { AboutFactAdmin } from "~~/app/types/fact";
 
 /** Field yang diizinkan berubah melalui endpoint ini. */
 const ALLOWED_FIELDS = ["term", "value", "order"] as const;

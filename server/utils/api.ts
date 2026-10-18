@@ -1,5 +1,5 @@
-import type { ApiResponse } from "../../app/types/api";
-import type { ProjectCategory } from "../../app/types/project";
+import type { ApiResponse } from "~~/app/types/api";
+import type { ProjectCategory } from "~~/app/types/project";
 import { ok, fail } from "./response";
 
 /**

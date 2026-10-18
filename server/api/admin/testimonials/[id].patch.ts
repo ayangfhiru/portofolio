@@ -1,11 +1,11 @@
 import { createError, defineEventHandler } from "h3";
-import { isSent, readAdminBody, requireId, throwPrismaError } from "../../../utils/admin";
-import { ok } from "../../../utils/response";
-import { isBoolean, isNonEmptyString } from "../../../utils/validation";
+import { isSent, readAdminBody, requireId, throwPrismaError } from "~~/server/utils/admin";
+import { ok } from "~~/server/utils/response";
+import { isBoolean, isNonEmptyString } from "~~/server/utils/validation";
 import type {
   TestimonialAdmin,
   TestimonialUpdateInput,
-} from "../../../../app/types/testimonial";
+} from "~~/app/types/testimonial";
 
 /** Field yang diizinkan berubah melalui endpoint ini. */
 const ALLOWED_FIELDS = [

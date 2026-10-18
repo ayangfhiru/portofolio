@@ -8,7 +8,7 @@
  */
 import { nextTick, ref, watch } from "vue";
 import { CornerDownLeft, Search, X } from "@lucide/vue";
-import type { AdminNavLink } from "~/types/admin";
+import type { AdminNavLink } from "~/types";
 
 interface Props {
   open?: boolean;

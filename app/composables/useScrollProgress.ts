@@ -1,5 +1,5 @@
 import { onMounted, onUnmounted, ref } from "vue";
-import { calculateScrollProgress } from "~/utils/format";
+import { calculateScrollProgress } from "~/utils";
 
 /**
  * Melacak progres scroll halaman (0–100) dan status "stuck"

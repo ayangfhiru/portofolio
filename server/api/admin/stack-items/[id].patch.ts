@@ -1,12 +1,12 @@
 import { createError, defineEventHandler } from "h3";
-import type { StackItemAdmin } from "../../../../app/types/stack";
+import type { StackItemAdmin } from "~~/app/types/stack";
 import {
   readAdminBody,
   requireId,
   throwPrismaError,
-} from "../../../utils/admin";
-import { ok } from "../../../utils/response";
-import { isNonEmptyString } from "../../../utils/validation";
+} from "~~/server/utils/admin";
+import { ok } from "~~/server/utils/response";
+import { isNonEmptyString } from "~~/server/utils/validation";
 
 /** Field yang diizinkan berubah melalui endpoint ini. */
 const ALLOWED_FIELDS = ["name", "groupId", "order"] as const;

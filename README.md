@@ -41,6 +41,7 @@ Setiap variabel sudah diberi komentar penjelasan di `.env.example`. Ringkasannya
 | `NUXT_PUBLIC_APP_URL` | URL publik aplikasi (untuk link absolut) |
 | `ENABLE_FALLBACK_DATA` | `true` → API menyediakan data contoh bila DB gagal diakses. Set `false` di production agar kegagalan DB terlihat jelas |
 | `UPLOAD_MAX_IMAGE_MB` | Batas ukuran gambar untuk `POST /api/projects` |
+| `UPLOAD_MAX_FILE_MB` | Batas ukuran file untuk `POST /api/admin/upload` (jenis file apa pun). Bila kosong, memakai `UPLOAD_MAX_IMAGE_MB` |
 
 ### 4. Database & Seed
 Generate client Prisma lalu buat tabel:

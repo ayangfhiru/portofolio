@@ -12,12 +12,12 @@
  */
 import { Menu, Plus, Search, X } from "@lucide/vue";
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
-import type { AdminNavItem, AdminNavLink, AdminUser } from "~/types/admin";
+import type { AdminNavItem, AdminNavLink, AdminUser } from "~/types";
 import {
   ADMIN_NAV_ITEMS,
   ADMIN_SEARCH_LINKS,
   ADMIN_USER_LINKS,
-} from "~/utils/admin-nav";
+} from "~/utils";
 import AdminBrand from "./AdminBrand.vue";
 import AdminMobileDrawer from "./AdminMobileDrawer.vue";
 import AdminNavMenu from "./AdminNavMenu.vue";

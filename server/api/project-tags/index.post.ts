@@ -1,6 +1,6 @@
 import { createError, defineEventHandler, readBody } from "h3";
-import { collectErrors, isNonEmptyString } from "../../utils/validation";
-import { ok } from "../../utils/response";
+import { collectErrors, isNonEmptyString } from "~~/server/utils/validation";
+import { ok } from "~~/server/utils/response";
 
 /**
  * POST /api/project-tags

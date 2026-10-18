@@ -1,6 +1,6 @@
 import { defineEventHandler } from "h3";
-import { withFallback } from "../../utils/api";
-import { FALLBACK_CONTACT_CARDS, FALLBACK_SOCIAL_LINKS } from "../../utils/fallback";
+import { withFallback } from "~~/server/utils/api";
+import { FALLBACK_CONTACT_CARDS, FALLBACK_SOCIAL_LINKS } from "~~/server/utils/fallback";
 
 /**
  * GET /api/contact

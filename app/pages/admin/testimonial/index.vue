@@ -24,12 +24,9 @@ import {
   TestimonialForm,
   TableToolbar,
 } from "~/components/admin";
-import { useAdminList } from "~/composables/useAdminList";
-import { adminList, adminRemove } from "~/utils/admin-api";
-import { ADMIN_NAV_ITEMS, ADMIN_USER } from "~/utils/admin-nav";
-import { highlightParts } from "~/utils/format";
-import type { DataTableColumn, ToolbarFilter } from "~/types/admin";
-import type { TestimonialAdmin } from "~/types/testimonial";
+import { useAdminList } from "~/composables";
+import { adminList, adminRemove, ADMIN_NAV_ITEMS, ADMIN_USER, highlightParts } from "~/utils";
+import type { DataTableColumn, ToolbarFilter, TestimonialAdmin } from "~/types";
 
 useHead({ title: "Kelola Testimoni — Admin" });
 

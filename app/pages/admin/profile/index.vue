@@ -15,11 +15,9 @@
 import { AlertCircle, RefreshCw } from "@lucide/vue";
 import { ref } from "vue";
 import { AdminTopbar, AppToast, ProfileForm } from "~/components/admin";
-import { useToast } from "~/composables/useToast";
-import type { ApiResponse } from "~/types/api";
-import type { ProfileAdmin } from "~/types/profile";
-import { extractApiError } from "~/utils/admin-api";
-import { ADMIN_NAV_ITEMS, ADMIN_USER } from "~/utils/admin-nav";
+import { useToast } from "~/composables";
+import type { ApiResponse, ProfileAdmin } from "~/types";
+import { extractApiError, ADMIN_NAV_ITEMS, ADMIN_USER } from "~/utils";
 
 useHead({ title: "Kelola Profil — Admin" });
 

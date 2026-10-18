@@ -5,8 +5,8 @@ import {
   readMultipartFormData,
   setResponseStatus,
 } from "h3";
-import { Prisma } from "../../../prisma/generated/client";
-import type { ProjectCategory as ProjectCategoryEnum } from "../../../prisma/generated/enums";
+import { Prisma } from "~~/prisma/generated/client";
+import type { ProjectCategory as ProjectCategoryEnum } from "~~/prisma/generated/enums";
 import {
   collectErrors,
   isNonEmptyString,
@@ -14,11 +14,11 @@ import {
   parseBoolean,
   parseTags,
   slugify,
-} from "../../utils/validation";
-import { UploadError, saveProjectImage } from "../../utils/upload";
-import { normalizeCategory } from "../../utils/api";
-import { ok } from "../../utils/response";
-import type { ProjectCategory } from "../../../app/types/project";
+} from "~~/server/utils/validation";
+import { UploadError, saveProjectImage } from "~~/server/utils/upload";
+import { normalizeCategory } from "~~/server/utils/api";
+import { ok } from "~~/server/utils/response";
+import type { ProjectCategory } from "~~/app/types/project";
 
 /**
  * POST /api/projects

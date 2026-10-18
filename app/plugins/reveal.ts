@@ -3,26 +3,33 @@ import { defineNuxtPlugin } from "#app";
 /**
  * Directive `v-reveal` untuk animasi scroll-reveal.
  *
- * Elemen dengan directive akan diberi class `.in` saat masuk viewport
- * (sekali saja). Tambahkan delay opsional: `v-reveal="0.08"`.
+ * Class dasar `reveal` (state awal: transisi netral) DITULIS STATIS DI
+ * TEMPLATE, bukan lewat directive. Alasannya: `getSSRProps` hanya dipanggil
+ * saat server merender, sehingga class yang dihasilkannya tidak pernah ada
+ * di vdom client — perbandingan hidrasi dilakukan sebelum hook `mounted`
+ * berjalan dan tetap memunculkan "hydration class mismatch" walaupun
+ * `mounted` menambahkan class yang sama sesudahnya.
  *
- * Elemen render tetap terlihat saat SSR (tanpa class `.reveal` efek
- * transisi tetap netral), lalu di sisi client directive menyembunyikannya
- * sebentar sebelum reveal — sesuai perilaku desain asli.
+ * Directive ini murni sisi client dan hanya mengurus dua hal yang tidak
+ * bisa diekspresikan di template:
+ *
+ *   - `--d` : delay animasi dari nilai binding (`v-reveal="0.08"`).
+ *   - `in`  : status akhir animasi, ditambahkan IntersectionObserver di
+ *             sisi client setelah elemen mount (sekali saja).
+ *
+ * `getSSRProps` sengaja TIDAK dipakai. Menyuntikkan `--d` lewat sana hanya
+ * memindahkan masalahnya: elemen yang sudah punya atribut `style` statis
+ * (mis. QuoteSection) akan memunculkan "Hydration style mismatch", karena
+ * `--d` ada di HTML server tetapi tidak pernah ada di vdom client. `--d`
+ * cukup disetel `mounted` — transisi baru berjalan setelah `.in` diberikan
+ * IntersectionObserver, jadi delay-nya sudah benar pada saat itu.
+ *
+ * Tambahkan delay opsional: `v-reveal="0.08"`.
  */
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.directive("reveal", {
-    getSSRProps(binding) {
-      // Saat SSR, terapkan class reveal + delay agar hidrasi mulus.
-      const delay = typeof binding.value === "number" ? binding.value : 0;
-      return {
-        class: ["reveal", { in: false }],
-        style: { "--d": `${delay}s` },
-      };
-    },
     mounted(el: HTMLElement, binding) {
       const delay = typeof binding.value === "number" ? binding.value : 0;
-      el.classList.add("reveal");
       el.style.setProperty("--d", `${delay}s`);
 
       const reducedMotion = window.matchMedia(

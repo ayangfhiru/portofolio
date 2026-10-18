@@ -1,7 +1,7 @@
 import { defineEventHandler, getQuery } from "h3";
-import { withFallback, normalizeCategory } from "../../utils/api";
-import { FALLBACK_PROJECTS } from "../../utils/fallback";
-import type { ProjectItem } from "../../../app/types/project";
+import { withFallback, normalizeCategory } from "~~/server/utils/api";
+import { FALLBACK_PROJECTS } from "~~/server/utils/fallback";
+import type { ProjectItem } from "~~/app/types/project";
 
 /**
  * GET /api/projects
