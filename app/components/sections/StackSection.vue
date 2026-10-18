@@ -47,15 +47,15 @@ interface TerminalConfig {
 }
 
 /** Nama tab pada header terminal. */
-const TERMINAL_FILE_NAME = "~/noel/stack.ts";
+const TERMINAL_FILE_NAME = "~/ghege/stack.ts";
 /** Komentar pada baris pertama terminal. */
-const TERMINAL_COMMENT = "// noel.config.ts";
+const TERMINAL_COMMENT = "// ghege.config.ts";
 /** Nama konstanta yang diekspor. */
 const TERMINAL_CONST_NAME = "developer";
 
 /** Data yang diketik oleh terminal. Ubah, tambah, atau hapus key di sini saja. */
 const DEVELOPER_CONFIG: TerminalConfig = {
-  name: "Noel",
+  name: "Ghege",
   role: "Full-Stack Engineer",
   focus: ["product", "performance", "craft"],
   openToWork: true,

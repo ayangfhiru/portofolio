@@ -90,13 +90,28 @@ const handleHoverClose = (key: string) => {
   if (openLayer.value === key) openLayer.value = "";
 };
 
-const isInsideTopbar = (target: EventTarget | null): boolean =>
-  target instanceof Node &&
-  topbar.value !== null &&
-  topbar.value.contains(target);
+/**
+ * Menilai apakah sebuah klik berasal dari dalam topbar.
+ *
+ * `event.target` tidak selalu bisa dipakai: ketika tombol pencarian diklik
+ * lewat mouse, Vue langsung mengganti ikon `Search` menjadi `X` pada render
+ * ulang berikutnya, sehingga node yang diklik bisa sudah dilepas dari DOM
+ * sebelum event mencapai listener `document`. Akibatnya `contains()` salah
+ * menganggap klik tersebut sebagai klik di luar topbar dan lapisan langsung
+ * tertutup kembali. `composedPath()` menyimpan jalur sejak dispatch dimulai,
+ * jadi header tetap teridentifikasi meski target-nya sudah terlepas.
+ */
+const isInsideTopbar = (event: MouseEvent): boolean => {
+  if (topbar.value === null) return false;
+
+  if (event.composedPath().includes(topbar.value)) return true;
+
+  const target = event.target;
+  return target instanceof Node && topbar.value.contains(target);
+};
 
 const handleDocumentClick = (event: MouseEvent) => {
-  if (isInsideTopbar(event.target)) return;
+  if (isInsideTopbar(event)) return;
   openLayer.value = "";
 };
 
@@ -196,7 +211,7 @@ onBeforeUnmount(() => {
           :aria-label="drawerOpen ? 'Tutup menu' : 'Buka menu'"
           @click="drawerOpen = !drawerOpen"
         >
-          <component :is="drawerOpen ? X : Menu" class="h-4.5 w-[18px]" />
+          <component :is="drawerOpen ? X : Menu" class="h-4.5 w-4.5" />
         </button>
       </div>
     </div>
