@@ -72,7 +72,7 @@ const facts = computed(() =>
           <div class="aspect-[4/3.4] overflow-hidden rounded-[26px] bg-surface">
             <img
               loading="lazy"
-              src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1000&q=80"
+              src="/images/portfolio/about-workspace.png"
               alt="Workspace with code on screen"
               class="h-full w-full object-cover grayscale-[.35] contrast-[1.06]"
             />

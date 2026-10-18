@@ -1,20 +1,21 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, unlink, writeFile } from "node:fs/promises";
 import { extname, join } from "node:path";
 import { randomUUID } from "node:crypto";
 import type { MultiPartData } from "h3";
+import type { MoveImageOptions, MoveImageResult } from "../../app/types/upload";
 
 /**
- * Util upload gambar untuk project.
+ * Util upload gambar.
  *
- * Gambar yang di-upload disimpan ke folder `public/uploads/projects/`
- * sehingga bisa diakses langsung sebagai URL statis oleh browser.
+ * Semua tulis-file melewati satu fungsi reusable, `moveImage`, sehingga
+ * endpoint upload lain cukup memanggilnya dengan folder tujuan yang berbeda
+ * tanpa menyalin implementasi filesystem.
  *
- * Catatan: `readMultipartFormData` (h3) mengembalikan `MultiPartData`
- * dengan properti `type` untuk MIME, `data` untuk isi berkas,
- * dan `filename` untuk nama aslinya.
+ * Gambar disimpan di bawah folder `public/` sehingga Nitro menyajikannya
+ * sebagai file statis dan browser dapat memuatnya langsung.
  *
- * Di production, pertimbangkan mengganti penyimpanan lokal ini dengan
- * object storage (S3/Cloudinary) — cukup ganti isi `saveProjectImage`.
+ * Di production, pertimbangkan mengganti penyimpanan lokal dengan object
+ * storage (S3/Cloudinary) — cukup ganti isi `moveImage`.
  */
 
 /** Tipe file gambar yang diizinkan. */
@@ -35,8 +36,18 @@ const EXTENSION_BY_MIME: Record<string, string> = {
   "image/avif": ".avif",
 };
 
-/** Folder publik relatif terhadap root proyek. */
-const UPLOAD_DIR = join(process.cwd(), "public", "uploads", "projects");
+/** Folder tujuan proyek untuk gambar project. */
+const PROJECT_UPLOAD_DIR = "uploads/projects";
+
+/**
+ * Satu-satunya prefix file yang boleh dihapus oleh aplikasi.
+ * Aset yang di-commit (mis. `/images/portfolio/...`) dan URL eksternal
+ * berada di luar prefix ini dan karena itu tidak akan pernah disentuh.
+ */
+const MANAGED_PROJECT_IMAGE_PREFIX = "/uploads/projects/";
+
+/** Sumber gambar yang diterima `moveImage`: bagian multipart h3 atau `File` web-standard. */
+export type ImageSource = MultiPartData | File;
 
 export class UploadError extends Error {
   constructor(
@@ -57,37 +68,177 @@ const parseMaxImageBytes = (): number => {
 };
 
 /**
- * Simpan satu file gambar ke folder upload dan kembalikan URL publiknya.
- * Melempar `UploadError` bila tipe atau ukuran file tidak diizinkan.
+ * Pastikan folder tujuan berupa path relatif yang aman di bawah `public/`.
+ * Menolak path absolut, separator `\`, `..`, dan segmen kosong supaya
+ * tujuan tulis tidak bisa keluar dari folder publik.
+ */
+const assertSafeDestination = (destination: string): string => {
+  const isAbsolute = destination.startsWith("/") || /^[a-zA-Z]:/.test(destination);
+  // Sengaja tidak membuang segmen kosong: `uploads//x` harus ikut ditolak.
+  const segments = destination.split("/");
+  const isSafe =
+    !isAbsolute &&
+    !destination.includes("\\") &&
+    segments.every((segment) => /^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(segment));
+
+  if (!isSafe) {
+    throw new UploadError("Folder tujuan upload tidak valid.");
+  }
+
+  return segments.join("/");
+};
+
+/** Rapikan nama file buatan pengguna: hanya karakter aman, tanpa path, tanpa dot di depan. */
+const sanitizeFileName = (name: string): string => {
+  const cleaned = name
+    .replace(/[^a-zA-Z0-9._-]+/g, "-")
+    .replace(/-{2,}/g, "-")
+    .replace(/^[-.]+|[-.]+$/g, "")
+    .slice(0, 80);
+
+  return cleaned || "image";
+};
+
+/** Ekstensi file dari MIME type, dengan fallback ke ekstensi nama asli lalu `.jpg`. */
+const resolveExtension = (mimetype: string, originalName: string | null): string => {
+  const fromMime = EXTENSION_BY_MIME[mimetype];
+  if (fromMime) return fromMime;
+
+  const fromName = extname(originalName ?? "").toLowerCase();
+  const isKnown = Object.values(EXTENSION_BY_MIME).includes(fromName);
+  return isKnown ? fromName : ".jpg";
+};
+
+/** Normalisasi sumber gambar apa pun menjadi byte + metadata. */
+const readImageSource = async (
+  file: ImageSource,
+): Promise<{ data: Uint8Array; mimetype: string; originalName: string | null }> => {
+  if ("data" in file) {
+    return {
+      data: file.data,
+      mimetype: file.type ?? "",
+      originalName: file.filename ?? null,
+    };
+  }
+
+  return {
+    data: new Uint8Array(await file.arrayBuffer()),
+    mimetype: file.type,
+    originalName: file.name || null,
+  };
+};
+
+/**
+ * Validasi MIME type dan ukuran gambar sebelum ditulis ke disk.
+ * Melempar `UploadError` (400) bila tidak lolos.
  *
  * `maxImageBytes` bisa dioverride lewat env `UPLOAD_MAX_IMAGE_MB`.
  */
-export const saveProjectImage = async (
-  part: MultiPartData,
+export const validateImageFile = (
+  mimetype: string,
+  size: number,
   maxImageBytes: number = parseMaxImageBytes(),
-): Promise<string> => {
-  const mimetype = part.type ?? "";
-
+): void => {
   if (!ALLOWED_MIME_TYPES.has(mimetype)) {
     throw new UploadError(
       `Tipe file "${mimetype || "tidak diketahui"}" tidak didukung. Gunakan JPG, PNG, WebP, GIF, atau AVIF.`,
     );
   }
 
-  const size = part.data.length;
   if (size > maxImageBytes) {
     throw new UploadError(
       `Ukuran gambar maksimal ${Math.round(maxImageBytes / 1024 / 1024)} MB.`,
     );
   }
+};
 
-  const extension =
-    EXTENSION_BY_MIME[mimetype] ?? extname(part.filename ?? "") ?? ".jpg";
-  const filename = `${Date.now()}-${randomUUID().slice(0, 8)}${extension}`;
+/**
+ * Simpan satu file gambar ke folder upload yang ditentukan.
+ *
+ * Fungsi ini bertanggung jawab atas hal-hal berikut sehingga endpoint upload
+ * lain tidak perlu mengulanginya:
+ * 1. Memvalidasi nama file dan folder tujuan.
+ * 2. Membuat folder tujuan secara otomatis bila belum ada.
+ * 3. Menulis file dengan nama unik untuk menghindari bentrok antar upload.
+ * 4. Mengembalikan nama file dan path yang siap disimpan ke database.
+ *
+ * Validasi MIME type dan ukuran tetap menjadi tanggung jawab pemanggil
+ * melalui `validateImageFile`, agar `moveImage` dapat dipakai untuk jenis
+ * file lain tanpa dipaksa mengikuti allowlist gambar.
+ *
+ * Melempar `UploadError` bila folder tujuan tidak aman.
+ */
+export const moveImage = async (
+  file: ImageSource,
+  options: MoveImageOptions,
+): Promise<MoveImageResult> => {
+  const destination = assertSafeDestination(options.destination);
+  const { data, mimetype, originalName } = await readImageSource(file);
 
-  await mkdir(UPLOAD_DIR, { recursive: true });
-  await writeFile(join(UPLOAD_DIR, filename), part.data);
+  const extension = resolveExtension(mimetype, originalName);
+  const baseName = options.fileName
+    ? sanitizeFileName(options.fileName)
+    : `${Date.now()}-${randomUUID().slice(0, 8)}`;
+  const fileName = `${baseName}${extension}`;
 
-  // Path ini disajikan langsung oleh Nitro dari folder `public/`.
-  return `/uploads/projects/${filename}`;
+  // Folder dibuat otomatis supaya upload tidak gagal pada environment baru.
+  const targetDir = join(process.cwd(), "public", ...destination.split("/"));
+  await mkdir(targetDir, { recursive: true });
+  await writeFile(join(targetDir, fileName), data);
+
+  const relativePath = `${destination}/${fileName}`;
+
+  return {
+    fileName,
+    relativePath,
+    // Nilai inilah yang disimpan ke database dan dipakai sebagai `<img src>`.
+    publicUrl: `/${relativePath}`,
+  };
+};
+
+/**
+ * Simpan gambar project dan kembalikan URL publiknya.
+ * Wrapper tipis di atas `moveImage` dengan folder tujuan tetap `uploads/projects`.
+ *
+ * Melempar `UploadError` bila tipe atau ukuran file tidak diizinkan.
+ */
+export const saveProjectImage = async (
+  part: MultiPartData,
+  maxImageBytes: number = parseMaxImageBytes(),
+): Promise<string> => {
+  validateImageFile(part.type ?? "", part.data.length, maxImageBytes);
+
+  const { publicUrl } = await moveImage(part, { destination: PROJECT_UPLOAD_DIR });
+  return publicUrl;
+};
+
+/**
+ * Hapus berkas gambar project lama bila sudah tidak dipakai lagi.
+ *
+ * Dipanggil saat sebuah project mengganti gambar. Pemanggil bertanggung jawab
+ * mengisi `isStillReferenced` dengan hasil pengecekan database, karena hanya
+ * pemanggil yang tahu apakah record lain masih menunjuk URL yang sama.
+ *
+ * Perisai yang diterapkan supaya aman dipakai berkali-kali:
+ * 1. Hanya berkas di `public/uploads/projects/` yang boleh dihapus. Aset yang
+ *    di-commit (`/images/...`) dan URL eksternal diabaikan begitu saja.
+ * 2. Gagal menghapus berkas bukan kegagalan request — permintaan update
+ *    sudah berhasil, jadi kegagalan ini hanya dicatat.
+ */
+export const removeManagedProjectImage = async (
+  publicUrl: string,
+  isStillReferenced: boolean,
+): Promise<void> => {
+  if (isStillReferenced) return;
+  if (!publicUrl.startsWith(MANAGED_PROJECT_IMAGE_PREFIX)) return;
+
+  const relative = publicUrl.slice(1);
+  const target = join(process.cwd(), "public", ...relative.split("/"));
+
+  try {
+    await unlink(target);
+  } catch (error) {
+    // Berkas sudah hilang atau tidak terbaca: bukan keadaan yang perlu menggagalkan request.
+    console.warn("[upload] berkas gambar lama tidak bisa dihapus:", relative, error);
+  }
 };

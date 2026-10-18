@@ -1,13 +1,22 @@
 import { PrismaClient } from "./generated/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import pg from "pg";
+import type { SeedResult } from "../app/types/seed";
 
 /**
  * Seed database dengan data konten portfolio.
  *
  * Semua data di bawah diambil dari desain asli (docs/code.html).
- * Seed ini idempotent: menjalankannya berulang tidak membuat data
- * ganda karena semua record di-upsert berdasarkan unique key.
+ *
+ * Prinsip yang dipegang:
+ * - **Idempotent** — record di-upsert berdasarkan natural key (slug, name,
+ *   label, ...), bukan id buatan, sehingga menjalankan seed berulang tidak
+ *   membuat data ganda dan tidak menabrak record yang dibuat lewat admin.
+ * - **Tidak menghapus data pengguna** — seed tidak pernah menjalankan
+ *   `deleteMany` tanpa filter. Record di luar daftar seed dibiarkan apa adanya.
+ * - **Gambar lokal** — semua `imageUrl` / `photoUrl` menunjuk ke file yang
+ *   di-commit di `public/images/portfolio/`, bukan URL eksternal, sehingga
+ *   halaman portofolio tetap tampil saat offline maupun di production.
  */
 
 const connectionString =
@@ -18,25 +27,38 @@ const pool = new pg.Pool({ connectionString });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
+/**
+ * Folder tempat placeholder gambar seed disimpan.
+ *
+ * File-file di `public/images/portfolio/` di-commit bersama source code sehingga
+ * selalu tersedia. Ganti isinya dengan foto asli (nama file boleh dipertahankan)
+ * atau arahkan field gambar ke hasil upload bila konten sudah diganti lewat admin.
+ */
+const SEED_IMAGE_DIR = "/images/portfolio";
+
 // ---------------------------------------------------------------------------
 // Profile (singleton)
 // ---------------------------------------------------------------------------
 const PROFILE = {
   id: "singleton",
-  fullName: "Raka Devano",
-  brand: "raka.dev",
+  fullName: "Syang Ghege",
+  brand: "ghege.dev",
   role: "Product Engineer",
   availabilityText: "Available for freelance — Jakarta, ID",
   heroLead:
     "Full-stack developer with **6+ years** crafting scalable web platforms, design systems, and cloud architecture — from the first wireframe to the last deploy.",
-  rotatingWords: ["ship fast.", "scale well.", "feel premium.", "solve real problems."],
-  photoUrl:
-    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=900&q=80",
+  rotatingWords: [
+    "ship fast.",
+    "scale well.",
+    "feel premium.",
+    "solve real problems.",
+  ],
+  photoUrl: `${SEED_IMAGE_DIR}/profile.png`,
   photoTagline: "EST. 2019",
   aboutNote:
     "I care as much about pixel spacing and motion curves as I do about database indexes and CI pipelines.",
   aboutParagraphs: [
-    "I'm **Raka**, a full-stack developer based in Jakarta. I started out writing PHP for local businesses, and today I architect **cloud-native platforms** used by thousands of people every day.",
+    "I'm **Ghege**, a full-stack developer based in Jakarta. I started out writing PHP for local businesses, and today I architect **cloud-native platforms** used by thousands of people every day.",
     "My sweet spot is the intersection of **engineering and interface** — translating messy product requirements into clean APIs, resilient systems, and interfaces that feel obvious to use. I work best in small teams where design, code, and product sit at the same table.",
     "Outside of work you'll find me contributing to open source tooling, writing about performance budgets, or over-engineering my home lab.",
   ],
@@ -44,7 +66,7 @@ const PROFILE = {
   badgeLabel: "On-time delivery across 48 shipped projects",
   contactSubtitle:
     "Got a product idea, a legacy system that needs rescuing, or a team that needs an extra pair of hands? My inbox is open.",
-  contactEmail: "hello@rakadevano.dev",
+  contactEmail: "hello@ghege.dev",
   contactCallUrl: null,
 };
 
@@ -100,19 +122,53 @@ const SERVICES = [
 const STACK_GROUPS = [
   {
     title: "Frontend",
-    items: ["TypeScript", "React", "Next.js", "Vue", "Tailwind CSS", "Framer Motion", "GSAP", "WebGL"],
+    items: [
+      "TypeScript",
+      "React",
+      "Next.js",
+      "Vue",
+      "Tailwind CSS",
+      "Framer Motion",
+      "GSAP",
+      "WebGL",
+    ],
   },
   {
     title: "Backend",
-    items: ["Node.js", "Go", "NestJS", "GraphQL", "gRPC", "PostgreSQL", "Redis", "MongoDB"],
+    items: [
+      "Node.js",
+      "Go",
+      "NestJS",
+      "GraphQL",
+      "gRPC",
+      "PostgreSQL",
+      "Redis",
+      "MongoDB",
+    ],
   },
   {
     title: "Cloud & DevOps",
-    items: ["AWS", "Docker", "Kubernetes", "Terraform", "GitHub Actions", "Vercel", "Grafana"],
+    items: [
+      "AWS",
+      "Docker",
+      "Kubernetes",
+      "Terraform",
+      "GitHub Actions",
+      "Vercel",
+      "Grafana",
+    ],
   },
   {
     title: "Design & Tools",
-    items: ["Figma", "Storybook", "Playwright", "Vitest", "Linear", "Git", "Figma MCP"],
+    items: [
+      "Figma",
+      "Storybook",
+      "Playwright",
+      "Vitest",
+      "Linear",
+      "Git",
+      "Figma MCP",
+    ],
   },
 ];
 
@@ -127,8 +183,7 @@ const PROJECTS = [
       "Real-time product analytics platform processing 40M+ events per day. Rebuilt the query layer and dashboard engine — cutting median report load time from 6.2s to 480ms.",
     category: "WEB" as const,
     year: 2025,
-    imageUrl:
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: `${SEED_IMAGE_DIR}/project-nimbus-analytics.png`,
     href: null,
     featured: true,
     tags: ["Next.js", "TypeScript", "PostgreSQL", "ClickHouse", "AWS"],
@@ -140,8 +195,7 @@ const PROJECTS = [
       "Payment infrastructure handling 12k TPS with idempotent gRPC services and automated reconciliation.",
     category: "WEB" as const,
     year: 2025,
-    imageUrl:
-      "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1000&q=80",
+    imageUrl: `${SEED_IMAGE_DIR}/project-vaultpay-api.png`,
     href: null,
     featured: false,
     tags: ["Go", "gRPC", "Redis", "Kubernetes"],
@@ -153,8 +207,7 @@ const PROJECTS = [
       "120+ accessible components and design tokens adopted across 6 product teams, with automated visual regression.",
     category: "WEB" as const,
     year: 2024,
-    imageUrl:
-      "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=1000&q=80",
+    imageUrl: `${SEED_IMAGE_DIR}/project-kanvas-design-system.png`,
     href: null,
     featured: false,
     tags: ["React", "Storybook", "Tailwind", "Playwright"],
@@ -166,8 +219,7 @@ const PROJECTS = [
       "Fleet tracking PWA with offline-first routing and live map telemetry for 1,800+ vehicles across Southeast Asia.",
     category: "MOBILE" as const,
     year: 2024,
-    imageUrl:
-      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1000&q=80",
+    imageUrl: `${SEED_IMAGE_DIR}/project-terra-logistics.png`,
     href: null,
     featured: false,
     tags: ["React Native", "Mapbox", "Node.js", "MQTT"],
@@ -179,8 +231,7 @@ const PROJECTS = [
       "Open-source time-tracking CLI with 4.2k GitHub stars, plugin system, and native SQLite storage.",
     category: "OSS" as const,
     year: 2023,
-    imageUrl:
-      "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&w=1000&q=80",
+    imageUrl: `${SEED_IMAGE_DIR}/project-opentrack-cli.png`,
     href: "https://github.com",
     featured: false,
     tags: ["Node.js", "TypeScript", "SQLite", "OSS"],
@@ -207,7 +258,8 @@ const EXPERIENCES = [
     role: "Full-Stack Developer",
     dateLabel: "2021 — 2023",
     company: "Satu Digital Studio — Bandung",
-    description: "Delivered 20+ client products across fintech, logistics and e-commerce.",
+    description:
+      "Delivered 20+ client products across fintech, logistics and e-commerce.",
     points: [
       "Built a reusable Next.js starter that cut project setup time by 2 weeks.",
       "Led migration from REST monolith to modular GraphQL services.",
@@ -239,11 +291,10 @@ const EXPERIENCES = [
 const TESTIMONIALS = [
   {
     quote:
-      "Raka doesn't just write code — he **understands the product**. He shipped our dashboard two weeks early and it still runs flawlessly.",
+      "Ghege doesn't just write code — he **understands the product**. He shipped our dashboard two weeks early and it still runs flawlessly.",
     authorName: "Maya Prasetyo",
     authorRole: "Head of Product — Nimbus",
-    authorImage:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80",
+    authorImage: `${SEED_IMAGE_DIR}/testimonial-maya-prasetyo.png`,
     active: true,
   },
 ];
@@ -271,7 +322,7 @@ const SOCIAL_LINKS = [
 // ---------------------------------------------------------------------------
 // Eksekusi seed
 // ---------------------------------------------------------------------------
-export const seedDatabase = async (): Promise<void> => {
+export const seedDatabase = async (): Promise<SeedResult> => {
   console.log("⏳ Seeding database...");
 
   // Profile — cukup satu baris, upsert berdasarkan id tetap.
@@ -282,11 +333,22 @@ export const seedDatabase = async (): Promise<void> => {
   });
   console.log("✔ Profile");
 
-  // Stats — hapus lalu tulis ulang agar urutan selalu konsisten.
-  await prisma.stat.deleteMany();
-  await prisma.stat.createMany({
-    data: STATS.map((stat, index) => ({ ...stat, order: index })),
-  });
+  // Stats — dicocokkan lewat `label` karena kolom tersebut satu-satunya
+  // yang mengenali sebuah stat. Stat yang dibuat lewat admin dibiarkan utuh.
+  for (const [index, stat] of STATS.entries()) {
+    const existing = await prisma.stat.findFirst({
+      where: { label: stat.label },
+    });
+
+    if (existing) {
+      await prisma.stat.update({
+        where: { id: existing.id },
+        data: { ...stat, order: index },
+      });
+    } else {
+      await prisma.stat.create({ data: { ...stat, order: index } });
+    }
+  }
   console.log("✔ Stats");
 
   // Services
@@ -308,7 +370,9 @@ export const seedDatabase = async (): Promise<void> => {
     });
 
     // Sinkronkan item: hapus yang tidak ada di seed, tambah yang belum ada.
-    const existing = await prisma.stackItem.findMany({ where: { groupId: created.id } });
+    const existing = await prisma.stackItem.findMany({
+      where: { groupId: created.id },
+    });
     const keep = new Set(group.items);
 
     for (const item of existing) {
@@ -346,36 +410,66 @@ export const seedDatabase = async (): Promise<void> => {
   }
   console.log("✔ Projects");
 
-  // Experiences + points
+  // Experiences + points — `role` + `dateLabel` dipakai sebagai natural key,
+  // bukan id buatan, agar tidak menabrak record yang dibuat lewat admin.
   for (const [index, exp] of EXPERIENCES.entries()) {
     const { points, ...data } = exp;
-    const created = await prisma.experience.upsert({
-      where: { id: `exp-${index}` },
-      update: { ...data, order: index },
-      create: { id: `exp-${index}`, ...data, order: index },
+    const existing = await prisma.experience.findFirst({
+      where: { role: exp.role, dateLabel: exp.dateLabel },
     });
 
-    // Poin dihapus lalu ditulis ulang agar urutannya selalu sesuai seed.
-    await prisma.experiencePoint.deleteMany({ where: { experienceId: created.id } });
-    if (points.length > 0) {
-      await prisma.experiencePoint.createMany({
-        data: points.map((text, pointIndex) => ({
-          text,
-          order: pointIndex,
-          experienceId: created.id,
-        })),
-      });
+    const created = existing
+      ? await prisma.experience.update({
+          where: { id: existing.id },
+          data: { ...data, order: index },
+        })
+      : await prisma.experience.create({ data: { ...data, order: index } });
+
+    // Sinkronkan poin: hapus yang tidak ada di seed, pertahankan sisanya.
+    const existingPoints = await prisma.experiencePoint.findMany({
+      where: { experienceId: created.id },
+    });
+    const keep = new Set(points);
+
+    for (const point of existingPoints) {
+      if (!keep.has(point.text)) {
+        await prisma.experiencePoint.delete({ where: { id: point.id } });
+      }
+    }
+
+    for (const [pointIndex, text] of points.entries()) {
+      const existingPoint = existingPoints.find((point) => point.text === text);
+
+      if (existingPoint) {
+        await prisma.experiencePoint.update({
+          where: { id: existingPoint.id },
+          data: { order: pointIndex },
+        });
+      } else {
+        await prisma.experiencePoint.create({
+          data: { text, order: pointIndex, experienceId: created.id },
+        });
+      }
     }
   }
   console.log("✔ Experiences");
 
-  // Testimonials — hanya satu yang aktif.
+  // Testimonials — dicocokkan lewat `authorName`; hanya satu yang aktif.
   for (const [index, testimonial] of TESTIMONIALS.entries()) {
-    await prisma.testimonial.upsert({
-      where: { id: `testimonial-${index}` },
-      update: testimonial,
-      create: { id: `testimonial-${index}`, ...testimonial, order: index },
+    const existing = await prisma.testimonial.findFirst({
+      where: { authorName: testimonial.authorName },
     });
+
+    if (existing) {
+      await prisma.testimonial.update({
+        where: { id: existing.id },
+        data: testimonial,
+      });
+    } else {
+      await prisma.testimonial.create({
+        data: { ...testimonial, order: index },
+      });
+    }
   }
   console.log("✔ Testimonials");
 
@@ -409,7 +503,23 @@ export const seedDatabase = async (): Promise<void> => {
   }
   console.log("✔ Social links");
 
-  console.log("✅ Seed selesai.");
+  // Hitung ulang dari database agar hasilnya mencerminkan isi sebenarnya,
+  // termasuk record yang bukan berasal dari seed.
+  const result: SeedResult = {
+    profile: await prisma.profile.count(),
+    stats: await prisma.stat.count(),
+    services: await prisma.service.count(),
+    stackGroups: await prisma.stackGroup.count(),
+    projects: await prisma.project.count(),
+    experiences: await prisma.experience.count(),
+    testimonials: await prisma.testimonial.count(),
+    aboutFacts: await prisma.aboutFact.count(),
+    contactCards: await prisma.contactCard.count(),
+    socialLinks: await prisma.socialLink.count(),
+  };
+
+  console.log("✅ Seed selesai.", result);
+  return result;
 };
 
 seedDatabase()

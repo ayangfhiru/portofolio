@@ -9,10 +9,10 @@
  * yang menjadikan elemen tersebut containing block bagi `fixed`, sehingga
  * tanpa teleport laci akan menempel pada tinggi topbar saja.
  */
-import { ref } from "vue";
 import { ChevronDown, Plus, X } from "@lucide/vue";
-import AdminBrand from "./AdminBrand.vue";
+import { ref } from "vue";
 import type { AdminNavItem, AdminNavLink, AdminUser } from "~/types/admin";
+import AdminBrand from "./AdminBrand.vue";
 
 interface Props {
   open?: boolean;
@@ -28,7 +28,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   open: false,
-  brand: "raka.dev",
+  brand: "ghege.dev",
   mark: "</>",
   env: "Admin",
   items: () => [],
@@ -51,7 +51,8 @@ const isGroupActive = (item: AdminNavItem): boolean =>
   item.key === props.activeKey ||
   (item.children ?? []).some((child) => child.key === props.activeKey);
 
-const isLinkActive = (item: AdminNavItem): boolean => item.key === props.activeKey;
+const isLinkActive = (item: AdminNavItem): boolean =>
+  item.key === props.activeKey;
 
 /** Kelas untuk tautan langsung pada laci, dipakai bersama cadangan nonaktif. */
 const linkClass = (item: AdminNavItem): string =>
@@ -74,8 +75,15 @@ const isChildActive = (item: AdminNavItem): boolean =>
       leave-active-class="transition duration-150 ease-in"
       leave-to-class="opacity-0"
     >
-      <div v-if="props.open" id="topbar-drawer" class="fixed inset-0 z-[60] lg:hidden">
-        <div class="absolute inset-0 bg-admin-ink/40 backdrop-blur-sm" @click="emit('close')" />
+      <div
+        v-if="props.open"
+        id="topbar-drawer"
+        class="fixed inset-0 z-[60] lg:hidden"
+      >
+        <div
+          class="absolute inset-0 bg-admin-ink/40 backdrop-blur-sm"
+          @click="emit('close')"
+        />
 
         <aside
           class="absolute right-0 top-0 flex h-full w-[min(88vw,344px)] flex-col border-l border-admin-line bg-admin-card text-admin-ink"
@@ -83,8 +91,14 @@ const isChildActive = (item: AdminNavItem): boolean =>
           aria-modal="true"
           aria-label="Menu navigasi admin"
         >
-          <div class="flex items-center justify-between gap-3 border-b border-admin-line px-4 py-3.5">
-            <AdminBrand :brand="props.brand" :mark="props.mark" :env="props.env" />
+          <div
+            class="flex items-center justify-between gap-3 border-b border-admin-line px-4 py-3.5"
+          >
+            <AdminBrand
+              :brand="props.brand"
+              :mark="props.mark"
+              :env="props.env"
+            />
             <button
               type="button"
               class="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-admin-muted transition-colors hover:bg-admin-bg-2 hover:text-admin-ink"
@@ -111,7 +125,11 @@ const isChildActive = (item: AdminNavItem): boolean =>
                   :aria-controls="`drawer-group-${item.key}`"
                   @click="toggleGroup(item.key)"
                 >
-                  <component :is="item.icon" v-if="item.icon" class="h-4 w-4 shrink-0" />
+                  <component
+                    :is="item.icon"
+                    v-if="item.icon"
+                    class="h-4 w-4 shrink-0"
+                  />
                   <span class="flex-1">{{ item.label }}</span>
                   <span
                     v-if="isChildActive(item)"
@@ -159,11 +177,19 @@ const isChildActive = (item: AdminNavItem): boolean =>
                 :aria-current="isLinkActive(item) ? 'page' : undefined"
                 @click="emit('navigate')"
               >
-                <component :is="item.icon" v-if="item.icon" class="h-4 w-4 shrink-0" />
+                <component
+                  :is="item.icon"
+                  v-if="item.icon"
+                  class="h-4 w-4 shrink-0"
+                />
                 {{ item.label }}
               </NuxtLink>
               <span v-else :class="linkClass(item)">
-                <component :is="item.icon" v-if="item.icon" class="h-4 w-4 shrink-0" />
+                <component
+                  :is="item.icon"
+                  v-if="item.icon"
+                  class="h-4 w-4 shrink-0"
+                />
                 {{ item.label }}
               </span>
             </template>
@@ -180,7 +206,10 @@ const isChildActive = (item: AdminNavItem): boolean =>
               {{ props.cta.label }}
             </NuxtLink>
 
-            <div v-if="props.user" class="mt-3 flex items-center gap-3 rounded-xl bg-admin-bg-2 px-3 py-2.5">
+            <div
+              v-if="props.user"
+              class="mt-3 flex items-center gap-3 rounded-xl bg-admin-bg-2 px-3 py-2.5"
+            >
               <span
                 class="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-[11px] border border-admin-line bg-admin-card font-mono text-[.7rem] font-bold text-admin-muted"
               >
@@ -193,7 +222,9 @@ const isChildActive = (item: AdminNavItem): boolean =>
                 <template v-else>{{ props.user.name.charAt(0) }}</template>
               </span>
               <span class="min-w-0">
-                <span class="block truncate text-sm font-bold">{{ props.user.name }}</span>
+                <span class="block truncate text-sm font-bold">{{
+                  props.user.name
+                }}</span>
                 <span
                   class="block font-mono text-[.62rem] uppercase tracking-[.12em] text-admin-muted-2"
                 >
@@ -216,8 +247,13 @@ const isChildActive = (item: AdminNavItem): boolean =>
                   class="mt-0.5 h-4 w-4 shrink-0 text-admin-muted"
                 />
                 <span class="min-w-0">
-                  <span class="block text-sm font-semibold">{{ link.label }}</span>
-                  <span v-if="link.description" class="block text-xs text-admin-muted">
+                  <span class="block text-sm font-semibold">{{
+                    link.label
+                  }}</span>
+                  <span
+                    v-if="link.description"
+                    class="block text-xs text-admin-muted"
+                  >
                     {{ link.description }}
                   </span>
                 </span>

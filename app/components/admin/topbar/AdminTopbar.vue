@@ -10,19 +10,19 @@
  * disimpan sebagai satu state tunggal sehingga klik di luar dan tombol
  * Esc cukup mengosongkan satu variabel.
  */
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { Menu, Plus, Search, X } from "@lucide/vue";
-import AdminBrand from "./AdminBrand.vue";
-import AdminMobileDrawer from "./AdminMobileDrawer.vue";
-import AdminNavMenu from "./AdminNavMenu.vue";
-import AdminProfileMenu from "./AdminProfileMenu.vue";
-import AdminSearchBar from "./AdminSearchBar.vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import type { AdminNavItem, AdminNavLink, AdminUser } from "~/types/admin";
 import {
   ADMIN_NAV_ITEMS,
   ADMIN_SEARCH_LINKS,
   ADMIN_USER_LINKS,
 } from "~/utils/admin-nav";
-import type { AdminNavItem, AdminNavLink, AdminUser } from "~/types/admin";
+import AdminBrand from "./AdminBrand.vue";
+import AdminMobileDrawer from "./AdminMobileDrawer.vue";
+import AdminNavMenu from "./AdminNavMenu.vue";
+import AdminProfileMenu from "./AdminProfileMenu.vue";
+import AdminSearchBar from "./AdminSearchBar.vue";
 
 interface Props {
   brand?: string;
@@ -36,7 +36,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  brand: "raka.dev",
+  brand: "ghege.dev",
   mark: "</>",
   env: "Admin",
   navItems: () => ADMIN_NAV_ITEMS,
@@ -62,7 +62,9 @@ const searchResults = computed<AdminNavLink[]>(() => {
   if (!query) return ADMIN_SEARCH_LINKS;
 
   return ADMIN_SEARCH_LINKS.filter((link) =>
-    `${link.label} ${link.description ?? ""} ${link.to}`.toLowerCase().includes(query),
+    `${link.label} ${link.description ?? ""} ${link.to}`
+      .toLowerCase()
+      .includes(query),
   );
 });
 
@@ -89,7 +91,9 @@ const handleHoverClose = (key: string) => {
 };
 
 const isInsideTopbar = (target: EventTarget | null): boolean =>
-  target instanceof Node && topbar.value !== null && topbar.value.contains(target);
+  target instanceof Node &&
+  topbar.value !== null &&
+  topbar.value.contains(target);
 
 const handleDocumentClick = (event: MouseEvent) => {
   if (isInsideTopbar(event.target)) return;
@@ -127,10 +131,13 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <header ref="topbar" class="sticky top-0 z-50 border-b border-admin-line bg-white/85 backdrop-blur-xl">
+  <header
+    ref="topbar"
+    class="sticky top-0 z-50 border-b border-admin-line bg-white/85 backdrop-blur-xl"
+  >
     <div
-      class="mx-auto flex w-full max-w-[1280px] items-center gap-3 px-4 transition-[height] duration-200 sm:px-6 lg:gap-4 lg:px-8"
-      :class="scrolled ? 'h-[62px]' : 'h-[76px]'"
+      class="mx-auto flex w-full max-w-7xl items-center gap-3 px-4 transition-[height] duration-200 sm:px-6 lg:gap-4 lg:px-8"
+      :class="scrolled ? 'h-15.5' : 'h-19'"
     >
       <AdminBrand :brand="props.brand" :mark="props.mark" :env="props.env" />
 
@@ -159,7 +166,7 @@ onBeforeUnmount(() => {
           :aria-label="searchOpen ? 'Tutup pencarian' : 'Buka pencarian'"
           @click="toggleLayer('search')"
         >
-          <component :is="searchOpen ? X : Search" class="h-[18px] w-[18px]" />
+          <component :is="searchOpen ? X : Search" class="h-4.5 w-4.5" />
         </button>
 
         <NuxtLink
@@ -189,7 +196,7 @@ onBeforeUnmount(() => {
           :aria-label="drawerOpen ? 'Tutup menu' : 'Buka menu'"
           @click="drawerOpen = !drawerOpen"
         >
-          <component :is="drawerOpen ? X : Menu" class="h-[18px] w-[18px]" />
+          <component :is="drawerOpen ? X : Menu" class="h-4.5 w-[18px]" />
         </button>
       </div>
     </div>

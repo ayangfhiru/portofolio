@@ -17,12 +17,12 @@ import StackSection from "~/components/sections/StackSection.vue";
 import WorkSection from "~/components/sections/WorkSection.vue";
 
 useHead({
-  title: "Raka Devano — Full-Stack Developer & Product Engineer",
+  title: "Syang Ghege — Full-Stack Developer & Product Engineer",
   meta: [
     {
       name: "description",
       content:
-        "Portfolio of Raka Devano, full-stack developer building fast, scalable, and beautiful digital products.",
+        "Portfolio of Syang Ghege, full-stack developer building fast, scalable, and beautiful digital products.",
     },
   ],
 });

@@ -47,8 +47,7 @@ onMounted(() => {
   <header
     class="fixed inset-x-0 top-0 z-[900] border-b border-transparent transition-[background,border-color,backdrop-filter] duration-[400ms] ease-[cubic-bezier(.22,.9,.28,1)]"
     :class="
-      isStuck &&
-      'border-line bg-bg/80 backdrop-blur-2xl backdrop-saturate-150'
+      isStuck && 'border-line bg-bg/80 backdrop-blur-2xl backdrop-saturate-150'
     "
   >
     <div
@@ -59,8 +58,9 @@ onMounted(() => {
           class="grid h-[34px] w-[34px] place-items-center rounded-[10px] bg-accent font-mono text-[0.82rem] font-bold text-accent-ink"
           >&lt;/&gt;</span
         >
-        <span class="font-display text-[1.12rem] font-extrabold tracking-[-0.02em]"
-          >raka.dev</span
+        <span
+          class="font-display text-[1.12rem] font-extrabold tracking-[-0.02em]"
+          >ghege.dev</span
         >
       </a>
 
@@ -84,9 +84,7 @@ onMounted(() => {
         <AppButton variant="ghost" href="#contact" class="max-[980px]:hidden">
           Download CV
         </AppButton>
-        <AppButton variant="primary" href="#contact">
-          Hire me
-        </AppButton>
+        <AppButton variant="primary" href="#contact"> Hire me </AppButton>
 
         <button
           class="relative hidden h-11 w-11 rounded-xl border border-line-strong max-[980px]:block"
@@ -101,9 +99,7 @@ onMounted(() => {
           <span
             class="absolute left-3 h-0.5 bg-ink transition-all duration-[320ms] ease-[cubic-bezier(.22,.9,.28,1)]"
             :class="
-              props.menuOpen
-                ? 'top-[21px] w-5 -rotate-45'
-                : 'top-6 w-[13px]'
+              props.menuOpen ? 'top-[21px] w-5 -rotate-45' : 'top-6 w-[13px]'
             "
           />
         </button>

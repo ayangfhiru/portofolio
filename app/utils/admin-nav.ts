@@ -25,7 +25,7 @@ import type { AdminNavItem, AdminNavLink } from "~/types/admin";
 
 /** Nama pengguna yang tampil di pojok kanan atas topbar. */
 export const ADMIN_USER = {
-  name: "Raka Devano",
+  name: "Syang Ghege",
   role: "Super Admin",
 };
 

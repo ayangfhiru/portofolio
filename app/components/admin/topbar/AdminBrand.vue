@@ -14,7 +14,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  brand: "raka.dev",
+  brand: "ghege.dev",
   mark: "</>",
   env: "Admin",
   to: "/admin",

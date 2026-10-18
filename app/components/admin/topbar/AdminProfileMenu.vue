@@ -27,7 +27,7 @@ const emit = defineEmits<{ toggle: []; navigate: [] }>();
     <button
       type="button"
       id="topbar-user-button"
-      class="flex items-center gap-2 rounded-full p-1 pr-1.5 transition-colors hover:bg-admin-bg-2"
+      class="flex items-center gap-2 rounded-xl px-3 py-0.5 transition-colors"
       :aria-expanded="props.open"
       aria-controls="topbar-user-menu"
       aria-haspopup="true"
@@ -35,7 +35,9 @@ const emit = defineEmits<{ toggle: []; navigate: [] }>();
     >
       <span class="hidden text-right leading-tight sm:block">
         <span class="block text-[.83rem] font-bold">{{ props.user.name }}</span>
-        <span class="block font-mono text-[.63rem] uppercase tracking-[.11em] text-admin-muted-2">
+        <span
+          class="block font-mono text-[.63rem] uppercase tracking-[.11em] text-admin-muted-2"
+        >
           {{ props.user.role }}
         </span>
       </span>
@@ -68,11 +70,13 @@ const emit = defineEmits<{ toggle: []; navigate: [] }>();
         v-if="props.open"
         id="topbar-user-menu"
         role="menu"
-        class="absolute right-0 top-[calc(100%+8px)] z-50 w-[266px] overflow-hidden rounded-2xl border border-admin-line bg-admin-card shadow-[0_18px_44px_-18px_rgba(15,23,40,.28)]"
+        class="absolute right-0 top-[calc(100%+8px)] z-50 w-66.5 overflow-hidden rounded-2xl border border-admin-line bg-admin-card shadow-[0_18px_44px_-18px_rgba(15,23,40,.28)]"
       >
         <div class="border-b border-admin-line px-4 py-3">
           <div class="truncate text-sm font-bold">{{ props.user.name }}</div>
-          <div class="font-mono text-[.62rem] uppercase tracking-[.12em] text-admin-muted-2">
+          <div
+            class="font-mono text-[.62rem] uppercase tracking-[.12em] text-admin-muted-2"
+          >
             {{ props.user.role }}
           </div>
         </div>
@@ -86,10 +90,17 @@ const emit = defineEmits<{ toggle: []; navigate: [] }>();
             class="flex items-start gap-3 rounded-xl px-3 py-2.5 text-admin-ink-2 transition-colors hover:bg-admin-bg-2"
             @click="emit('navigate')"
           >
-            <component :is="link.icon" v-if="link.icon" class="mt-0.5 h-4 w-4 shrink-0" />
+            <component
+              :is="link.icon"
+              v-if="link.icon"
+              class="mt-0.5 h-4 w-4 shrink-0"
+            />
             <span class="min-w-0">
               <span class="block text-sm font-semibold">{{ link.label }}</span>
-              <span v-if="link.description" class="block text-xs text-admin-muted">
+              <span
+                v-if="link.description"
+                class="block text-xs text-admin-muted"
+              >
                 {{ link.description }}
               </span>
             </span>

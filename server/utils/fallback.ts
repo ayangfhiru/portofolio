@@ -1,10 +1,10 @@
-import type { ProjectItem } from "../../app/types/project";
+import type { ContactCard, SocialLink } from "../../app/types/contact";
 import type { Experience } from "../../app/types/experience";
-import type { Profile, Stat, AboutFact } from "../../app/types/profile";
+import type { AboutFact, Profile, Stat } from "../../app/types/profile";
+import type { ProjectItem } from "../../app/types/project";
 import type { Service } from "../../app/types/service";
 import type { StackGroup } from "../../app/types/stack";
 import type { Testimonial } from "../../app/types/testimonial";
-import type { ContactCard, SocialLink } from "../../app/types/contact";
 
 /**
  * Data cadangan (fallback) yang dipakai HANYA saat koneksi database
@@ -12,23 +12,30 @@ import type { ContactCard, SocialLink } from "../../app/types/contact";
  *
  * Data ini dimatikan secara otomatis di production (lihat `db.ts`).
  * Sumber kebenaran yang sesungguhnya adalah seed di `prisma/seed.ts`.
+ *
+ * Gambar menunjuk ke file yang di-commit di `public/images/portfolio/`
+ * (sama seperti seed) agar pratinjau tidak bergantung pada URL eksternal.
  */
 
 export const FALLBACK_PROFILE: Profile = {
-  fullName: "Raka Devano",
-  brand: "raka.dev",
+  fullName: "Syang Ghege",
+  brand: "ghege.dev",
   role: "Product Engineer",
   availabilityText: "Available for freelance — Jakarta, ID",
   heroLead:
     "Full-stack developer with **6+ years** crafting scalable web platforms, design systems, and cloud architecture — from the first wireframe to the last deploy.",
-  rotatingWords: ["ship fast.", "scale well.", "feel premium.", "solve real problems."],
-  photoUrl:
-    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=900&q=80",
+  rotatingWords: [
+    "ship fast.",
+    "scale well.",
+    "feel premium.",
+    "solve real problems.",
+  ],
+  photoUrl: "/images/portfolio/profile.png",
   photoTagline: "EST. 2019",
   aboutNote:
     "I care as much about pixel spacing and motion curves as I do about database indexes and CI pipelines.",
   aboutParagraphs: [
-    "I'm **Raka**, a full-stack developer based in Jakarta. I started out writing PHP for local businesses, and today I architect **cloud-native platforms** used by thousands of people every day.",
+    "I'm **Ghege**, a full-stack developer based in Jakarta. I started out writing PHP for local businesses, and today I architect **cloud-native platforms** used by thousands of people every day.",
     "My sweet spot is the intersection of **engineering and interface** — translating messy product requirements into clean APIs, resilient systems, and interfaces that feel obvious to use. I work best in small teams where design, code, and product sit at the same table.",
     "Outside of work you'll find me contributing to open source tooling, writing about performance budgets, or over-engineering my home lab.",
   ],
@@ -36,7 +43,7 @@ export const FALLBACK_PROFILE: Profile = {
   badgeLabel: "On-time delivery across 48 shipped projects",
   contactSubtitle:
     "Got a product idea, a legacy system that needs rescuing, or a team that needs an extra pair of hands? My inbox is open.",
-  contactEmail: "hello@rakadevano.dev",
+  contactEmail: "hello@ghege.dev",
   contactCallUrl: null,
 };
 
@@ -139,11 +146,16 @@ export const FALLBACK_PROJECTS: ProjectItem[] = [
       "Real-time product analytics platform processing 40M+ events per day. Rebuilt the query layer and dashboard engine — cutting median report load time from 6.2s to 480ms.",
     category: "web",
     year: 2025,
-    imageUrl:
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: "/images/portfolio/project-nimbus-analytics.png",
     href: null,
     featured: true,
-    tags: [{ name: "Next.js" }, { name: "TypeScript" }, { name: "PostgreSQL" }, { name: "ClickHouse" }, { name: "AWS" }],
+    tags: [
+      { name: "Next.js" },
+      { name: "TypeScript" },
+      { name: "PostgreSQL" },
+      { name: "ClickHouse" },
+      { name: "AWS" },
+    ],
     createdAt: "2025-01-10T08:15:00.000Z",
     updatedAt: "2026-01-14T09:38:00.000Z",
   },
@@ -155,11 +167,15 @@ export const FALLBACK_PROJECTS: ProjectItem[] = [
       "Payment infrastructure handling 12k TPS with idempotent gRPC services and automated reconciliation.",
     category: "web",
     year: 2025,
-    imageUrl:
-      "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1000&q=80",
+    imageUrl: "/images/portfolio/project-vaultpay-api.png",
     href: null,
     featured: false,
-    tags: [{ name: "Go" }, { name: "gRPC" }, { name: "Redis" }, { name: "Kubernetes" }],
+    tags: [
+      { name: "Go" },
+      { name: "gRPC" },
+      { name: "Redis" },
+      { name: "Kubernetes" },
+    ],
     createdAt: "2025-03-02T11:42:00.000Z",
     updatedAt: "2025-11-20T16:05:00.000Z",
   },
@@ -171,11 +187,15 @@ export const FALLBACK_PROJECTS: ProjectItem[] = [
       "120+ accessible components and design tokens adopted across 6 product teams, with automated visual regression.",
     category: "web",
     year: 2024,
-    imageUrl:
-      "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=1000&q=80",
+    imageUrl: "/images/portfolio/project-kanvas-design-system.png",
     href: null,
     featured: false,
-    tags: [{ name: "React" }, { name: "Storybook" }, { name: "Tailwind" }, { name: "Playwright" }],
+    tags: [
+      { name: "React" },
+      { name: "Storybook" },
+      { name: "Tailwind" },
+      { name: "Playwright" },
+    ],
     createdAt: "2024-06-18T10:20:00.000Z",
     updatedAt: "2025-08-05T13:12:00.000Z",
   },
@@ -187,11 +207,15 @@ export const FALLBACK_PROJECTS: ProjectItem[] = [
       "Fleet tracking PWA with offline-first routing and live map telemetry for 1,800+ vehicles across Southeast Asia.",
     category: "mobile",
     year: 2024,
-    imageUrl:
-      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1000&q=80",
+    imageUrl: "/images/portfolio/project-terra-logistics.png",
     href: null,
     featured: false,
-    tags: [{ name: "React Native" }, { name: "Mapbox" }, { name: "Node.js" }, { name: "MQTT" }],
+    tags: [
+      { name: "React Native" },
+      { name: "Mapbox" },
+      { name: "Node.js" },
+      { name: "MQTT" },
+    ],
     createdAt: "2024-02-27T07:48:00.000Z",
     updatedAt: "2025-04-16T18:31:00.000Z",
   },
@@ -203,11 +227,15 @@ export const FALLBACK_PROJECTS: ProjectItem[] = [
       "Open-source time-tracking CLI with 4.2k GitHub stars, plugin system, and native SQLite storage.",
     category: "oss",
     year: 2023,
-    imageUrl:
-      "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&w=1000&q=80",
+    imageUrl: "/images/portfolio/project-opentrack-cli.png",
     href: "https://github.com",
     featured: false,
-    tags: [{ name: "Node.js" }, { name: "TypeScript" }, { name: "SQLite" }, { name: "OSS" }],
+    tags: [
+      { name: "Node.js" },
+      { name: "TypeScript" },
+      { name: "SQLite" },
+      { name: "OSS" },
+    ],
     createdAt: "2024-09-05T14:10:00.000Z",
     updatedAt: "2025-12-29T11:27:00.000Z",
   },
@@ -230,7 +258,8 @@ export const FALLBACK_EXPERIENCES: Experience[] = [
     role: "Full-Stack Developer",
     dateLabel: "2021 — 2023",
     company: "Satu Digital Studio — Bandung",
-    description: "Delivered 20+ client products across fintech, logistics and e-commerce.",
+    description:
+      "Delivered 20+ client products across fintech, logistics and e-commerce.",
     points: [
       "Built a reusable Next.js starter that cut project setup time by 2 weeks.",
       "Led migration from REST monolith to modular GraphQL services.",
@@ -259,11 +288,10 @@ export const FALLBACK_EXPERIENCES: Experience[] = [
 export const FALLBACK_TESTIMONIALS: Testimonial[] = [
   {
     quote:
-      "Raka doesn't just write code — he **understands the product**. He shipped our dashboard two weeks early and it still runs flawlessly.",
+      "Ghege doesn't just write code — he **understands the product**. He shipped our dashboard two weeks early and it still runs flawlessly.",
     authorName: "Maya Prasetyo",
     authorRole: "Head of Product — Nimbus",
-    authorImage:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80",
+    authorImage: "/images/portfolio/testimonial-maya-prasetyo.png",
   },
 ];
 

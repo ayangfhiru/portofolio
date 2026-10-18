@@ -32,7 +32,7 @@ const emit = defineEmits<{ close: [] }>();
       class="mt-auto border-t border-line pt-[26px] font-mono text-[0.76rem] text-muted"
     >
       <div>Jakarta, Indonesia — Open for freelance</div>
-      <div class="mt-2 text-accent">hello@rakadevano.dev</div>
+      <div class="mt-2 text-accent">hello@ghege.dev</div>
     </div>
   </div>
 </template>

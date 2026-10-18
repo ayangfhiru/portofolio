@@ -18,7 +18,7 @@ import {
   parseTags,
   slugify,
 } from "../../utils/validation";
-import { UploadError, saveProjectImage } from "../../utils/upload";
+import { UploadError, removeManagedProjectImage, saveProjectImage } from "../../utils/upload";
 import type { ProjectCategory } from "../../../app/types/project";
 
 /**
@@ -247,6 +247,16 @@ export default defineEventHandler(async (event) => {
       include: { tags: { select: { name: true }, orderBy: { name: "asc" } } },
     });
 
+    // Gambar lama dibersihkan hanya bila: (a) URL-nya benar-benar berubah,
+    // (b) berkasnya berada di folder upload yang dikelola aplikasi, dan
+    // (c) tidak ada project lain yang masih menunjuk URL yang sama.
+    if (data.imageUrl !== undefined && data.imageUrl !== existing.imageUrl) {
+      const stillUsed = await prisma.project.count({
+        where: { imageUrl: existing.imageUrl, NOT: { id } },
+      });
+      await removeManagedProjectImage(existing.imageUrl, stillUsed > 0);
+    }
+
     return ok({
       ...updated,
       category: normalizeCategory(updated.category),
@@ -286,11 +296,11 @@ export default defineEventHandler(async (event) => {
 const findProjectOrThrow = async (
   prisma: ReturnType<typeof getPrismaClient>,
   id: string,
-): Promise<{ id: string; title: string }> => {
+): Promise<{ id: string; title: string; imageUrl: string }> => {
   try {
     const project = await prisma.project.findUnique({
       where: { id },
-      select: { id: true, title: true },
+      select: { id: true, title: true, imageUrl: true },
     });
 
     if (!project) {

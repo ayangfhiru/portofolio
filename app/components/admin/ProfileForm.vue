@@ -114,7 +114,10 @@ const validate = (): Record<string, string> => {
   const next: Record<string, string> = {};
   const current = form.value;
 
-  const requireText = (field: keyof ProfileFormState, message: string): void => {
+  const requireText = (
+    field: keyof ProfileFormState,
+    message: string,
+  ): void => {
     if (!String(current[field]).trim()) next[field] = message;
   };
 
@@ -164,7 +167,9 @@ const buildPayload = (): ProfileUpdateInput => {
     photoUrl: current.photoUrl.trim(),
     photoTagline: current.photoTagline.trim(),
     aboutNote: current.aboutNote.trim(),
-    aboutParagraphs: current.aboutParagraphs.map((paragraph) => paragraph.trim()),
+    aboutParagraphs: current.aboutParagraphs.map((paragraph) =>
+      paragraph.trim(),
+    ),
     badgeValue: current.badgeValue.trim(),
     badgeLabel: current.badgeLabel.trim(),
     contactSubtitle: current.contactSubtitle.trim(),
@@ -210,7 +215,11 @@ const handleSubmit = async (): Promise<void> => {
 </script>
 
 <template>
-  <form class="px-5 py-6 sm:px-[30px]" novalidate @submit.prevent="handleSubmit">
+  <form
+    class="px-5 py-6 sm:px-[30px]"
+    novalidate
+    @submit.prevent="handleSubmit"
+  >
     <!-- Banner pesan sukses / gagal -->
     <div
       v-if="status.message"
@@ -236,7 +245,9 @@ const handleSubmit = async (): Promise<void> => {
       class="grid gap-5 border-t border-admin-line pt-6 first:border-t-0 first:pt-0"
       aria-label="Bagian identitas pemilik portfolio."
     >
-      <h2 class="font-mono text-[.71rem] font-bold uppercase tracking-[.17em] text-admin-accent">
+      <h2
+        class="font-mono text-[.71rem] font-bold uppercase tracking-[.17em] text-admin-accent"
+      >
         Identitas
       </h2>
 
@@ -244,7 +255,7 @@ const handleSubmit = async (): Promise<void> => {
         v-model="form.fullName"
         name="fullName"
         title="Nama Lengkap"
-        placeholder="Mis. Raka Devano"
+        placeholder="Mr. Ghege"
         required
         :disabled="submitting"
         :error="errors.fullName"
@@ -256,7 +267,7 @@ const handleSubmit = async (): Promise<void> => {
           v-model="form.brand"
           name="brand"
           title="Brand"
-          placeholder="Mis. raka.dev"
+          placeholder="Mr. ghege.dev"
           required
           :disabled="submitting"
           :error="errors.brand"
@@ -281,7 +292,9 @@ const handleSubmit = async (): Promise<void> => {
       class="grid gap-5 border-t border-admin-line pt-6"
       aria-label="Bagian hero di atas halaman utama."
     >
-      <h2 class="font-mono text-[.71rem] font-bold uppercase tracking-[.17em] text-admin-accent">
+      <h2
+        class="font-mono text-[.71rem] font-bold uppercase tracking-[.17em] text-admin-accent"
+      >
         Hero
       </h2>
 
@@ -352,7 +365,9 @@ const handleSubmit = async (): Promise<void> => {
       class="grid gap-5 border-t border-admin-line pt-6"
       aria-label="Bagian About di halaman utama."
     >
-      <h2 class="font-mono text-[.71rem] font-bold uppercase tracking-[.17em] text-admin-accent">
+      <h2
+        class="font-mono text-[.71rem] font-bold uppercase tracking-[.17em] text-admin-accent"
+      >
         About
       </h2>
 
@@ -407,7 +422,9 @@ const handleSubmit = async (): Promise<void> => {
       class="grid gap-5 border-t border-admin-line pt-6"
       aria-label="Bagian Contact di halaman utama."
     >
-      <h2 class="font-mono text-[.71rem] font-bold uppercase tracking-[.17em] text-admin-accent">
+      <h2
+        class="font-mono text-[.71rem] font-bold uppercase tracking-[.17em] text-admin-accent"
+      >
         Kontak
       </h2>
 

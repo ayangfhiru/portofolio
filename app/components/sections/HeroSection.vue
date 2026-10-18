@@ -11,9 +11,9 @@
  */
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import AppButton from "~/components/ui/AppButton.vue";
-import { splitEmphasis } from "~/utils/format";
 import type { ApiResponse } from "~/types/api";
 import type { Profile, Stat } from "~/types/profile";
+import { splitEmphasis } from "~/utils/format";
 
 /** Kata berputar cadangan bila API belum mengembalikan data. */
 const DEFAULT_ROTATING_WORDS = ["ship fast."];
@@ -37,22 +37,25 @@ const MARQUEE_ITEMS = [
 /** Chip melayang di sekitar foto. */
 const FLOAT_CHIPS = [
   {
-    initial: "R",
-    label: "React 19",
+    initial: "devicon-nestjs-original colored",
+    icon: true,
+    label: "NestJs",
     iconClass: "bg-[#61DAFB] text-accent-ink",
     positionClass: "top-[8%] -left-[8%] max-[680px]:-left-[4%]",
     delayClass: "[-animation-delay:-1s]",
   },
   {
-    initial: "TS",
+    initial: "devicon-typescript-plain colored",
+    icon: true,
     label: "TypeScript",
     iconClass: "bg-[#3178C6] text-white",
     positionClass: "top-[42%] -right-[9%] max-[680px]:-right-[4%]",
     delayClass: "[-animation-delay:-3s]",
   },
   {
-    initial: "N",
-    label: "Node.js",
+    initial: "devicon-vuejs-plain colored",
+    icon: true,
+    label: "Vue.js",
     iconClass: "bg-[#8CC84B] text-accent-ink",
     positionClass: "bottom-[15%] -left-[11%] max-[680px]:-left-[4%]",
     delayClass: "[-animation-delay:-5s]",
@@ -60,10 +63,10 @@ const FLOAT_CHIPS = [
 ];
 
 // --- Ambil data dinamis -----------------------------------------------------
-const { data: profileResponse } = await useFetch<ApiResponse<Profile>>(
-  "/api/profile",
-);
-const { data: statsResponse } = await useFetch<ApiResponse<Stat[]>>("/api/stats");
+const { data: profileResponse } =
+  await useFetch<ApiResponse<Profile>>("/api/profile");
+const { data: statsResponse } =
+  await useFetch<ApiResponse<Stat[]>>("/api/stats");
 
 const profile = computed<Profile | null>(
   () => profileResponse.value?.data ?? null,
@@ -154,7 +157,9 @@ onMounted(() => {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            const index = Number((entry.target as HTMLElement).dataset.index ?? 0);
+            const index = Number(
+              (entry.target as HTMLElement).dataset.index ?? 0,
+            );
             animateCount(index);
             counterObserver?.unobserve(entry.target);
           }
@@ -178,7 +183,7 @@ onUnmounted(() => {
   <section
     id="home"
     ref="heroRef"
-    class="relative overflow-hidden px-0 pb-[70px] pt-40 max-[980px]:pt-[132px]"
+    class="relative overflow-hidden px-0 pb-17.5 pt-40 max-[980px]:pt-33"
     @mousemove="handleHeroMouseMove"
     @mouseleave="handleHeroMouseLeave"
   >
@@ -188,24 +193,44 @@ onUnmounted(() => {
       style="
         background:
           linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255, 255, 255, 0.028) 1px, transparent 1px);
+          linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.028) 1px,
+            transparent 1px
+          );
         background-size: 72px 72px;
-        mask-image: radial-gradient(ellipse 85% 70% at 30% 25%, #000 20%, transparent 78%);
-        -webkit-mask-image: radial-gradient(ellipse 85% 70% at 30% 25%, #000 20%, transparent 78%);
+        mask-image: radial-gradient(
+          ellipse 85% 70% at 30% 25%,
+          #000 20%,
+          transparent 78%
+        );
+        -webkit-mask-image: radial-gradient(
+          ellipse 85% 70% at 30% 25%,
+          #000 20%,
+          transparent 78%
+        );
       "
       aria-hidden="true"
     />
     <div
-      class="pointer-events-none absolute -right-[260px] -top-[280px] h-[820px] w-[820px]"
+      class="pointer-events-none absolute -right-65 -top-70 h-205 w-205"
       style="
-        background: radial-gradient(circle, rgba(214, 255, 74, 0.13), transparent 62%);
+        background: radial-gradient(
+          circle,
+          rgba(214, 255, 74, 0.13),
+          transparent 62%
+        );
       "
       aria-hidden="true"
     />
     <div
-      class="pointer-events-none absolute -bottom-[320px] -left-[240px] h-[620px] w-[620px]"
+      class="pointer-events-none absolute -bottom-80 -left-60 h-155 w-155"
       style="
-        background: radial-gradient(circle, rgba(255, 91, 57, 0.11), transparent 65%);
+        background: radial-gradient(
+          circle,
+          rgba(255, 91, 57, 0.11),
+          transparent 65%
+        );
       "
       aria-hidden="true"
     />
@@ -213,7 +238,11 @@ onUnmounted(() => {
     <div
       class="pointer-events-none absolute h-[560px] w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full transition-opacity duration-[600ms]"
       style="
-        background: radial-gradient(circle, rgba(214, 255, 74, 0.11), transparent 68%);
+        background: radial-gradient(
+          circle,
+          rgba(214, 255, 74, 0.11),
+          transparent 68%
+        );
       "
       :style="{
         left: spotlightStyle.left,
@@ -257,7 +286,10 @@ onUnmounted(() => {
           </span>
         </h1>
 
-        <p v-reveal="0.16" class="mb-[34px] max-w-[47ch] text-[1.07rem] text-muted">
+        <p
+          v-reveal="0.16"
+          class="mb-[34px] max-w-[47ch] text-[1.07rem] text-muted"
+        >
           <template v-for="(part, i) in leadParts" :key="i">
             <strong v-if="part.emphasized" class="font-semibold text-ink">{{
               part.text
@@ -281,9 +313,11 @@ onUnmounted(() => {
             <div
               class="font-display text-[1.85rem] font-extrabold leading-none tracking-[-0.03em]"
             >
-              <span class="count" :data-target="stat.value" :data-index="index">{{
-                counters[index] ?? 0
-              }}</span
+              <span
+                class="count"
+                :data-target="stat.value"
+                :data-index="index"
+                >{{ counters[index] ?? 0 }}</span
               ><span v-if="stat.suffix" class="text-[1.15rem] text-accent">{{
                 stat.suffix
               }}</span>
@@ -321,7 +355,11 @@ onUnmounted(() => {
           <div
             class="pointer-events-none absolute inset-0"
             style="
-              background: linear-gradient(180deg, rgba(10, 11, 13, 0) 42%, rgba(10, 11, 13, 0.82) 100%);
+              background: linear-gradient(
+                180deg,
+                rgba(10, 11, 13, 0) 42%,
+                rgba(10, 11, 13, 0.82) 100%
+              );
             "
             aria-hidden="true"
           />
@@ -348,26 +386,49 @@ onUnmounted(() => {
         <div
           v-for="chip in FLOAT_CHIPS"
           :key="chip.label"
-          class="absolute z-[5] flex items-center gap-2 rounded-[13px] border border-line-strong bg-surface/95 px-[15px] py-2.5 font-mono text-[0.74rem] shadow-[0_18px_40px_-18px_rgba(0,0,0,.8)] [animation:floaty_6s_ease-in-out_infinite] max-[680px]:px-3 max-[680px]:py-2 max-[680px]:text-[0.68rem]"
+          class="absolute z-[5] flex items-center gap-2 rounded-[13px] border border-line-strong bg-surface/95 px-[15px] py-2.5 font-mono text-[0.74rem] leading-none shadow-[0_18px_40px_-18px_rgba(0,0,0,.8)] [animation:floaty_6s_ease-in-out_infinite] max-[680px]:px-3 max-[680px]:py-2 max-[680px]:text-[0.68rem]"
           :class="[chip.positionClass, chip.delayClass]"
         >
+          <i
+            v-if="chip.icon"
+            class="grid h-5.5 w-5.5 shrink-0 place-items-center rounded-[7px] text-[1.5rem] leading-none"
+            :class="chip.initial"
+          ></i>
+
           <span
-            class="grid h-[22px] w-[22px] place-items-center rounded-[7px] text-[0.66rem] font-bold"
+            v-else
+            class="grid h-5.5 w-5.5 shrink-0 place-items-center rounded-[7px] text-[0.66rem] font-bold leading-none"
             :class="chip.iconClass"
-            >{{ chip.initial }}</span
           >
-          {{ chip.label }}
+            {{ chip.initial }}
+          </span>
+
+          <span class="leading-none">{{ chip.label }}</span>
         </div>
       </div>
     </div>
 
     <!-- Marquee -->
-    <div class="mx-auto w-[min(1240px,100%-48px)] max-[680px]:w-[min(1240px,100%-32px)]">
+    <div
+      class="mx-auto w-[min(1240px,100%-48px)] max-[680px]:w-[min(1240px,100%-32px)]"
+    >
       <div
         class="group relative mt-[76px] overflow-hidden border-y border-line py-[22px]"
         style="
-          mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
-          -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+          mask-image: linear-gradient(
+            90deg,
+            transparent,
+            #000 9%,
+            #000 91%,
+            transparent
+          );
+          -webkit-mask-image: linear-gradient(
+            90deg,
+            transparent,
+            #000 9%,
+            #000 91%,
+            transparent
+          );
         "
       >
         <div class="marquee-track group-hover:[animation-play-state:paused]">

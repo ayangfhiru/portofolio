@@ -20,8 +20,9 @@ const year = getCurrentYear();
           class="grid h-[34px] w-[34px] place-items-center rounded-[10px] bg-accent font-mono text-[0.82rem] font-bold text-accent-ink"
           >&lt;/&gt;</span
         >
-        <span class="font-display text-[1.12rem] font-extrabold tracking-[-0.02em]"
-          >raka.dev</span
+        <span
+          class="font-display text-[1.12rem] font-extrabold tracking-[-0.02em]"
+          >ghege.dev</span
         >
       </a>
 
@@ -38,7 +39,7 @@ const year = getCurrentYear();
 
       <p class="font-mono text-[0.73rem] tracking-[0.06em] text-muted-2">
         Jakarta <b class="font-medium text-accent">{{ clock }}</b> · ©
-        {{ year }} Raka Devano
+        {{ year }} Syang Ghege
       </p>
 
       <a

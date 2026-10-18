@@ -44,12 +44,16 @@ const emit = defineEmits<{
     @close="emit('close')"
   >
     <div class="pb-2 text-center">
-      <div class="mx-auto mb-[18px] grid h-[58px] w-[58px] place-items-center rounded-2xl bg-admin-accent-soft text-admin-accent">
+      <div
+        class="mx-auto mb-[18px] grid h-[58px] w-[58px] place-items-center rounded-2xl bg-admin-accent-soft text-admin-accent"
+      >
         <Trash2 class="h-6 w-6" aria-hidden="true" />
       </div>
 
       <!-- Eksplisit: dialog di-Teleport ke <body>, di luar pembungkus `text-admin-ink`. -->
-      <h3 class="font-display text-[1.25rem] tracking-tight text-admin-ink">{{ props.title }}</h3>
+      <h3 class="font-display text-[1.25rem] tracking-tight text-admin-ink">
+        {{ props.title }}
+      </h3>
 
       <!-- Slot menimpa `description`; bila keduanya kosong, paragraf tidak dirender -->
       <p
@@ -78,7 +82,11 @@ const emit = defineEmits<{
           :aria-busy="props.loading"
           @click="emit('confirm')"
         >
-          <LoaderCircle v-if="props.loading" class="h-4 w-4 animate-spin" aria-hidden="true" />
+          <LoaderCircle
+            v-if="props.loading"
+            class="h-4 w-4 animate-spin"
+            aria-hidden="true"
+          />
           <Trash2 v-else class="h-4 w-4" aria-hidden="true" />
           {{ props.loading ? "Menghapus…" : props.confirmLabel }}
         </button>
