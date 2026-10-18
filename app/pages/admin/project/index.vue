@@ -16,7 +16,7 @@
  * `/api/projects` (bukan `/api/admin/projects`) karena endpoint tersebut
  * sudah ada sejak awal dan menangani upload gambar.
  */
-import { computed } from "vue";
+import { computed, watch } from "vue";
 import { Pencil, Plus, Trash2 } from "@lucide/vue";
 import {
   AdminTopbar,
@@ -164,6 +164,24 @@ const {
   closeDelete,
   confirmDelete,
 } = list;
+
+/* ----------------------------------------------------- Pintasan CTA */
+
+// Tombol "Tambah Project" pada topbar membawa `?tambah=1` agar pengguna
+// langsung tiba di form pembuatan, bukan sekadar halaman daftar.
+//
+// Query dibaca setelah komponen terpasang, bukan saat setup: SSR selalu
+// merender keadaan tertutup, sehingga membuka form lebih dulu akan membuat
+// render klien berbeda dan memicu peringatan hydration mismatch.
+const route = useRoute();
+
+const openCreateFromQuery = (value: unknown) => {
+  if (value === "1") openCreate();
+};
+
+onMounted(() => openCreateFromQuery(route.query.tambah));
+
+watch(() => route.query.tambah, openCreateFromQuery);
 
 /* --------------------------------------------------------- Statistik */
 

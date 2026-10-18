@@ -4,13 +4,48 @@
  * Disimpan terpisah dari komponen karena dipakai lintas modul:
  * komponen yang menerimanya maupun halaman yang memakainya.
  */
+import type { Component } from "vue";
 
-/** Item menu pada topbar admin. */
-export interface TopNavItem {
+/** Ikon lucide yang dipetakan langsung dari konfigurasi navigasi. */
+export type NavIcon = Component;
+
+/** Identitas pengirim yang tampil di topbar maupun laci mobile. */
+export interface AdminUser {
+  name: string;
+  role: string;
+  avatar?: string;
+}
+
+/**
+ * Tautan tunggal pada navigasi admin.
+ *
+ * Bentuk ini selalu memiliki tujuan sehingga aman dirender sebagai
+ * `NuxtLink` — dipakai pada isi grup dropdown, hasil pencarian, dan
+ * menu pengguna.
+ */
+export interface AdminNavLink {
+  key: string;
+  label: string;
+  to: string;
+  icon?: NavIcon;
+  /** Keterangan singkat tampil di bawah label. */
+  description?: string;
+}
+
+/**
+ * Item menu topbar admin.
+ *
+ * Tanpa `children` ia dirender sebagai tautan langsung; dengan `children`
+ * ia menjadi dropdown pada desktop dan akordeon pada laci mobile.
+ */
+export interface AdminNavItem {
   key: string;
   label: string;
   /** Rute tujuan. Bila kosong, item tampil sebagai label nonaktif. */
   to?: string;
+  icon?: NavIcon;
+  description?: string;
+  children?: AdminNavLink[];
 }
 
 /** Satu kartu pada deretan statistik. */

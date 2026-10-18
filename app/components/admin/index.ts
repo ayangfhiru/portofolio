@@ -1,4 +1,4 @@
-export { default as AdminTopbar } from "./AdminTopbar.vue";
+export { default as AdminTopbar } from "./topbar/AdminTopbar.vue";
 export { default as AppToast } from "./AppToast.vue";
 export { default as ConfirmDialog } from "./ConfirmDialog.vue";
 export { default as ContactCardForm } from "./ContactCardForm.vue";
