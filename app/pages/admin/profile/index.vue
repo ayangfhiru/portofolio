@@ -12,14 +12,14 @@
  * Data dimuat sebelum render sehingga SSR sudah menampilkan isi profil
  * sungguhan, bukan kerangka loading.
  */
-import { ref } from "vue";
 import { AlertCircle, RefreshCw } from "@lucide/vue";
+import { ref } from "vue";
 import { AdminTopbar, AppToast, ProfileForm } from "~/components/admin";
 import { useToast } from "~/composables/useToast";
-import { extractApiError } from "~/utils/admin-api";
-import { ADMIN_NAV_ITEMS, ADMIN_USER } from "~/utils/admin-nav";
 import type { ApiResponse } from "~/types/api";
 import type { ProfileAdmin } from "~/types/profile";
+import { extractApiError } from "~/utils/admin-api";
+import { ADMIN_NAV_ITEMS, ADMIN_USER } from "~/utils/admin-nav";
 
 useHead({ title: "Kelola Profil — Admin" });
 
@@ -35,12 +35,13 @@ const loadProfile = async (): Promise<void> => {
   loadError.value = null;
 
   try {
-    const response = await $fetch<ApiResponse<ProfileAdmin | null>>(
-      "/api/admin/profile",
-    );
+    const response =
+      await $fetch<ApiResponse<ProfileAdmin | null>>("/api/admin/profile");
 
     if (!response.success) {
-      throw new Error(response.error ?? "Server tidak mengembalikan data profil.");
+      throw new Error(
+        response.error ?? "Server tidak mengembalikan data profil.",
+      );
     }
 
     // `null` bukan kegagalan — hanya menandakan barisnya belum dibuat.
@@ -76,18 +77,27 @@ const onSaved = (saved: ProfileAdmin): void => {
     <main class="mx-auto w-full max-w-[1280px] px-4 pb-14 sm:px-6 lg:px-8">
       <!-- Kepala halaman -->
       <div class="py-9">
-        <div class="font-mono text-[.71rem] font-bold uppercase tracking-[.17em] text-admin-accent">
+        <div
+          class="font-mono text-[.71rem] font-bold uppercase tracking-[.17em] text-admin-accent"
+        >
           Admin · Profil
         </div>
-        <h1 class="mt-3 font-display text-[clamp(1.95rem,4.2vw,2.85rem)] font-extrabold leading-[1.04] tracking-tight">
-          Profil tunggal <span class="font-bold text-admin-muted-2">/ view form</span>
+        <h1
+          class="mt-3 font-display text-[clamp(1.95rem,4.2vw,2.85rem)] font-extrabold leading-[1.04] tracking-tight"
+        >
+          Profil tunggal
+          <span class="font-bold text-admin-muted-2">/ view form</span>
         </h1>
         <p class="mt-3 max-w-[74ch] text-[.985rem] text-admin-muted">
           Satu baris data yang menampung identitas, konfigurasi
-          <b class="text-admin-ink">Hero</b>, <b class="text-admin-ink">About</b>, dan
-          <b class="text-admin-ink">Contact</b> di halaman utama. Karena hanya ada
-          satu baris, tersimpan lewat
-          <code class="rounded-md border border-admin-line bg-admin-bg-2 px-1.5 py-0.5 font-mono text-[.82em] text-admin-ink-2">PUT /api/admin/profile</code>
+          <b class="text-admin-ink">Hero</b>,
+          <b class="text-admin-ink">About</b>, dan
+          <b class="text-admin-ink">Contact</b> di halaman utama. Karena hanya
+          ada satu baris, tersimpan lewat
+          <code
+            class="rounded-md border border-admin-line bg-admin-bg-2 px-1.5 py-0.5 font-mono text-[.82em] text-admin-ink-2"
+            >PUT /api/admin/profile</code
+          >
           sebagai upsert — tanpa tombol tambah maupun hapus.
         </p>
       </div>
@@ -111,7 +121,9 @@ const onSaved = (saved: ProfileAdmin): void => {
       </div>
 
       <!-- Form profil -->
-      <section class="overflow-hidden rounded-[20px] border border-admin-line bg-admin-card shadow-[0_1px_2px_rgba(16,24,40,.05)]">
+      <section
+        class="overflow-hidden rounded-[20px] border border-admin-line bg-admin-card shadow-[0_1px_2px_rgba(16,24,40,.05)]"
+      >
         <div
           v-if="loading"
           role="status"

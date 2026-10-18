@@ -6,6 +6,7 @@ import {
   BaseInput,
   BaseSelect,
   BaseTextarea,
+  FileUpload,
 } from "~/components/form";
 import { parseTagInput } from "~/utils/format";
 import { extractApiError } from "~/utils/admin-api";
@@ -101,12 +102,12 @@ const form = ref<ProjectFormState>(
 const errors = ref<Record<string, string>>({});
 const status = ref<Status>({ type: "idle", message: "" });
 const submitting = ref(false);
-/** File gambar pilihan user; `null` berarti memakai `imageUrl`. */
-const imageFile = ref<File | null>(null);
 
 const isUpdate = computed(() => props.mode === "update");
 const heading = computed(
-  () => props.submitLabel || (isUpdate.value ? "Simpan Perubahan" : "Simpan Project"),
+  () =>
+    props.submitLabel ||
+    (isUpdate.value ? "Simpan Perubahan" : "Simpan Project"),
 );
 
 /** Hapus pesan error sebuah field begitu user mulai memperbaikinya. */
@@ -145,12 +146,15 @@ const validate = (): Record<string, string> => {
     next.year = "Tahun harus antara 1900–9999.";
   }
 
-  // Gambar wajib bila belum ada berkas terpilih DAN belum ada nilai awal.
-  if (!imageFile.value && !form.value.imageUrl.trim() && !props.initialProject) {
-    next.imageUrl = "Isi URL gambar atau pilih berkas gambar.";
+  // Gambar wajib bila URL belum terisi dan belum ada nilai awal.
+  if (!form.value.imageUrl.trim() && !props.initialProject) {
+    next.imageUrl = "Isi URL gambar atau unggah berkas gambar.";
   }
 
-  if (!imageFile.value && form.value.href.trim() && !/^https?:\/\/\S+/i.test(form.value.href.trim())) {
+  if (
+    form.value.href.trim() &&
+    !/^https?:\/\/\S+/i.test(form.value.href.trim())
+  ) {
     next.href = "Tautan harus diawali http:// atau https://.";
   }
 
@@ -192,7 +196,10 @@ const buildUpdatePayload = (): ProjectUpdatePayload | null => {
   }
 
   // Slug kosong = biarkan slug lama tetap dipertahankan.
-  if (current.slug.trim() && current.slug.trim().toLowerCase() !== project.slug) {
+  if (
+    current.slug.trim() &&
+    current.slug.trim().toLowerCase() !== project.slug
+  ) {
     payload.slug = current.slug.trim();
   }
 
@@ -208,9 +215,10 @@ const buildUpdatePayload = (): ProjectUpdatePayload | null => {
     payload.year = Number(current.year);
   }
 
-  // Gambar hanya ikut dikirim bila user memilih berkas baru
-  // (berkas ditangani lewat field `image` pada multipart).
-  if (!imageFile.value && current.imageUrl.trim() !== project.imageUrl) {
+  // Gambar ikut dikirim hanya bila nilainya berubah. Unggahan file juga
+  // masuk lewat kolom ini karena `FileUpload` mengisi `imageUrl` dengan
+  // URL publik hasil pemindahan file.
+  if (current.imageUrl.trim() !== project.imageUrl) {
     payload.imageUrl = current.imageUrl.trim();
   }
 
@@ -274,15 +282,15 @@ const handleSubmit = async (): Promise<void> => {
     if (target) {
       const payload = buildUpdatePayload();
 
-      // Tanpa perubahan dan tanpa berkas gambar baru → tidak ada yang perlu dikirim.
-      if (!payload && !imageFile.value) {
+      // Tanpa perubahan sama sekali → tidak ada yang perlu dikirim.
+      if (!payload) {
         setStatus("info", "Tidak ada perubahan untuk disimpan.");
         return;
       }
 
-      saved = await patchProject(target.id, payload ?? {}, imageFile.value);
+      saved = await patchProject(target.id, payload);
     } else {
-      saved = await postProject(buildCreatePayload(), imageFile.value);
+      saved = await postProject(buildCreatePayload());
     }
 
     if (!saved.success || !saved.data) {
@@ -300,7 +308,6 @@ const handleSubmit = async (): Promise<void> => {
     } else {
       form.value = emptyForm();
     }
-    imageFile.value = null;
 
     setStatus(
       "success",
@@ -322,16 +329,23 @@ const handleSubmit = async (): Promise<void> => {
 
 <template>
   <div>
-    <form class="px-5 py-6 sm:px-[30px]" novalidate @submit.prevent="handleSubmit">
+    <form
+      class="px-5 py-6 sm:px-[30px]"
+      novalidate
+      @submit.prevent="handleSubmit"
+    >
       <!-- Banner pesan sukses / gagal / informasi -->
       <div
         v-if="status.message"
         :role="status.type === 'error' ? 'alert' : 'status'"
         class="mb-6 flex items-start gap-3 rounded-xl border px-4 py-3 text-sm"
         :class="{
-          'border-[#f2c9c5] bg-admin-accent-soft text-admin-accent-dark': status.type === 'error',
-          'border-[#bfdfd1] bg-admin-ok-soft text-admin-ok': status.type === 'success',
-          'border-admin-line bg-admin-bg-2 text-admin-muted': status.type === 'info',
+          'border-[#f2c9c5] bg-admin-accent-soft text-admin-accent-dark':
+            status.type === 'error',
+          'border-[#bfdfd1] bg-admin-ok-soft text-admin-ok':
+            status.type === 'success',
+          'border-admin-line bg-admin-bg-2 text-admin-muted':
+            status.type === 'info',
           'border-admin-line bg-white text-admin-muted': status.type === 'idle',
         }"
       >
@@ -438,23 +452,23 @@ const handleSubmit = async (): Promise<void> => {
           name="imageUrl"
           type="url"
           placeholder="https://…/cover.jpg"
-          :required="!imageFile && !initialProject"
+          :required="!initialProject"
           :error="errors.imageUrl"
-          :disabled="submitting || Boolean(imageFile)"
+          :disabled="submitting"
           autocomplete="off"
           @clear-error="clearError('imageUrl')"
         />
 
         <!-- Unggah gambar (opsional — menimpa URL bila dipilih) -->
-        <BaseInput
-          v-model="imageFile"
+        <FileUpload
+          v-model="form.imageUrl"
           title="Ganti Gambar"
           name="image"
-          type="file"
-          placeholder=""
-          :error="errors.image"
+          path="uploads/projects"
+          accept="image/jpeg,image/png"
+          hint="Berkas dengan format jpeg,png, lalu URL hasilnya mengisi kolom URL Gambar."
           :disabled="submitting"
-          @clear-error="clearError('image')"
+          @clear-error="clearError('imageUrl')"
         />
 
         <!-- Tags -->
@@ -490,18 +504,18 @@ const handleSubmit = async (): Promise<void> => {
     </form>
 
     <!-- Bilah aksi — meniru tata letak kaki modal pada desain referensi -->
-    <div class="flex flex-col gap-3 rounded-b-[20px] border-t border-admin-line bg-admin-head px-5 pb-6 pt-5 sm:flex-row sm:items-center sm:justify-between sm:px-[30px]">
+    <div
+      class="flex flex-col gap-3 rounded-b-[20px] border-t border-admin-line bg-admin-head px-5 pb-6 pt-5 sm:flex-row sm:items-center sm:justify-between sm:px-[30px]"
+    >
       <!-- Ringkasan file terpilih / gambar saat ini -->
       <p class="text-xs text-admin-muted-2">
-        <template v-if="imageFile">
-          Gambar baru: <span class="font-medium text-admin-ink-2">{{ imageFile.name }}</span>
+        <template v-if="form.imageUrl">
+          Gambar:
+          <span class="break-all font-medium text-admin-ink-2">{{
+            form.imageUrl
+          }}</span>
         </template>
-        <template v-else-if="initialProject">
-          Gambar saat ini: <span class="break-all font-medium text-admin-ink-2">{{ initialProject.imageUrl }}</span>
-        </template>
-        <template v-else>
-          Belum ada gambar dipilih.
-        </template>
+        <template v-else> Belum ada gambar dipilih. </template>
       </p>
 
       <div class="flex flex-wrap gap-2.5">

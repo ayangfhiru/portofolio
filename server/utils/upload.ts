@@ -1,18 +1,24 @@
+import type { MultiPartData } from "h3";
+import { randomUUID } from "node:crypto";
 import { mkdir, unlink, writeFile } from "node:fs/promises";
 import { extname, join } from "node:path";
-import { randomUUID } from "node:crypto";
-import type { MultiPartData } from "h3";
 import type { MoveImageOptions, MoveImageResult } from "../../app/types/upload";
 
 /**
- * Util upload gambar.
+ * Util upload file.
  *
  * Semua tulis-file melewati satu fungsi reusable, `moveImage`, sehingga
  * endpoint upload lain cukup memanggilnya dengan folder tujuan yang berbeda
  * tanpa menyalin implementasi filesystem.
  *
- * Gambar disimpan di bawah folder `public/` sehingga Nitro menyajikannya
- * sebagai file statis dan browser dapat memuatnya langsung.
+ * File disimpan di bawah folder `public/` sehingga Nitro menyajikannya
+ * sebagai file statis dan browser dapat memuatnya langsung. Folder tujuan
+ * yang belum ada dibuat otomatis oleh `moveImage`, jadi pemanggil cukup
+ * menentukan path tujuan tanpa menyiapkan direktori terlebih dahulu.
+ *
+ * Fungsi di file ini bersifat generik (boleh dipakai untuk jenis file
+ * apa pun), kecuali `validateImageFile` yang sengaja membatasi ke gambar
+ * karena dipakai endpoint project yang memang hanya menerima gambar.
  *
  * Di production, pertimbangkan mengganti penyimpanan lokal dengan object
  * storage (S3/Cloudinary) — cukup ganti isi `moveImage`.
@@ -40,14 +46,97 @@ const EXTENSION_BY_MIME: Record<string, string> = {
 const PROJECT_UPLOAD_DIR = "uploads/projects";
 
 /**
+ * MIME dan ekstensi yang DITOLAK pada upload generik.
+ *
+ * File di folder `public/` disajikan Nitro ke domain yang sama dengan
+ * aplikasi, sehingga konten yang bisa dieksekusi browser (HTML, SVG, skrip)
+ * berpotensi menjadi stored XSS. Karena itu daftar ini memakai pendekatan
+ * deny-list ketat untuk hal yang bisa dijalankan, dan tetap mengizinkan
+ * jenis file biasa (gambar, dokumen, data, arsip).
+ */
+const BLOCKED_MIME_TYPES = new Set([
+  "text/html",
+  "application/xhtml+xml",
+  "image/svg+xml",
+  "image/svg",
+  "text/xml",
+  "application/xml",
+  "application/javascript",
+  "text/javascript",
+  "application/x-javascript",
+  "application/x-sh",
+  "application/x-shellscript",
+  "application/x-bat",
+  "application/x-msdownload",
+  "application/vnd.microsoft.portable-executable",
+  "application/x-executable",
+  "application/x-sharedlib",
+  "application/java-archive",
+]);
+
+const BLOCKED_EXTENSIONS = new Set([
+  ".html",
+  ".htm",
+  ".xhtml",
+  ".shtml",
+  ".xht",
+  ".svg",
+  ".svgz",
+  ".xml",
+  ".js",
+  ".mjs",
+  ".cjs",
+  ".php",
+  ".php3",
+  ".php4",
+  ".php5",
+  ".phtml",
+  ".phar",
+  ".cgi",
+  ".pl",
+  ".py",
+  ".rb",
+  ".lua",
+  ".sh",
+  ".bash",
+  ".zsh",
+  ".fish",
+  ".ksh",
+  ".bat",
+  ".cmd",
+  ".ps1",
+  ".vbs",
+  ".vbe",
+  ".wsf",
+  ".hta",
+  ".reg",
+  ".exe",
+  ".com",
+  ".scr",
+  ".msi",
+  ".msp",
+  ".dll",
+  ".so",
+  ".dylib",
+  ".jar",
+  ".war",
+  ".ear",
+  ".apk",
+  ".app",
+  ".dmg",
+  ".deb",
+  ".rpm",
+]);
+
+/**
  * Satu-satunya prefix file yang boleh dihapus oleh aplikasi.
  * Aset yang di-commit (mis. `/images/portfolio/...`) dan URL eksternal
  * berada di luar prefix ini dan karena itu tidak akan pernah disentuh.
  */
 const MANAGED_PROJECT_IMAGE_PREFIX = "/uploads/projects/";
 
-/** Sumber gambar yang diterima `moveImage`: bagian multipart h3 atau `File` web-standard. */
-export type ImageSource = MultiPartData | File;
+/** Sumber file yang diterima `moveImage`: bagian multipart h3 atau `File` web-standard. */
+export type FileSource = MultiPartData | File;
 
 export class UploadError extends Error {
   constructor(
@@ -59,9 +148,17 @@ export class UploadError extends Error {
   }
 }
 
-/** Baca batas ukuran gambar dari env `UPLOAD_MAX_IMAGE_MB` (default 5 MB). */
-const parseMaxImageBytes = (): number => {
-  const fromEnv = Number(process.env.UPLOAD_MAX_IMAGE_MB);
+/**
+ * Baca batas ukuran upload (default 5 MB).
+ *
+ * `UPLOAD_MAX_FILE_MB` dipakai untuk upload generik. `UPLOAD_MAX_IMAGE_MB`
+ * tetap dihormati sebagai fallback sehingga konfigurasi yang sudah ada
+ * tidak berubah arti.
+ */
+const parseMaxUploadBytes = (): number => {
+  const fromEnv = Number(
+    process.env.UPLOAD_MAX_FILE_MB ?? process.env.UPLOAD_MAX_IMAGE_MB,
+  );
   return Number.isFinite(fromEnv) && fromEnv > 0
     ? fromEnv * 1024 * 1024
     : 5 * 1024 * 1024;
@@ -73,7 +170,8 @@ const parseMaxImageBytes = (): number => {
  * tujuan tulis tidak bisa keluar dari folder publik.
  */
 const assertSafeDestination = (destination: string): string => {
-  const isAbsolute = destination.startsWith("/") || /^[a-zA-Z]:/.test(destination);
+  const isAbsolute =
+    destination.startsWith("/") || /^[a-zA-Z]:/.test(destination);
   // Sengaja tidak membuang segmen kosong: `uploads//x` harus ikut ditolak.
   const segments = destination.split("/");
   const isSafe =
@@ -99,20 +197,35 @@ const sanitizeFileName = (name: string): string => {
   return cleaned || "image";
 };
 
-/** Ekstensi file dari MIME type, dengan fallback ke ekstensi nama asli lalu `.jpg`. */
-const resolveExtension = (mimetype: string, originalName: string | null): string => {
+/**
+ * Tentukan ekstensi file final.
+ *
+ * Prioritas: ekstensi dari MIME → ekstensi nama file asli (bila bentuknya
+ * aman) → `.bin`. `.bin` dipakai sebagai fallback netral supaya file tanpa
+ * ekstensi disajikan Nitro dengan tipe konten yang tidak bisa
+ * dieksekusi browser.
+ */
+const resolveExtension = (
+  mimetype: string,
+  originalName: string | null,
+): string => {
   const fromMime = EXTENSION_BY_MIME[mimetype];
   if (fromMime) return fromMime;
 
   const fromName = extname(originalName ?? "").toLowerCase();
-  const isKnown = Object.values(EXTENSION_BY_MIME).includes(fromName);
-  return isKnown ? fromName : ".jpg";
+  if (/^\.[a-z0-9]{1,8}$/.test(fromName)) return fromName;
+
+  return ".bin";
 };
 
-/** Normalisasi sumber gambar apa pun menjadi byte + metadata. */
-const readImageSource = async (
-  file: ImageSource,
-): Promise<{ data: Uint8Array; mimetype: string; originalName: string | null }> => {
+/** Normalisasi sumber file apa pun menjadi byte + metadata. */
+const readFileSource = async (
+  file: FileSource,
+): Promise<{
+  data: Uint8Array;
+  mimetype: string;
+  originalName: string | null;
+}> => {
   if ("data" in file) {
     return {
       data: file.data,
@@ -137,7 +250,7 @@ const readImageSource = async (
 export const validateImageFile = (
   mimetype: string,
   size: number,
-  maxImageBytes: number = parseMaxImageBytes(),
+  maxImageBytes: number = parseMaxUploadBytes(),
 ): void => {
   if (!ALLOWED_MIME_TYPES.has(mimetype)) {
     throw new UploadError(
@@ -153,7 +266,50 @@ export const validateImageFile = (
 };
 
 /**
- * Simpan satu file gambar ke folder upload yang ditentukan.
+ * Validasi file generik sebelum ditulis ke disk (untuk jenis file apa pun).
+ *
+ * Yang diperiksa:
+ * 1. Ukuran, dibatasi env `UPLOAD_MAX_FILE_MB` (fallback
+ *    `UPLOAD_MAX_IMAGE_MB`, default 5 MB).
+ * 2. MIME type dan ekstensi yang bisa dieksekusi browser — ditolak karena
+ *    file hasil upload disajikan dari domain yang sama dengan aplikasi
+ *    (risiko stored XSS).
+ *
+ * `moveImage` TIDAK memanggil fungsi ini supaya tetap bebas dipakai untuk
+ * file apa pun; validasi tetap menjadi tanggung jawab pemanggil.
+ *
+ * Melempar `UploadError` (400) bila tidak lolos.
+ */
+export const validateUploadFile = (
+  mimetype: string,
+  size: number,
+  originalName: string | null,
+  maxBytes: number = parseMaxUploadBytes(),
+): void => {
+  if (size > maxBytes) {
+    throw new UploadError(
+      `Ukuran file maksimal ${Math.round(maxBytes / 1024 / 1024)} MB.`,
+    );
+  }
+
+  // Ekstensi akhir dihitung dari MIME dulu lalu nama asli, jadi keduanya
+  // diperiksa agar file yang menyamar pun tetap tertolak.
+  const finalExtension = resolveExtension(mimetype, originalName).toLowerCase();
+  const originalExtension = extname(originalName ?? "").toLowerCase();
+  const isBlocked =
+    BLOCKED_MIME_TYPES.has(mimetype) ||
+    BLOCKED_EXTENSIONS.has(finalExtension) ||
+    BLOCKED_EXTENSIONS.has(originalExtension);
+
+  if (isBlocked) {
+    throw new UploadError(
+      `Tipe file "${mimetype || originalName || "tidak diketahui"}" tidak diizinkan karena bisa dieksekusi oleh browser.`,
+    );
+  }
+};
+
+/**
+ * Simpan satu file ke folder upload yang ditentukan.
  *
  * Fungsi ini bertanggung jawab atas hal-hal berikut sehingga endpoint upload
  * lain tidak perlu mengulanginya:
@@ -163,17 +319,18 @@ export const validateImageFile = (
  * 4. Mengembalikan nama file dan path yang siap disimpan ke database.
  *
  * Validasi MIME type dan ukuran tetap menjadi tanggung jawab pemanggil
- * melalui `validateImageFile`, agar `moveImage` dapat dipakai untuk jenis
- * file lain tanpa dipaksa mengikuti allowlist gambar.
+ * melalui `validateImageFile` (untuk gambar) atau `validateUploadFile`
+ * (untuk file generik), agar `moveImage` dapat dipakai untuk jenis file
+ * lain tanpa dipaksa mengikuti allowlist gambar.
  *
  * Melempar `UploadError` bila folder tujuan tidak aman.
  */
 export const moveImage = async (
-  file: ImageSource,
+  file: FileSource,
   options: MoveImageOptions,
 ): Promise<MoveImageResult> => {
   const destination = assertSafeDestination(options.destination);
-  const { data, mimetype, originalName } = await readImageSource(file);
+  const { data, mimetype, originalName } = await readFileSource(file);
 
   const extension = resolveExtension(mimetype, originalName);
   const baseName = options.fileName
@@ -204,11 +361,13 @@ export const moveImage = async (
  */
 export const saveProjectImage = async (
   part: MultiPartData,
-  maxImageBytes: number = parseMaxImageBytes(),
+  maxImageBytes: number = parseMaxUploadBytes(),
 ): Promise<string> => {
   validateImageFile(part.type ?? "", part.data.length, maxImageBytes);
 
-  const { publicUrl } = await moveImage(part, { destination: PROJECT_UPLOAD_DIR });
+  const { publicUrl } = await moveImage(part, {
+    destination: PROJECT_UPLOAD_DIR,
+  });
   return publicUrl;
 };
 
@@ -239,6 +398,10 @@ export const removeManagedProjectImage = async (
     await unlink(target);
   } catch (error) {
     // Berkas sudah hilang atau tidak terbaca: bukan keadaan yang perlu menggagalkan request.
-    console.warn("[upload] berkas gambar lama tidak bisa dihapus:", relative, error);
+    console.warn(
+      "[upload] berkas gambar lama tidak bisa dihapus:",
+      relative,
+      error,
+    );
   }
 };

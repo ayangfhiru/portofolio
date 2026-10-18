@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { AlertCircle, CheckCircle2, LoaderCircle, Save } from "@lucide/vue";
-import { BaseInput, BaseTextarea, InputList } from "~/components/form";
+import { BaseInput, BaseTextarea, FileUpload, InputList } from "~/components/form";
 import { adminPut, extractApiError } from "~/utils/admin-api";
 import type { ApiResponse } from "~/types/api";
 import type {
@@ -358,6 +358,18 @@ const handleSubmit = async (): Promise<void> => {
           @clear-error="clearError('photoTagline')"
         />
       </div>
+
+      <!-- Unggah foto — menimpa URL Foto dengan path hasil pemindahan -->
+      <FileUpload
+        v-model="form.photoUrl"
+        title="Unggah Foto"
+        name="photo"
+        path="uploads/profile"
+        accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+        hint="Berkas dipindahkan ke folder public/uploads/profile dengan nama unik, lalu URL hasilnya mengisi kolom URL Foto."
+        :disabled="submitting"
+        @clear-error="clearError('photoUrl')"
+      />
     </section>
 
     <!-- About -->
