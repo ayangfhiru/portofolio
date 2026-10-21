@@ -31,7 +31,7 @@ import {
 } from "~/components/admin";
 import { useAdminList } from "~/composables";
 import type { DataTableColumn, StatItem, ToolbarFilter, ApiResponse, ProjectItem } from "~/types";
-import { ADMIN_NAV_ITEMS, ADMIN_USER, formatDate, formatTime, highlightParts } from "~/utils";
+import { ADMIN_NAV_ITEMS, formatDate, formatTime, highlightParts } from "~/utils";
 
 useHead({ title: "Kelola Project — Admin" });
 
@@ -238,7 +238,6 @@ const titleParts = (value: string) => highlightParts(value, search.value);
     <AdminTopbar
       :nav-items="ADMIN_NAV_ITEMS"
       active-key="project"
-      :user="ADMIN_USER"
     />
 
     <main class="mx-auto w-full max-w-[1280px] px-4 pb-14 sm:px-6 lg:px-8">

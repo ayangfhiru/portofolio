@@ -5,21 +5,27 @@
  * Keadaan terbuka dipegang `AdminTopbar` lewat prop `open` supaya bisa
  * ditutup bersamaan dengan lapisan lain oleh klik luar maupun Esc.
  */
-import { ChevronDown } from "@lucide/vue";
+import { ChevronDown, LoaderCircle, LogOut } from "@lucide/vue";
 import type { AdminNavLink, AdminUser } from "~/types";
 
 interface Props {
   user: AdminUser;
   links?: AdminNavLink[];
   open?: boolean;
+  /** Sedang mengirim permintaan keluar. */
+  signingOut?: boolean;
+  /** Pesan galat keluar terakhir; kosong bila tidak ada. */
+  logoutError?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   links: () => [],
   open: false,
+  signingOut: false,
+  logoutError: "",
 });
 
-const emit = defineEmits<{ toggle: []; navigate: [] }>();
+const emit = defineEmits<{ toggle: []; navigate: []; logout: [] }>();
 </script>
 
 <template>
@@ -106,6 +112,31 @@ const emit = defineEmits<{ toggle: []; navigate: [] }>();
               </span>
             </span>
           </NuxtLink>
+        </div>
+
+        <div class="border-t border-admin-line p-1.5">
+          <p
+            v-if="props.logoutError"
+            role="alert"
+            class="px-3 pb-1 pt-2 text-xs text-admin-accent-dark"
+          >
+            {{ props.logoutError }}
+          </p>
+          <button
+            type="button"
+            :disabled="props.signingOut"
+            :aria-busy="props.signingOut"
+            class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-admin-ink-2 transition-colors hover:bg-admin-accent-soft hover:text-admin-accent-dark disabled:cursor-not-allowed disabled:opacity-60"
+            @click="emit('logout')"
+          >
+            <LoaderCircle
+              v-if="props.signingOut"
+              class="h-4 w-4 shrink-0 animate-spin"
+              aria-hidden="true"
+            />
+            <LogOut v-else class="h-4 w-4 shrink-0" aria-hidden="true" />
+            Keluar
+          </button>
         </div>
       </div>
     </Transition>

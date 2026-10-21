@@ -27,7 +27,7 @@ import {
   TableToolbar,
 } from "~/components/admin";
 import { useAdminList } from "~/composables";
-import { adminList, adminRemove, ADMIN_NAV_ITEMS, ADMIN_USER, highlightParts } from "~/utils";
+import { adminList, adminRemove, ADMIN_NAV_ITEMS, highlightParts } from "~/utils";
 import type { DataTableColumn, StatAdmin } from "~/types";
 
 useHead({ title: "Kelola Statistik — Admin" });
@@ -113,7 +113,6 @@ const onSaved = async (stat: StatAdmin): Promise<void> => {
     <AdminTopbar
       :nav-items="ADMIN_NAV_ITEMS"
       active-key="stat"
-      :user="ADMIN_USER"
     />
 
     <main class="mx-auto w-full max-w-[1280px] px-4 pb-14 sm:px-6 lg:px-8">

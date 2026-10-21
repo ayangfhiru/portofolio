@@ -9,9 +9,14 @@
  * Keadaan lapisan yang terbuka (dropdown menu, menu pengguna, pencarian)
  * disimpan sebagai satu state tunggal sehingga klik di luar dan tombol
  * Esc cukup mengosongkan satu variabel.
+ *
+ * Identitas pengguna diambil dari sesi yang telah diverifikasi server
+ * melalui `useAuth`, sehingga topbar selalu menampilkan akun yang benar-
+ * benar sedang masuk — tanpa nama pengguna dummy yang tetap.
  */
 import { Menu, Plus, Search, X } from "@lucide/vue";
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { useAuth } from "~/composables";
 import type { AdminNavItem, AdminNavLink, AdminUser } from "~/types";
 import {
   ADMIN_NAV_ITEMS,
@@ -32,7 +37,6 @@ interface Props {
   /** Kunci menu yang sedang aktif (disorot). */
   activeKey?: string;
   cta?: { label: string; to: string };
-  user?: AdminUser;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -42,7 +46,6 @@ const props = withDefaults(defineProps<Props>(), {
   navItems: () => ADMIN_NAV_ITEMS,
   activeKey: "",
   cta: () => ({ label: "Tambah Project", to: "/admin/project?tambah=1" }),
-  user: undefined,
 });
 
 /**
@@ -56,6 +59,61 @@ const scrolled = ref(false);
 const topbar = ref<HTMLElement | null>(null);
 
 const searchOpen = computed(() => openLayer.value === "search");
+
+const { user, signOut } = useAuth();
+
+/** Sedang mengirim permintaan keluar — dipakai untuk menonaktifkan tombol. */
+const signingOut = ref(false);
+
+/** Pesan galat keluar terakhir; dikosongkan pada percobaan berikutnya. */
+const logoutError = ref("");
+
+/**
+ * Identitas yang ditampilkan pada topbar dan laci mobile.
+ *
+ * `null` selama sesi belum terbaca sehingga menu pengguna belum dirender
+ * — bukan nama pengguna tetap yang seolah-olah selalu benar.
+ */
+const adminUser = computed<AdminUser | null>(() => {
+  const current = user.value;
+  if (!current) return null;
+
+  return {
+    name: current.name,
+    role: "Admin",
+    avatar: current.image ?? undefined,
+  };
+});
+
+/**
+ * Akhiri sesi melalui API resmi Better Auth, lalu kembali ke halaman masuk.
+ *
+ * Selama permintaan berjalan tombol dinonaktifkan. Bila gagal, pesannya
+ * ditampilkan di dalam menu (bukan diam-diam) sehingga pengguna tahu
+ * sesinya masih aktif dan bisa mencoba lagi.
+ */
+const handleLogout = async (): Promise<void> => {
+  if (signingOut.value) return;
+
+  logoutError.value = "";
+  signingOut.value = true;
+
+  try {
+    const result = await signOut();
+
+    if (result.error) {
+      logoutError.value = result.error;
+      return;
+    }
+
+    openLayer.value = "";
+    drawerOpen.value = false;
+
+    await navigateTo("/login");
+  } finally {
+    signingOut.value = false;
+  }
+};
 
 const searchResults = computed<AdminNavLink[]>(() => {
   const query = searchQuery.value.trim().toLowerCase();
@@ -195,12 +253,15 @@ onBeforeUnmount(() => {
         </NuxtLink>
 
         <AdminProfileMenu
-          v-if="props.user"
-          :user="props.user"
+          v-if="adminUser"
+          :user="adminUser"
           :links="ADMIN_USER_LINKS"
           :open="openLayer === 'profile'"
+          :signing-out="signingOut"
+          :logout-error="logoutError"
           @toggle="toggleLayer('profile')"
           @navigate="navigate"
+          @logout="handleLogout"
         />
 
         <button
@@ -232,10 +293,13 @@ onBeforeUnmount(() => {
       :items="props.navItems"
       :links="ADMIN_USER_LINKS"
       :active-key="props.activeKey"
-      :user="props.user"
+      :user="adminUser"
       :cta="props.cta"
+      :signing-out="signingOut"
+      :logout-error="logoutError"
       @close="drawerOpen = false"
       @navigate="navigate"
+      @logout="handleLogout"
     />
   </header>
 </template>

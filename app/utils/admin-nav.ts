@@ -21,13 +21,11 @@ import type { AdminNavItem, AdminNavLink } from "~/types";
  * Disimpan terpisah dari halaman karena dipakai oleh seluruh halaman
  * admin — mengubah daftar modul cukup dilakukan di satu tempat sehingga
  * tidak ada URL yang tertinggal atau menyimpang antar halaman.
+ *
+ * Catatan: identitas pengguna **tidak** didefinisikan di sini. Topbar
+ * mengambil nama dan avatar dari sesi yang telah diverifikasi server
+ * (lihat `useAuth`), sehingga tidak ada nama pengguna dummy yang tetap.
  */
-
-/** Nama pengguna yang tampil di pojok kanan atas topbar. */
-export const ADMIN_USER = {
-  name: "Syang Ghege",
-  role: "Super Admin",
-};
 
 /**
  * Seluruh modul admin, dikelompokkan mengikuti alur kerja: ringkasan,

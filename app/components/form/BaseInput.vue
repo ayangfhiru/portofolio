@@ -57,29 +57,46 @@ const handleFileChange = (event: Event) => {
         *
       </span>
     </label>
-    <input
-      :id="inputId"
-      v-model="model"
-      :name="props.name"
-      :type="props.type"
-      :value="props.type === 'file' ? undefined : model"
-      :placeholder="props.placeholder"
-      :autocomplete="props.autocomplete"
-      :disabled="props.disabled"
-      :readonly="props.readonly"
-      :maxlength="props.maxlength"
-      :required="props.required"
-      :aria-invalid="!!props.error"
-      :aria-describedby="props.error ? errorId : undefined"
-      class="w-full rounded-xl border bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500 read-only:bg-slate-50"
-      :class="
-        props.error
-          ? 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10'
-          : 'border-slate-200 hover:border-slate-300 focus:border-[#D71920] focus:ring-4 focus:ring-[#D71920]/10'
-      "
-      @input="props.type !== 'file' && handleInput()"
-      @change="props.type === 'file' && handleFileChange($event)"
-    />
+    <!--
+      `relative` + overlay dibungkus terpisah dari `<input>` agar tombol
+      aksi (mis. lihat/sembunyi password) berada tepat di ujung kanan
+      kolom isian tanpa perlu menggandakan markup label, isian, dan
+      pesan galat. Padding kanan hanya ditambahkan bila slot terisi
+      supaya input biasa tidak kehilangan ruangnya.
+    -->
+    <div class="relative">
+      <input
+        :id="inputId"
+        v-model="model"
+        :name="props.name"
+        :type="props.type"
+        :value="props.type === 'file' ? undefined : model"
+        :placeholder="props.placeholder"
+        :autocomplete="props.autocomplete"
+        :disabled="props.disabled"
+        :readonly="props.readonly"
+        :maxlength="props.maxlength"
+        :required="props.required"
+        :aria-invalid="!!props.error"
+        :aria-describedby="props.error ? errorId : undefined"
+        class="w-full rounded-xl border bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500 read-only:bg-slate-50"
+        :class="[
+          props.error
+            ? 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10'
+            : 'border-slate-200 hover:border-slate-300 focus:border-[#D71920] focus:ring-4 focus:ring-[#D71920]/10',
+          $slots.trailing ? 'pr-12' : '',
+        ]"
+        @input="props.type !== 'file' && handleInput()"
+        @change="props.type === 'file' && handleFileChange($event)"
+      />
+
+      <span
+        v-if="$slots.trailing"
+        class="absolute inset-y-0 right-0 flex items-center pr-3"
+      >
+        <slot name="trailing" />
+      </span>
+    </div>
     <p
       v-if="props.error"
       :id="errorId"

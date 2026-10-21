@@ -17,7 +17,7 @@ import { ref } from "vue";
 import { AdminTopbar, AppToast, ProfileForm } from "~/components/admin";
 import { useToast } from "~/composables";
 import type { ApiResponse, ProfileAdmin } from "~/types";
-import { extractApiError, ADMIN_NAV_ITEMS, ADMIN_USER } from "~/utils";
+import { extractApiError, ADMIN_NAV_ITEMS } from "~/utils";
 
 useHead({ title: "Kelola Profil — Admin" });
 
@@ -69,7 +69,6 @@ const onSaved = (saved: ProfileAdmin): void => {
     <AdminTopbar
       :nav-items="ADMIN_NAV_ITEMS"
       active-key="profile"
-      :user="ADMIN_USER"
     />
 
     <main class="mx-auto w-full max-w-[1280px] px-4 pb-14 sm:px-6 lg:px-8">

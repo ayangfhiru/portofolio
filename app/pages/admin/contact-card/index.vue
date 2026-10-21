@@ -27,7 +27,7 @@ import {
   TableToolbar,
 } from "~/components/admin";
 import { useAdminList } from "~/composables";
-import { adminList, adminRemove, ADMIN_NAV_ITEMS, ADMIN_USER, highlightParts } from "~/utils";
+import { adminList, adminRemove, ADMIN_NAV_ITEMS, highlightParts } from "~/utils";
 import type { DataTableColumn, ContactCardAdmin } from "~/types";
 
 useHead({ title: "Kelola Kartu Kontak — Admin" });
@@ -111,7 +111,6 @@ const onSaved = async (contactCard: ContactCardAdmin): Promise<void> => {
     <AdminTopbar
       :nav-items="ADMIN_NAV_ITEMS"
       active-key="contact-card"
-      :user="ADMIN_USER"
     />
 
     <main class="mx-auto w-full max-w-[1280px] px-4 pb-14 sm:px-6 lg:px-8">

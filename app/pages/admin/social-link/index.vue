@@ -28,7 +28,7 @@ import {
 } from "~/components/admin";
 import { useAdminList } from "~/composables";
 import type { DataTableColumn, SocialLinkAdmin } from "~/types";
-import { adminList, adminRemove, ADMIN_NAV_ITEMS, ADMIN_USER, highlightParts } from "~/utils";
+import { adminList, adminRemove, ADMIN_NAV_ITEMS, highlightParts } from "~/utils";
 
 useHead({ title: "Kelola Tautan Sosial — Admin" });
 
@@ -113,7 +113,6 @@ const onSaved = async (socialLink: SocialLinkAdmin): Promise<void> => {
     <AdminTopbar
       :nav-items="ADMIN_NAV_ITEMS"
       active-key="social-link"
-      :user="ADMIN_USER"
     />
 
     <main class="mx-auto w-full max-w-[1280px] px-4 pb-14 sm:px-6 lg:px-8">

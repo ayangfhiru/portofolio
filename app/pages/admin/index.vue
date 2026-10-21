@@ -12,7 +12,7 @@
  */
 import { ArrowRight } from "@lucide/vue";
 import { AdminTopbar, AppToast } from "~/components/admin";
-import { ADMIN_NAV_ITEMS, ADMIN_USER } from "~/utils";
+import { ADMIN_NAV_ITEMS } from "~/utils";
 
 useHead({ title: "Admin — Semua Modul" });
 
@@ -99,7 +99,6 @@ const MODULES: ModuleCard[] = [
     <AdminTopbar
       :nav-items="ADMIN_NAV_ITEMS"
       active-key="dashboard"
-      :user="ADMIN_USER"
     />
 
     <main class="mx-auto w-full max-w-[1280px] px-4 pb-14 sm:px-6 lg:px-8">

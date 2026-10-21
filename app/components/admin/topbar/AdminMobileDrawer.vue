@@ -9,7 +9,7 @@
  * yang menjadikan elemen tersebut containing block bagi `fixed`, sehingga
  * tanpa teleport laci akan menempel pada tinggi topbar saja.
  */
-import { ChevronDown, Plus, X } from "@lucide/vue";
+import { ChevronDown, LoaderCircle, LogOut, Plus, X } from "@lucide/vue";
 import { ref } from "vue";
 import type { AdminNavItem, AdminNavLink, AdminUser } from "~/types";
 import AdminBrand from "./AdminBrand.vue";
@@ -24,6 +24,10 @@ interface Props {
   activeKey?: string;
   user?: AdminUser;
   cta?: { label: string; to: string };
+  /** Sedang mengirim permintaan keluar. */
+  signingOut?: boolean;
+  /** Pesan galat keluar terakhir; kosong bila tidak ada. */
+  logoutError?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -36,9 +40,11 @@ const props = withDefaults(defineProps<Props>(), {
   activeKey: "",
   user: undefined,
   cta: undefined,
+  signingOut: false,
+  logoutError: "",
 });
 
-const emit = defineEmits<{ close: []; navigate: [] }>();
+const emit = defineEmits<{ close: []; navigate: []; logout: [] }>();
 
 /** Kunci grup yang sedang terbuka; kosong berarti semua tertutup. */
 const expandedKey = ref("");
@@ -258,6 +264,31 @@ const isChildActive = (item: AdminNavItem): boolean =>
                   </span>
                 </span>
               </NuxtLink>
+            </div>
+
+            <div v-if="props.user" class="mt-2 border-t border-admin-line pt-2">
+              <p
+                v-if="props.logoutError"
+                role="alert"
+                class="px-3 pb-1 text-xs text-admin-accent-dark"
+              >
+                {{ props.logoutError }}
+              </p>
+              <button
+                type="button"
+                :disabled="props.signingOut"
+                :aria-busy="props.signingOut"
+                class="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-semibold text-admin-ink-2 transition-colors hover:bg-admin-accent-soft hover:text-admin-accent-dark disabled:cursor-not-allowed disabled:opacity-60"
+                @click="emit('logout')"
+              >
+                <LoaderCircle
+                  v-if="props.signingOut"
+                  class="h-4 w-4 shrink-0 animate-spin"
+                  aria-hidden="true"
+                />
+                <LogOut v-else class="h-4 w-4 shrink-0" aria-hidden="true" />
+                Keluar
+              </button>
             </div>
           </div>
         </aside>
