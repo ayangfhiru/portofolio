@@ -11,6 +11,11 @@ export default defineNuxtConfig({
           rel: "stylesheet",
           href: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css",
         },
+        {
+          rel: "icon",
+          type: "image/x-icon",
+          href: "images/dev.png",
+        },
       ],
     },
   },
