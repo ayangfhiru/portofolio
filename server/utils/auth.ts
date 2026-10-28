@@ -19,15 +19,94 @@ import { prisma } from "./db";
  *
  * `secret` dan `baseURL` sengaja TIDAK ditulis ulang di sini — Better
  * Auth membacanya langsung dari `BETTER_AUTH_SECRET` dan
- * `BETTER_AUTH_URL` pada `.env`, sehingga tidak ada dua tempat yang
- * bisa menyimpan rahasia dan tidak ada risiko secret ikut ter-embed ke
- * runtime config klien.
+ * `BETTER_AUTH_URL`, sehingga tidak ada dua tempat yang bisa menyimpan
+ * rahasia dan tidak ada risiko secret ikut ter-embed ke runtime config
+ * klien. Origin asal `BETTER_AUTH_URL` juga sudah dipercaya otomatis,
+ * sehingga `trustedOrigins` di bawah hanya menambah origin tambahan.
  */
 
-const trustedOrigins = (process.env.BETTER_AUTH_TRUSTED_ORIGINS ?? "")
-  .split(/[,;]/)
-  .map((origin) => origin.trim())
-  .filter(Boolean);
+/**
+ * Baca satu variabel environment tanpa mengasumsikan adanya `process.env`.
+ *
+ * Preset Nitro `netlify` (yang dipakai secara default) membangun Netlify
+ * Functions dengan runtime Node, sehingga `process.env` tersedia. Preset
+ * `netlify-edge` membangun Edge Functions di atas Deno, yang tidak
+ * menyediakan `process.env` dan membaca env lewat `Deno.env`. Better Auth
+ * sendiri menempuh cara yang sama, sehingga pembacaan daftar origin di
+ * sini tidak pernah menyimpang dari yang dipakai library tersebut —
+ * `trustedOrigins` tetap terisi walau project dipindah ke preset Edge.
+ *
+ * @returns Nilai variabel, atau `undefined` bila tidak tersedia.
+ */
+const readEnv = (key: string): string | undefined => {
+  if (typeof process !== "undefined") {
+    const value = process.env?.[key];
+    if (value) return value;
+  }
+
+  // Runtime Deno diakses lewat objek tersendiri karena tipe global
+  // `Deno` tidak tersedia pada project Node.
+  const deno = (
+    globalThis as typeof globalThis & {
+      Deno?: { env?: { get: (key: string) => string | undefined } };
+    }
+  ).Deno;
+
+  return deno?.env?.get(key);
+};
+
+/**
+ * Daftar origin tambahan yang dipercaya Better Auth.
+ *
+ * Dipisah koma (`,`) maupun titik koma (`;`); spasi di sekitar tiap
+ * entri dibuang dan entri kosong dibuang, sehingga format berikut
+ * semuanya menghasilkan daftar yang sama:
+ *
+ * ```text
+ * https://a.example,https://b.example
+ * https://a.example; https://b.example
+ * https://a.example , , https://b.example ,
+ * ```
+ *
+ * Setiap entri harus berupa origin asal browser **persis** — skema, host,
+ * dan port bila bukan port default; tanpa jalur dan tanpa garis miring
+ * di akhir. `https://www.contoh.example` adalah origin berbeda dari
+ * `https://contoh.example`, dan keduanya perlu dicantumkan bila keduanya
+ * benar-benar dipakai.
+ */
+const readTrustedOrigins = (): string[] =>
+  (readEnv("BETTER_AUTH_TRUSTED_ORIGINS") ?? "")
+    .split(/[,;]/)
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+const trustedOrigins = readTrustedOrigins();
+
+/**
+ * Catat konfigurasi origin yang aktif, satu kali saat modul dimuat.
+ *
+ * Ketika permintaan ditolak, Better Auth hanya mencatat
+ * `Invalid origin: <origin>` pada level `error`; pesan yang menyebut
+ * daftar origin tepercaya dikirim ke level `info` yang dibungkam oleh
+ * default logger (level `warn`). Tanpa catatan ini, 403 di production
+ * tidak bisa dibedakan antara "variabel env tidak terbaca runtime" dan
+ * "origin browser memang belum didaftarkan".
+ *
+ * Hanya informasi non-rahasia yang dicatat: daftar origin yang sudah
+ * disanitasi, URL dasar publik, serta ketersediaan variabel — nilai
+ * `BETTER_AUTH_SECRET` tidak pernah ikut dicetak.
+ */
+const logTrustedOriginConfig = (): void => {
+  const origins = trustedOrigins.length > 0 ? trustedOrigins.join(", ") : "(tidak ada)";
+
+  console.info(
+    `[better-auth] Origin tepercaya tambahan: ${origins}` +
+      ` | BETTER_AUTH_URL: ${readEnv("BETTER_AUTH_URL") ?? "(tidak diatur)"}` +
+      ` | BETTER_AUTH_SECRET: ${readEnv("BETTER_AUTH_SECRET") ? "tersedia" : "tidak tersedia"}`,
+  );
+};
+
+logTrustedOriginConfig();
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
