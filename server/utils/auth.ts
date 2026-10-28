@@ -1,7 +1,7 @@
-import type { H3Event } from "h3";
-import { createError } from "h3";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import type { H3Event } from "h3";
+import { createError } from "h3";
 // Impor langsung, bukan barrel `~~/utils`: barrel `app/utils` memuat
 // nav dan util sisi klien yang tidak boleh ikut terbundel ke server.
 import {
@@ -23,6 +23,12 @@ import { prisma } from "./db";
  * bisa menyimpan rahasia dan tidak ada risiko secret ikut ter-embed ke
  * runtime config klien.
  */
+
+const trustedOrigins = (process.env.BETTER_AUTH_TRUSTED_ORIGINS ?? "")
+  .split(/[,;]/)
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
@@ -34,12 +40,11 @@ export const auth = betterAuth({
     minPasswordLength: PASSWORD_MIN_LENGTH,
     maxPasswordLength: PASSWORD_MAX_LENGTH,
   },
+  trustedOrigins,
 });
 
 /** Sesi valid hasil `auth.api.getSession`. */
-type AuthSession = NonNullable<
-  Awaited<ReturnType<typeof auth.api.getSession>>
->;
+type AuthSession = NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>;
 
 /**
  * Wajibkan sesi terautentikasi untuk sebuah request.
@@ -58,7 +63,8 @@ export const requireSession = async (event: H3Event): Promise<AuthSession> => {
   if (!session) {
     throw createError({
       statusCode: 401,
-      statusMessage: "Sesi tidak valid atau sudah berakhir. Silakan masuk kembali.",
+      statusMessage:
+        "Sesi tidak valid atau sudah berakhir. Silakan masuk kembali.",
     });
   }
 
